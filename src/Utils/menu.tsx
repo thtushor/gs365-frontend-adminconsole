@@ -112,6 +112,8 @@ import SportList from "../components/SportInner/SportList";
 import SportProviderProfile from "../components/SportProviderInner/SportProviderProfile";
 import SportChildProviderList from "../components/SportProviderInner/SportChildProviderList";
 import SportsTransactionHistory from "../components/SportProviderInner/SportsTransactionHistory";
+import ProviderWiseGameList from "../components/GameProviderInner/ProviderWiseGameList";
+import SportsProviderWiseSport from "../components/SportProviderInner/SportsProviderWiseSport";
 
 export const menu = [
   {
@@ -348,13 +350,13 @@ export const menu = [
     icon: <FaShieldAlt />,
     children: [
       {
-        label: "Add P. Provider",
+        label: "Add Parent Provider",
         path: "/add-parent-game-provider",
         component: AddParentProvider,
         icon: <FaUserPlus />,
       },
       {
-        label: "Add Provider",
+        label: "Add Sub Provider",
         path: "/add-game-provider",
         component: AddGameProvider,
         icon: <FaUserPlus />,
@@ -391,13 +393,13 @@ export const menu = [
     icon: <FaShieldAlt />,
     children: [
       {
-        label: "Add P. Provider",
+        label: "Add Parent Provider",
         path: "/add-parent-sport-provider",
         component: AddSportParentProvider,
         icon: <FaUserPlus />,
       },
       {
-        label: "Add Provider",
+        label: "Add Sub Provider",
         path: "/add-sport-provider",
         component: AddSportProvider,
         icon: <FaUserPlus />,
@@ -653,7 +655,7 @@ export const gameProviderOutsideRoute = [
     component: GameProviderProfile,
   },
   {
-    label: "Provider List",
+    label: "Sub Provider List",
     path: "/game-provider-list/:gameProviderId/child-provider-list",
     component: ChildProviderList,
   },
@@ -667,6 +669,11 @@ export const gameProviderOutsideRoute = [
     path: "/game-provider-list/:gameProviderId/game-expense-history",
     component: GameExpenseHistory,
   },
+  {
+    label: "Game List",
+    path: "/game-provider-list/:gameProviderId/games-list",
+    component: ProviderWiseGameList,
+  },
 ];
 
 export const sportProviderOutsideRoute = [
@@ -676,7 +683,7 @@ export const sportProviderOutsideRoute = [
     component: SportProviderProfile,
   },
   {
-    label: "Provider List",
+    label: "Sub Provider List",
     path: "/sport-provider-list/:sportProviderId/child-provider-list",
     component: SportChildProviderList,
   },
@@ -684,5 +691,10 @@ export const sportProviderOutsideRoute = [
     label: "Sports Transaction History",
     path: "/sport-provider-list/:sportProviderId/sport-transaction-history",
     component: SportsTransactionHistory,
+  },
+  {
+    label: "Sport List",
+    path: "/sport-provider-list/:sportProviderId/Sport-list",
+    component: SportsProviderWiseSport,
   },
 ];

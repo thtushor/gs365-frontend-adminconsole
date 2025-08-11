@@ -252,7 +252,7 @@ const CreatePromotion = () => {
           </button>
         </div>
         <div className="w-full">
-          <label className="block text-sm mb-1">Promotion Types</label>
+          <label className="block text-sm mb-1">Promotion Name</label>
 
           <input
             className="border rounded px-3 py-2 w-full"
@@ -322,7 +322,7 @@ const CreatePromotion = () => {
           />
         </div>
         <div className="w-full">
-          <label className="block text-sm mb-1">Minimum Deposit Amount</label>
+          <label className="block text-sm mb-1">Maximum Deposit Amount</label>
 
           <input
             className="border rounded px-3 py-2 w-full"

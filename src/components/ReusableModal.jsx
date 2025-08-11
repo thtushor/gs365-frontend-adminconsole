@@ -14,7 +14,7 @@ const ReusableModal = ({
   if (!open) return null;
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center overflow-auto justify-center bg-black bg-opacity-40 ${containerClassName}`}
+      className={`fixed inset-0 z-50 flex items-center overflow-auto justify-center bg-black/60 ${containerClassName}`}
     >
       <div
         className={`bg-white overflow-auto max-h-[90vh] rounded-lg shadow-lg w-full max-w-md p-6 relative ${className}`}

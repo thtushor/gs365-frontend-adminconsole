@@ -29,6 +29,7 @@ export function CreateAgentForm({
   roles,
   isAffiliate = false,
 }) {
+  console.log(initialValues);
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
 
   // Format options for react-select
@@ -144,7 +145,7 @@ export function CreateAgentForm({
           value={form.phone}
           onChange={handleChange}
           required
-          type="number"
+          type="text"
         />
       </div>
       <div className="flex flex-col">
@@ -217,15 +218,16 @@ export function CreateAgentForm({
         )}
       </div>
       <div className="flex flex-col">
-        <label className="font-semibold text-xs mb-1">CITY</label>
+        <label className="font-semibold text-xs mb-1">Address</label>
         <input
           className="border rounded px-3 py-2"
           name="city"
-          placeholder="City"
+          placeholder="Address"
           value={form.city}
           onChange={handleChange}
         />
       </div>
+      {/*
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">STREET</label>
         <input
@@ -236,6 +238,8 @@ export function CreateAgentForm({
           onChange={handleChange}
         />
       </div>
+        */}
+
       {/* Row 4 */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">

@@ -159,7 +159,7 @@ const AffiliateListPage = () => {
     },
     {
       field: "city",
-      headerName: "City",
+      headerName: "Address",
       width: 120,
       render: (_, row) => row.city,
     },
@@ -285,11 +285,12 @@ const AffiliateListPage = () => {
   ];
 
   const handleEdit = (row) => {
+    console.log(row);
     setEditAgent(row);
     setEditForm({
       username: row.username || "",
       fullname: row.fullname || row.name || "",
-      phone: row.phone || row.mobile || "",
+      phone: row.phone ? row?.phone : row.mobile ? row.mobile : "",
       email: row.email || "",
       password: "",
       role: row.role || "",
@@ -407,7 +408,7 @@ const AffiliateListPage = () => {
       {/* Edit Modal */}
       <ReusableModal
         open={editModalOpen}
-        className={"min-w-[80vw] h-[80vh] overflow-auto"}
+        className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
         onClose={() => setEditModalOpen(false)}
         title="Edit Agent"
         // onSave={handleEditFormSubmit}

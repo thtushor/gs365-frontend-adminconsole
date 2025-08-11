@@ -29,8 +29,8 @@ const GameProviderInfo = ({ info }) => {
   return (
     <div className="border-2 border-[#07122b] bg-[#f5f5f5] p-4 rounded-md">
       <div className="flex items-center justify-between mb-2 flex-wrap">
-        <h1 className="mt-[-5px] text-base font-semibold bg-[#07122b] text-white px-3 w-fit rounded-full py-1 pt-[2px] mb-2">
-          Game Provider Information
+        <h1 className="mt-[-5px] text-base font-semibold  bg-[#07122b] text-white px-3 w-fit rounded-full py-1 pt-[2px] mb-2">
+          {`Personal Information`}
         </h1>
         <Link
           to={

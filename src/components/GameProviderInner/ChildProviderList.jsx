@@ -190,7 +190,7 @@ const ChildProviderList = () => {
     <div className="bg-white rounded-lg shadow p-4 mt-6 w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">
-          Game Provider List of{" "}
+          Game Sub Provider List of{" "}
           <span className="text-green-500">{gameProviderInfo?.name}</span>
         </h2>
         <button
@@ -199,7 +199,7 @@ const ChildProviderList = () => {
             navigate(`/add-game-provider?ref_parent_id=${gameProviderInfo?.id}`)
           }
         >
-          + Game Provider
+          + Add Sub Provider
         </button>
       </div>
       {/* Filters */}
@@ -235,7 +235,7 @@ const ChildProviderList = () => {
         </div>
       ) : game_providers.length === 0 ? (
         <div className="text-center text-gray-500 py-8">
-          No game providers found.
+          No game sub providers found.
         </div>
       ) : (
         <>

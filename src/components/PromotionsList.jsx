@@ -93,12 +93,12 @@ const PromotionsList = () => {
     },
     {
       field: "turnoverMultiply",
-      headerName: "T. Multiply",
+      headerName: "Turnover",
       width: 110,
     },
     {
       field: "bonus",
-      headerName: "Bonus",
+      headerName: "Bonus%",
       width: 80,
     },
     {

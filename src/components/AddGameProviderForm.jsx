@@ -44,6 +44,7 @@ const AddGameProviderForm = ({
 
   const parentProviderList = data?.data || [];
   console.log(parentProviderList);
+
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
   const currencyOptions =
     currencyList?.map((currency) => ({
@@ -69,7 +70,12 @@ const AddGameProviderForm = ({
     setForm({
       logo: data?.logo || null,
       name: data?.name || "",
-      parentId: data?.parentId || "",
+      parentId:
+        refParentId && data?.parentId
+          ? refParentId
+          : !refParentId && data?.parentId
+          ? data?.parentId
+          : "",
       providerIp: data?.providerIp || "",
       licenseKey: data?.licenseKey || "",
       phone: data?.phone || "",
@@ -81,7 +87,6 @@ const AddGameProviderForm = ({
       status: data?.status || "inactive",
     });
   };
-  console.log(form);
   useQuery({
     queryKey: ["game_providers", providerId],
     queryFn: () =>
@@ -113,7 +118,8 @@ const AddGameProviderForm = ({
       });
     },
     onSuccess: () => {
-      if (!providerId) setForm(defaultForm);
+      if (!providerId)
+        setForm({ ...defaultForm, parentId: refParentId ? refParentId : "" });
     },
   });
 
@@ -196,11 +202,11 @@ const AddGameProviderForm = ({
         <h2 className="text-lg font-semibold uppercase">
           {isParentProvider
             ? providerId
-              ? "Edit Game Parent Provider"
-              : "Add Game Parent Provider"
+              ? "Edit Parent Provider"
+              : "Add Parent Provider"
             : providerId
-            ? "Edit Game Provider"
-            : "Add Game Provider"}
+            ? "Edit Sub Provider"
+            : "Add Sub Provider"}
         </h2>
         <button
           className="border border-green-400 text-green-600 px-4 py-1 rounded hover:bg-green-50 print:hidden"
@@ -249,7 +255,7 @@ const AddGameProviderForm = ({
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select Provider</option>
+                  <option value="">Select Parent Provider</option>
                   {parentProviderList.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.name}
@@ -433,7 +439,7 @@ const AddGameProviderForm = ({
                 type="submit"
                 className={`bg-red-500 uppercase cursor-pointer text-white px-6 py-2 rounded hover:bg-red-600 transition font-medium pointer-events-none`}
               >
-                Add Parent Game Provider First
+                Add Parent Provider First
               </button>
             ) : (
               <button
@@ -444,12 +450,12 @@ const AddGameProviderForm = ({
               >
                 {!submitLoading
                   ? providerId && isParentProvider
-                    ? "Edit Game Parent Provider"
+                    ? "Edit Parent Provider"
                     : !providerId && isParentProvider
-                    ? "ADD Game Parent Provider"
+                    ? "ADD Parent Provider"
                     : !isParentProvider && !providerId
-                    ? "Add Game provider"
-                    : "edit Game provider"
+                    ? "Add Sub provider"
+                    : "edit Sub provider"
                   : "Submitting..."}
               </button>
             )}

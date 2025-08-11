@@ -1,4 +1,10 @@
-import { Link, Outlet, useParams, useLocation } from "react-router-dom";
+import {
+  Link,
+  Outlet,
+  useParams,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useGetRequest } from "../Utils/apiClient";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +13,7 @@ import { useAuth } from "../hooks/useAuth";
 import { gameProviderOutsideRoute } from "../Utils/menu";
 
 const GameProviderLayout = () => {
+  const navigate = useNavigate();
   const { gameProviderId } = useParams();
   const location = useLocation();
   const getRequest = useGetRequest();
@@ -43,6 +50,7 @@ const GameProviderLayout = () => {
     }
     return true;
   });
+
   // Dummy balances (could come from API)
   const HighlightBox = ({ label, value }) => {
     return (
@@ -55,6 +63,23 @@ const GameProviderLayout = () => {
 
   return (
     <div>
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="text-sm uppercase font-semibold border-green-500 border text-green-500 bg-green-100 px-2 w-fit rounded-md py-1">
+          {`${
+            parentProvider ? "Sub Provider Profile" : "Parent Provider Profile"
+          }- ${gameProviderDetails?.data.name || "Unknown"}`}
+        </h1>
+        <button
+          className="bg-green-500 text-white px-4 py-1 cursor-pointer rounded hover:bg-green-600 transition text-sm font-medium"
+          onClick={() =>
+            navigate(
+              `/add-game-provider?ref_parent_id=${gameProviderDetails?.data.id}`
+            )
+          }
+        >
+          + Add Sub Provider
+        </button>
+      </div>
       <nav className="bg-[#07122b] sticky top-[-24px] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3">
         <ul className="flex gap-4 flex-wrap">
           {filteredRoutes.map(({ label, path }) => {

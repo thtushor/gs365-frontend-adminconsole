@@ -19,6 +19,7 @@ const GameProvidersList = () => {
     pageSize: 10,
     name: "",
     status: "",
+    parentId: "",
   });
 
   const { data, isLoading, isError, error } = useQuery({
@@ -31,6 +32,20 @@ const GameProvidersList = () => {
       }),
     keepPreviousData: true,
   });
+
+  // ✅ Fetch parentProviders
+  const { data: parentProvider, isLoading: parentLoading } = useQuery({
+    queryKey: ["game_providers", { publicList: true, isParent: true }],
+    queryFn: () =>
+      getRequest({
+        url: BASE_URL + API_LIST.GET_GAME_PROVIDER,
+        params: { publicList: true, isParent: true },
+        errorMessage: "Failed to fetch parent provider list",
+      }),
+    keepPreviousData: true,
+  });
+  const parentProviderList = parentProvider?.data || [];
+  console.log(parentProviderList);
 
   const game_providers = data?.data || [];
   const total = data?.pagination?.total || 0;
@@ -212,6 +227,26 @@ const GameProvidersList = () => {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
+
+        {/* Parent Provider Select */}
+        {parentProviderList.length > 0 && (
+          <div className={`flex flex-col `}>
+            <select
+              className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+              name="parentId"
+              value={filters.parentId}
+              onChange={handleFilterChange}
+              required
+            >
+              <option value="">Select Parent Provider</option>
+              {parentProviderList.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Table */}
