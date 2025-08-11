@@ -1,0 +1,463 @@
+import React, { useEffect, useState } from "react";
+import ReusableModal from "./ReusableModal";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useGetRequest, usePostRequest } from "../Utils/apiClient";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { API_LIST, BASE_URL, SINGLE_IMAGE_UPLOAD_URL } from "../api/ApiList";
+import { toast } from "react-toastify";
+import { useCurrencies } from "./shared/useCurrencies";
+import Select from "react-select";
+// Updated default form to match backend keys
+const defaultForm = {
+  logo: null,
+  name: "",
+  parentId: "",
+  providerIp: "",
+  licenseKey: "",
+  phone: "",
+  email: "",
+  minBalanceLimit: "",
+  whatsapp: "",
+  telegram: "",
+  country: "",
+  status: "inactive",
+};
+
+const AddGameProviderForm = ({
+  isParentProvider = true,
+  sectionTitle = "",
+}) => {
+  const [searchParams] = useSearchParams();
+  const refParentId = searchParams.get("ref_parent_id");
+
+  console.log(refParentId);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["game_providers", { publicList: true, isParent: true }],
+    queryFn: () =>
+      getRequest({
+        url: BASE_URL + API_LIST.GET_GAME_PROVIDER,
+        params: { publicList: true, isParent: true },
+        errorMessage: "Failed to fetch promotions list",
+      }),
+    keepPreviousData: true,
+  });
+
+  const parentProviderList = data?.data || [];
+  console.log(parentProviderList);
+  const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
+  const currencyOptions =
+    currencyList?.map((currency) => ({
+      value: currency.id,
+      label: `${currency.name} (${currency.code})`,
+    })) || [];
+
+  const [form, setForm] = useState(defaultForm);
+  const [submitLoading, setSubmitLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const providerId = queryParams.get("providerId");
+
+  const postRequest = usePostRequest();
+  const getRequest = useGetRequest();
+
+  const handleUpdatedData = (fetchData) => {
+    const data = fetchData?.data;
+    if (!data && !refParentId) return;
+
+    setForm({
+      logo: data?.logo || null,
+      name: data?.name || "",
+      parentId: data?.parentId || "",
+      providerIp: data?.providerIp || "",
+      licenseKey: data?.licenseKey || "",
+      phone: data?.phone || "",
+      email: data?.email || "",
+      minBalanceLimit: data?.minBalanceLimit || "",
+      whatsapp: data?.whatsapp || "",
+      telegram: data?.telegram || "",
+      country: Number(data?.country) || "",
+      status: data?.status || "inactive",
+    });
+  };
+  console.log(form);
+  useQuery({
+    queryKey: ["game_providers", providerId],
+    queryFn: () =>
+      getRequest({
+        url: BASE_URL + API_LIST.GET_GAME_PROVIDER,
+        params: { id: providerId },
+        errorMessage: "Failed to fetch game_providers details",
+        onSuccessFn: handleUpdatedData,
+      }),
+    enabled: !!providerId,
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (formData) => {
+      const payload = {
+        ...formData,
+        id: providerId || undefined,
+      };
+
+      return await postRequest({
+        url: BASE_URL + API_LIST.CREATE_GAME_PROVIDER,
+        body: payload,
+        contentType: "application/json",
+        setLoading: setSubmitLoading,
+        onSuccessFn: handleUpdatedData,
+        successMessage: providerId
+          ? "Game provider updated successfully."
+          : "Game provider created successfully.",
+      });
+    },
+    onSuccess: () => {
+      if (!providerId) setForm(defaultForm);
+    },
+  });
+
+  const handleChange = (e) => {
+    const { name, value, files, type } = e.target;
+    if (type === "file") {
+      setForm((prev) => ({ ...prev, [name]: files[0] }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const validate = () => {
+    const requiredFields = ["name"];
+    for (let field of requiredFields) {
+      if (!form[field]) {
+        toast.error(
+          `${field.charAt(0).toUpperCase()}${field.slice(1)} is required`
+        );
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+
+    try {
+      if (!validate()) return;
+
+      let logoUrl = form.logo;
+
+      if (form.logo instanceof File) {
+        const imageForm = new FormData();
+        imageForm.append("file", form.logo);
+
+        const uploadResponse = await fetch(SINGLE_IMAGE_UPLOAD_URL, {
+          method: "POST",
+          body: imageForm,
+        });
+
+        if (!uploadResponse.ok) {
+          toast.error("Logo upload failed");
+          return;
+        }
+
+        const imageData = await uploadResponse.json();
+        if (!imageData?.status || !imageData.data?.original) {
+          toast.error("Invalid image upload response");
+          return;
+        }
+
+        logoUrl = imageData.data.original;
+      }
+
+      const formWithLogoUrl = {
+        ...form,
+        logo: logoUrl,
+      };
+
+      mutation.mutate(formWithLogoUrl);
+    } catch (error) {
+      console.error("Submit error:", error);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (refParentId) {
+      setForm({ ...form, parentId: refParentId });
+    }
+  }, [refParentId]);
+
+  return (
+    <div className="bg-[#f5f5f5] min-h-screen p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold uppercase">
+          {isParentProvider
+            ? providerId
+              ? "Edit Game Parent Provider"
+              : "Add Game Parent Provider"
+            : providerId
+            ? "Edit Game Provider"
+            : "Add Game Provider"}
+        </h2>
+        <button
+          className="border border-green-400 text-green-600 px-4 py-1 rounded hover:bg-green-50 print:hidden"
+          onClick={() => window.print()}
+        >
+          Print
+        </button>
+      </div>
+
+      <div className="border border-green-400 rounded-md bg-white p-6">
+        <form
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          onSubmit={handleSubmit}
+        >
+          {/* Provider or Parent Name */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              {isParentProvider ? "PARENT PROVIDER NAME" : "PROVIDER NAME"}{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="name"
+              placeholder="Provider Name"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Parent Provider Select */}
+          {isParentProvider ||
+            (parentProviderList.length > 0 && (
+              <div className={`flex flex-col `}>
+                <label className="font-semibold text-xs mb-1">
+                  SELECT PARENT PROVIDER <span className="text-red-500">*</span>
+                </label>
+                <select
+                  className={`border rounded px-3 py-2 ${
+                    refParentId
+                      ? "pointer-events-none border-green-500 text-green-500"
+                      : ""
+                  }`}
+                  name="parentId"
+                  value={form.parentId}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Provider</option>
+                  {parentProviderList.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+
+          {/* Provider IP */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              PROVIDER IP <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="providerIp"
+              placeholder="Provider IP"
+              value={form.providerIp}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* License Key */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              LICENSE KEY <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="licenseKey"
+              placeholder="License Key"
+              value={form.licenseKey}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Phone */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              PHONE NUMBER <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="phone"
+              placeholder="Phone Number"
+              value={form.phone}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Email */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              EMAIL <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              className="border rounded px-3 py-2"
+              name="email"
+              placeholder="Email Address"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Min Balance */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              MIN BALANCE LIMIT <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              className="border rounded px-3 py-2"
+              name="minBalanceLimit"
+              placeholder="Minimum Balance"
+              value={form.minBalanceLimit}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Currency Dropdown */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              COUNTRY/CURRENCY
+            </label>
+            {currencyLoading ? (
+              <p className="text-gray-500 text-sm">Loading currencies...</p>
+            ) : (
+              <Select
+                options={currencyOptions}
+                value={
+                  currencyOptions.find((opt) => opt.value === form.country) ||
+                  null
+                }
+                onChange={(selected) => {
+                  console.log(selected);
+                  setForm((prev) => ({
+                    ...prev,
+                    country: selected ? selected.value : null,
+                  }));
+                }}
+                isSearchable
+                placeholder="Select Currency"
+                styles={{
+                  menuList: (base) => ({
+                    ...base,
+                    maxHeight: "300px",
+                    overflowY: "auto",
+                  }),
+                }}
+              />
+            )}
+          </div>
+
+          {/* WhatsApp */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              WHATSAPP <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="whatsapp"
+              placeholder="WhatsApp Number"
+              value={form.whatsapp}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Telegram */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              TELEGRAM <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="telegram"
+              placeholder="Telegram Number"
+              value={form.telegram}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Logo Upload */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">
+              PROVIDER LOGO <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="logo"
+              type="file"
+              accept="image/*"
+              onChange={handleChange}
+              required={!providerId}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="font-semibold text-xs mb-1">STATUS</label>
+            <select
+              className="border rounded px-3 py-2"
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          {/* Submit Button */}
+          <div className="md:col-span-2 flex justify-end mt-2">
+            {!isParentProvider && parentProviderList.length < 1 ? (
+              <button
+                type="submit"
+                className={`bg-red-500 uppercase cursor-pointer text-white px-6 py-2 rounded hover:bg-red-600 transition font-medium pointer-events-none`}
+              >
+                Add Parent Game Provider First
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className={`bg-green-500 uppercase cursor-pointer text-white px-6 py-2 rounded hover:bg-green-600 transition font-medium ${
+                  submitLoading ? "pointer-events-none" : ""
+                }`}
+              >
+                {!submitLoading
+                  ? providerId && isParentProvider
+                    ? "Edit Game Parent Provider"
+                    : !providerId && isParentProvider
+                    ? "ADD Game Parent Provider"
+                    : !isParentProvider && !providerId
+                    ? "Add Game provider"
+                    : "edit Game provider"
+                  : "Submitting..."}
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AddGameProviderForm;

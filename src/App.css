@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+.uploaderInput {
+  display: none;
+}
+#uploaderLabel {
+  height: 100px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px dashed #999;
+}
+#uploaderLabel:hover {
+  color: #de0611;
+  border: 1px dashed #de0611;
+}
+
+.editor-wrapper button,
+.editor-wrapper input,
+.editor-wrapper textarea,
+.editor-wrapper ul,
+.editor-wrapper ol,
+.editor-wrapper h1,
+.editor-wrapper h2,
+.editor-wrapper h3,
+.editor-wrapper h4,
+.editor-wrapper h5,
+.editor-wrapper h6,
+.editor-wrapper p,
+.editor-wrapper a,
+.editor-wrapper img {
+  all: revert;
+}
+
+.custom-promotion-type .ant-select-selector {
+  height: 41px !important;
+  border-color: black !important;
+}

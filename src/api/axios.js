@@ -1,0 +1,37 @@
+import axios from "axios";
+import { API_LIST, BASE_URL } from "./ApiList";
+import { toast } from "react-toastify";
+
+const Axios = axios.create({
+  baseURL: BASE_URL, // Change to your API base URL
+  timeout: 30000,
+});
+
+// Request interceptor for adding auth token
+Axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor for handling errors
+Axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Optionally handle unauthorized globally
+
+      window.location.href = "/login";
+      localStorage.removeItem("token");
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default Axios;
