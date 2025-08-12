@@ -5,9 +5,10 @@ import { useGetRequest, useUpdateRequest } from "../Utils/apiClient";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
 import ExpandableDataTable from "./ExpandableDataTable";
-import { MdToggleOff, MdToggleOn } from "react-icons/md";
+import { MdDeleteOutline, MdToggleOff, MdToggleOn } from "react-icons/md";
 import BaseModal from "./shared/BaseModal";
 import StatusChangePopup from "./inner_component/StatusChangePopup";
+import DeleteDropdownOption from "./DeleteDropdownOption";
 
 const DropdownList = () => {
   const getRequest = useGetRequest();
@@ -40,7 +41,7 @@ const DropdownList = () => {
       field: "dropdown_id",
       headerName: "ID",
       width: 80,
-      render: (_, row) => row.dropdown_id,
+      render: (_, row) => row.id,
     },
     {
       field: "name",
@@ -90,7 +91,6 @@ const DropdownList = () => {
   };
 
   const handleStatusToggle = (row) => {
-    console.log(row);
     setIsModalOpen(true);
     setChildren(
       <StatusChangePopup
@@ -98,6 +98,13 @@ const DropdownList = () => {
         onCancel={() => setIsModalOpen(false)}
         onConfirm={handleChangeStatus}
       />
+    );
+  };
+
+  const handleDeleteOption = (row) => {
+    setIsModalOpen(true);
+    setChildren(
+      <DeleteDropdownOption data={row} onCancel={() => setIsModalOpen(false)} />
     );
   };
 
@@ -140,6 +147,18 @@ const DropdownList = () => {
         field: "created_at",
         headerName: "Created At",
         render: (value) => new Date(value).toLocaleString(),
+      },
+      {
+        field: "action",
+        headerName: "Action",
+        render: (value, row) => (
+          <button
+            onClick={() => handleDeleteOption(row)}
+            className="text-red-600 hover:text-red-800 cursor-pointer text-[20px]"
+          >
+            <MdDeleteOutline size={20} />
+          </button>
+        ),
       },
     ],
     expandableCheck: (row) =>

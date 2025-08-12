@@ -48,6 +48,7 @@ export const API_LIST = {
   CREATE_DROPDOWN: "/api/admin/create-dropdowns",
   GET_DROPDOWN: "/api/admin/get-dropdowns",
   UPDATE_DROPDOWN_OPTION: "/api/admin/update-dropdown-option-status",
+  DELETE_DROPDOWN_OPTION: "/api/admin/dropdown",
 
   // promotions
   CREATE_PROMOTION: "/api/admin/promotion",

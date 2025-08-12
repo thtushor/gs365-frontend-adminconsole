@@ -68,20 +68,26 @@ const SportsProviderLayout = () => {
             parentProvider ? "Sub Provider Profile" : "Parent Provider Profile"
           }- ${sportProviderDetails?.data.name || "Unknown"}`}
         </h1>
-        <button
-          className="bg-green-500 text-white px-4 py-1 cursor-pointer rounded hover:bg-green-600 transition text-sm font-medium"
-          onClick={() =>
-            navigate(
-              `/add-sport-provider?ref_parent_id=${
-                sportProviderDetails?.data?.parentId
-                  ? sportProviderDetails?.data?.parentId
-                  : sportProviderDetails?.data.id
-              }`
-            )
-          }
-        >
-          + Add Sub Provider
-        </button>
+
+        {!sportProviderDetails?.data?.parentId ? (
+          <button
+            className="bg-green-500 text-white px-4 py-1 cursor-pointer rounded hover:bg-green-600 transition text-sm font-medium"
+            onClick={() =>
+              navigate(
+                `/add-sport-provider?ref_parent_id=${sportProviderDetails?.data?.id}`
+              )
+            }
+          >
+            + Add Sub Provider
+          </button>
+        ) : (
+          <button
+            className="bg-green-500 text-white cursor-pointer px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+            onClick={() => navigate("/add-sport")}
+          >
+            Create Sport
+          </button>
+        )}
       </div>
       <nav className="bg-[#07122b] sticky top-[-24px] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3">
         <ul className="flex gap-4 flex-wrap">
