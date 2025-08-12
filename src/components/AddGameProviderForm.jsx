@@ -246,9 +246,7 @@ const AddGameProviderForm = ({
                 </label>
                 <select
                   className={`border rounded px-3 py-2 ${
-                    refParentId
-                      ? "pointer-events-none border-green-500 text-green-500"
-                      : ""
+                    refParentId ? "border-green-500 text-green-500" : ""
                   }`}
                   name="parentId"
                   value={form.parentId}

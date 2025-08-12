@@ -73,7 +73,11 @@ const GameProviderLayout = () => {
           className="bg-green-500 text-white px-4 py-1 cursor-pointer rounded hover:bg-green-600 transition text-sm font-medium"
           onClick={() =>
             navigate(
-              `/add-game-provider?ref_parent_id=${gameProviderDetails?.data.id}`
+              `/add-game-provider?ref_parent_id=${
+                gameProviderDetails?.data?.parentId
+                  ? gameProviderDetails?.data?.parentId
+                  : gameProviderDetails?.data.id
+              }`
             )
           }
         >
