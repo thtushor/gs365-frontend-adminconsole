@@ -83,6 +83,8 @@ const GameProviderLayout = () => {
       <nav className="bg-[#07122b] sticky top-[-24px] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3">
         <ul className="flex gap-4 flex-wrap">
           {filteredRoutes.map(({ label, path }) => {
+            if (!gameProviderDetails?.data.parentId && label === "Game List")
+              return;
             const to = path.replace(":gameProviderId", gameProviderId);
             const isActive =
               path === "/game-provider-list/:gameProviderId"

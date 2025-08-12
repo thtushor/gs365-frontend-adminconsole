@@ -18,10 +18,11 @@ const SportProvidersList = () => {
     pageSize: 10,
     name: "",
     status: "",
+    parentId: "",
   });
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["game_providers", filters],
+    queryKey: ["sports_providers", filters],
     queryFn: () =>
       getRequest({
         url: BASE_URL + API_LIST.GET_SPORT_PROVIDER,
@@ -31,7 +32,20 @@ const SportProvidersList = () => {
     keepPreviousData: true,
   });
 
-  const game_providers = data?.data || [];
+  // ✅ Fetch parentProviders
+  const { data: parentProvider, isLoading: parentLoading } = useQuery({
+    queryKey: ["sports_providers", { publicList: true, isParent: true }],
+    queryFn: () =>
+      getRequest({
+        url: BASE_URL + API_LIST.GET_SPORT_PROVIDER,
+        params: { publicList: true, isParent: true },
+        errorMessage: "Failed to fetch parent provider list",
+      }),
+    keepPreviousData: true,
+  });
+  const parentProviderList = parentProvider?.data || [];
+
+  const sports_providers = data?.data || [];
   const total = data?.pagination?.total || 0;
   const totalPages = Math.ceil(total / filters.pageSize) || 1;
 
@@ -211,6 +225,26 @@ const SportProvidersList = () => {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
+
+        {/* Parent Provider Select */}
+        {parentProviderList.length > 0 && (
+          <div className={`flex flex-col `}>
+            <select
+              className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+              name="parentId"
+              value={filters.parentId}
+              onChange={handleFilterChange}
+              required
+            >
+              <option value="">Select Parent Provider</option>
+              {parentProviderList.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Table */}
@@ -222,13 +256,13 @@ const SportProvidersList = () => {
         <div className="text-center text-red-500 py-8">
           Failed to load game providers: {error?.message || "Unknown error"}
         </div>
-      ) : game_providers.length === 0 ? (
+      ) : sports_providers.length === 0 ? (
         <div className="text-center text-gray-500 py-8">
           No game providers found.
         </div>
       ) : (
         <>
-          <DataTable columns={columns} data={game_providers} />
+          <DataTable columns={columns} data={sports_providers} />
           <Pagination
             currentPage={filters.page}
             totalPages={totalPages}

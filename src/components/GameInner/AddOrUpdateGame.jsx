@@ -22,6 +22,7 @@ const defaultForm = {
 };
 
 const AddOrUpdateGame = () => {
+  const [parentProviderId, setParentProviderId] = useState(null);
   const [form, setForm] = useState(defaultForm);
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -46,22 +47,41 @@ const AddOrUpdateGame = () => {
       res?.data?.options?.filter((opt) => opt.status === "active") || [],
   });
 
-  // ✅ Fetch providers
+  // ✅ Fetch parent providers
   const { data: providers = [] } = useQuery({
-    queryKey: ["game_providers"],
+    queryKey: ["game_providers", { publicList: true, isParent: true }],
     queryFn: () =>
       getRequest({
         url: BASE_URL + API_LIST.GET_GAME_PROVIDER,
-        params: { publicList: true },
+        params: { publicList: true, isParent: true },
+        errorMessage: "Failed to fetch parent provider list",
       }),
     select: (res) => res?.data || [],
   });
+  // ✅ Fetch child providers
+  const { data: childProviders = [], isLoading: childProviderLoading } =
+    useQuery({
+      queryKey: [
+        "child_game_providers",
+        { publicList: true, parentId: parentProviderId },
+      ],
+      queryFn: () =>
+        getRequest({
+          url: BASE_URL + API_LIST.GET_GAME_PROVIDER,
+          params: { publicList: true, parentId: parentProviderId },
+          errorMessage: "Failed to fetch parent provider list",
+        }),
+      enabled: !!parentProviderId,
+    });
 
   // ✅ Prefill form in edit mode
   const handleUpdatedData = (fetchData) => {
     const data = fetchData?.data;
     if (!data) return;
 
+    if (data?.providerInfo?.parentId) {
+      setParentProviderId(data?.providerInfo?.parentId);
+    }
     setForm({
       name: data.name || "",
       parentId: data.parentId || "",
@@ -72,8 +92,16 @@ const AddOrUpdateGame = () => {
       secretPin: data.secretPin || "",
       gameUrl: data.gameUrl || "",
       ggrPercent: data.ggrPercent || "",
-      categoryId: data.categoryInfo?.id?.toString() || "",
-      providerId: data.providerInfo?.id?.toString() || "",
+      categoryId: gameId
+        ? data.categoryInfo?.id?.toString()
+        : data.categoryInfo?.id
+        ? data.categoryInfo?.id?.toString()
+        : "",
+      providerId: gameId
+        ? data.providerInfo?.id?.toString()
+        : data.providerInfo?.id
+        ? data.providerInfo?.id?.toString()
+        : "",
       isFavorite: data.isFavorite || false,
     });
   };
@@ -203,6 +231,13 @@ const AddOrUpdateGame = () => {
     }
   };
 
+  const handleGetSubProvider = (e) => {
+    const { name, value } = e.target;
+    if (name === "parentProviderId") {
+      setParentProviderId(value);
+    }
+  };
+
   return (
     <div className="bg-[#f5f5f5] min-h-screen p-6">
       <form
@@ -253,16 +288,53 @@ const AddOrUpdateGame = () => {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Game Provider</label>
+          <label className="block mb-1 font-medium">
+            Select Parent Provider
+          </label>
+          <select
+            name="parentProviderId"
+            value={parentProviderId}
+            onChange={handleGetSubProvider}
+            className="w-full border px-3 py-2 rounded"
+            required
+          >
+            <option value="">Select Parent Provider</option>
+            {providers.map((prov) => (
+              <option key={prov.id} value={prov.id}>
+                {prov.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div
+          className={`${
+            (!parentProviderId ||
+              childProviders?.data?.length < 1 ||
+              childProviderLoading) &&
+            "opacity-50"
+          }`}
+        >
+          <label className="block mb-1 font-medium">Select Sub Provider</label>
           <select
             name="providerId"
             value={form.providerId}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className={`w-full border px-3 py-2 rounded ${
+              (!parentProviderId ||
+                childProviders?.data?.length < 1 ||
+                childProviderLoading) &&
+              "opacity-50 pointer-events-none select-none"
+            }`}
             required
           >
-            <option value="">Select Provider</option>
-            {providers.map((prov) => (
+            <option value="">
+              {childProviderLoading
+                ? "Loading..."
+                : parentProviderId && childProviders?.data?.length < 1
+                ? "Sub Provider Not Available"
+                : "Select Sub Provider"}
+            </option>
+            {childProviders?.data?.map((prov) => (
               <option key={prov.id} value={prov.id}>
                 {prov.name}
               </option>
@@ -321,22 +393,21 @@ const AddOrUpdateGame = () => {
           />
         </div>
 
-        <div>
-          <label className="block mb-1 font-medium">GGR Percent</label>
-          <input
-            type="number"
-            name="ggrPercent"
-            value={form.ggrPercent}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-            placeholder="Enter your GGR%"
-          />
-        </div>
-
-        <div className="col-span-full grid-cols-3 grid  gap-4">
+        <div className="col-span-full sm:grid-cols-2 grid-cols-1 lg:grid-cols-4 grid  gap-4">
+          <div>
+            <label className="block mb-1 font-medium">GGR Percent</label>
+            <input
+              type="number"
+              name="ggrPercent"
+              value={form.ggrPercent}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              required
+              placeholder="Enter your GGR%"
+            />
+          </div>
           <div className="col-span-full sm:col-span-1">
-            <label className="block mb-1 font-medium">Game Logo</label>
+            <label className="block mb-1 font-medium">Game Thumbnail</label>
             <input
               type="file"
               name="gameLogo"

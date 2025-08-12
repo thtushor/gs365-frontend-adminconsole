@@ -46,7 +46,7 @@ const GameList = ({ providerId }) => {
     },
     {
       field: "gameLogo",
-      headerName: "Game Logo",
+      headerName: "Game Thumbnail",
       width: 120,
       render: (value) => {
         const imageUrl = value?.replace(/^"+|"+$/g, ""); // Remove extra quotes
