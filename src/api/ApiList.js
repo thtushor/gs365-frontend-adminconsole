@@ -1,10 +1,10 @@
-// export const BASE_URL = "https://gs-server-svmt.onrender.com";
+export const BASE_URL = "https://glorypos.com/gs-server";
 // export const BASE_URL = "https://gs-backend-73tu.onrender.com";
-export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "http://localhost:3000";
 
-export const GAME_SITE = "https://fashionglory-gaming.vercel.app/";
+export const GAME_SITE = "https://gamestar365.com";
 
-export const Image_BASE_URL = "https://gs-image-server.onrender.com";
+export const Image_BASE_URL = "https://glorypos.com/image-upload/";
 export const SINGLE_IMAGE_UPLOAD_URL = `${Image_BASE_URL}/upload`;
 export const MULTIPLE_IMAGE_UPLOAD_URL = `${Image_BASE_URL}/uploads`;
 
