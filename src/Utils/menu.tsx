@@ -45,6 +45,7 @@ import CoinAnalyticsPage from "../components/CoinAnalyticsPage";
 import ProviderPaymentsPage from "../components/ProviderPaymentsPage";
 import AffiliatePanelPage from "../components/AffiliatePanelPage";
 import TurnoverSettingsPage from "../components/TurnoverSettingsPage";
+import SystemSettingsPage from "../components/SystemSettingsPage";
 import BackupRestorePage from "../components/BackupRestorePage";
 import OwnerAccountControlPage from "../components/OwnerAccountControlPage";
 import { BiLoader } from "react-icons/bi";
@@ -512,6 +513,12 @@ export const menu = [
     label: "Settings",
     icon: <FaCogs />,
     children: [
+      {
+        label: "System Settings",
+        path: "/settings/system",
+        component: SystemSettingsPage,
+        icon: <FaCogs />,
+      },
       {
         label: "Turnover",
         path: "/settings/turnover",
