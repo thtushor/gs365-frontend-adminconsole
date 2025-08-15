@@ -1,6 +1,6 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
+// export const BASE_URL = "https://glorypos.com/gs-server";
 // export const BASE_URL = "https://gs-backend-73tu.onrender.com";
-// export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -130,6 +130,10 @@ export const API_LIST = {
   GATEWAY_ACCOUNTS_BY_PROVIDER_GATEWAY:
     "/api/gateway-provider-accounts/provider",
   PAYMENT_TRANSACTION: "/api/transactions",
+
+  // Settings
+  GET_SETTINGS: "/api/settings",
+  UPDATE_SETTINGS: "/api/settings/update",
 };
 
 export const DROPDOWN_ID = {
