@@ -2,7 +2,6 @@ import React, { Children } from "react";
 import {
   FaUserFriends,
   FaMoneyCheckAlt,
-  FaWallet,
   FaListUl,
   FaGamepad,
   FaUserPlus,
@@ -126,9 +125,36 @@ export const menu = [
   },
   {
     label: "Players",
-    path: "/players",
     icon: <FaUserFriends />,
-    component: PlayerListPage, // Full DB list, max winning filter, etc.
+    children: [
+      {
+        label: "Player List",
+        path: "/players",
+        component: PlayerListPage,
+        icon: <FaUserFriends />,
+      },
+      {
+        label: "Transactions",
+        path: "/transactions",
+        component: TransactionsPage,
+      },
+      {
+        label: "Win/Loss",
+        path: "/win-loss",
+        component: ComingSoon,
+      },
+      {
+        label: "Betting Wager",
+        path: "/betting-wager",
+        component: ComingSoon,
+      },
+      {
+        label: "Message/Chat Box",
+        path: "/message-chat-box",
+        component: ComingSoon,
+      },
+        ],
+    // Full DB list, max winning filter, etc.
   },
   {
     label: "Finance",
