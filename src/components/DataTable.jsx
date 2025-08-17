@@ -1,6 +1,6 @@
 import React from "react";
 
-const DataTable = ({ columns, isLoading, data = [] }) => {
+const DataTable = ({ columns, isLoading, data = [], onRowClick, selectedRow, selectable = false }) => {
   if (!Array.isArray(data)) {
     return (
       <p className="text-red-300 text-center">Table Data format is not valid</p>
@@ -36,7 +36,12 @@ const DataTable = ({ columns, isLoading, data = [] }) => {
             {data.map((row, rowIndex) => (
               <tr
                 key={row.id || rowIndex}
-                className="border-b border-gray-200 whitespace-nowrap hover:bg-gray-50"
+                className={`border-b border-gray-200 whitespace-nowrap hover:bg-gray-50 cursor-pointer ${
+                  selectable && selectedRow && selectedRow.id === row.id 
+                    ? 'bg-blue-50 border-blue-200' 
+                    : ''
+                }`}
+                onClick={() => selectable && onRowClick && onRowClick(row)}
               >
                 {columns.map((column, colIndex) => (
                   <td

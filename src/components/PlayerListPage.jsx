@@ -9,6 +9,7 @@ import Tabs from "./Tabs";
 import { FaUsers, FaUser, FaExchangeAlt, FaDice } from "react-icons/fa";
 import ReusableModal from "./ReusableModal";
 import PlayerForm from "./PlayerForm";
+import PlayerWagerTab from "./PlayerWagerTab";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 
@@ -44,6 +45,7 @@ const PlayerListPage = () => {
   const [activeTab, setActiveTab] = useState("players");
   const [modalOpen, setModalOpen] = useState(false);
   const [editPlayer, setEditPlayer] = useState(null);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
   const queryClient = useQueryClient();
 
   const { user } = useAuth();
@@ -135,6 +137,10 @@ const PlayerListPage = () => {
     setModalOpen(true);
   };
 
+  const handlePlayerSelect = (player) => {
+    setSelectedPlayer(player);
+  };
+
   const handleDeletePlayer = (player) => {
     if (window.confirm("Are you sure you want to delete this player?")) {
       deleteMutation.mutate(player.id);
@@ -206,6 +212,8 @@ const PlayerListPage = () => {
                   players={players}
                   onEdit={handleEditPlayer}
                   onDelete={handleDeletePlayer}
+                  onSelect={handlePlayerSelect}
+                  selectedPlayer={selectedPlayer}
                 />
                 <Pagination
                   currentPage={currentPage}
@@ -234,11 +242,7 @@ const PlayerListPage = () => {
           </div>
         </div>
         {/* Wagers Tab */}
-        <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
-          <FaDice className="text-4xl mb-2" />
-          <div className="text-lg font-semibold">Wagers</div>
-          <div className="mt-2">Select a player to view wager details.</div>
-        </div>
+        <PlayerWagerTab selectedPlayerId={selectedPlayer?.id} />
       </Tabs>
       <ReusableModal
         open={modalOpen}

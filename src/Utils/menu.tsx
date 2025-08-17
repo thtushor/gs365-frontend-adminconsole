@@ -21,6 +21,7 @@ import {
 import Dashboard from "../components/Dashboard";
 import ComingSoon from "../components/ComingSoon";
 import PlayerListPage from "../components/PlayerListPage";
+import BettingWagerPage from "../components/BettingWagerPage";
 import AllDepositPage from "../components/AllDepositPage";
 import PendingDepositPage from "../components/PendingDepositPage";
 import AllWithdrawPage from "../components/AllWithdrawPage";
@@ -148,7 +149,7 @@ export const menu = [
       {
         label: "Betting Wager",
         path: "/betting-wager",
-        component: ComingSoon,
+        component: BettingWagerPage,
         icon: <BiTrophy/>
       },
       {

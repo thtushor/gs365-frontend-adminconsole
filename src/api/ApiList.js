@@ -1,5 +1,5 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -134,6 +134,15 @@ export const API_LIST = {
   // Settings
   GET_SETTINGS: "/api/settings",
   UPDATE_SETTINGS: "/api/settings/update",
+
+  // Bet Results
+  GET_BET_RESULTS: "/api/bet-results",
+  
+  // Games
+  GET_ALL_GAMES: "/api/games/games",
+  
+  // Users
+  GET_ALL_USERS: "/api/users",
 };
 
 export const DROPDOWN_ID = {

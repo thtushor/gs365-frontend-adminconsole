@@ -1,7 +1,7 @@
 import { FaEdit, FaTrash } from "react-icons/fa";
 import DataTable from "./DataTable";
 
-const PlayerListTable = ({ players, onEdit, onDelete }) => {
+const PlayerListTable = ({ players, onEdit, onDelete, onSelect, selectedPlayer }) => {
   const columns = [
     {
       field: "id",
@@ -100,7 +100,15 @@ const PlayerListTable = ({ players, onEdit, onDelete }) => {
     },
   ];
 
-  return <DataTable columns={columns} data={players} />;
+  return (
+    <DataTable 
+      columns={columns} 
+      data={players} 
+      onRowClick={onSelect}
+      selectedRow={selectedPlayer}
+      selectable={true}
+    />
+  );
 };
 
 export default PlayerListTable;
