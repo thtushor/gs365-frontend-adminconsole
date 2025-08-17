@@ -113,7 +113,7 @@ const SportList = ({ providerId }) => {
       field: "categoryName",
       headerName: "Category Name",
       width: 150,
-      render: (_, row) => row?.categoryInfo?.name || "N/A",
+      render: (_, row) => row?.categoryInfo?.title || "N/A",
     },
     {
       field: "apiKey",
