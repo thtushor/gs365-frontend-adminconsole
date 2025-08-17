@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useCurrencies } from "./useCurrencies";
 import Select from "react-select";
+import { useLocation } from "react-router-dom";
 
 const defaultForm = {
   username: "",
@@ -17,7 +18,7 @@ const defaultForm = {
   currency: null,
   commission_percent: null,
   status: "active",
-  refCode: "",
+  refer_code: "",
 };
 
 export function CreateAgentForm({
@@ -29,7 +30,9 @@ export function CreateAgentForm({
   roles,
   isAffiliate = false,
 }) {
-  console.log(initialValues);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const refCodeFromUrl = queryParams.get("refCode") || "";
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
 
   // Format options for react-select
@@ -66,6 +69,16 @@ export function CreateAgentForm({
       }
     }
   }, [currencyList]);
+
+  useEffect(() => {
+    if (refCodeFromUrl) {
+      setForm((prev) => ({
+        ...prev,
+        refer_code: refCodeFromUrl,
+        role: "affiliate",
+      }));
+    }
+  }, [refCodeFromUrl]);
 
   return (
     <form
@@ -227,18 +240,6 @@ export function CreateAgentForm({
           onChange={handleChange}
         />
       </div>
-      {/*
-      <div className="flex flex-col">
-        <label className="font-semibold text-xs mb-1">STREET</label>
-        <input
-          className="border rounded px-3 py-2"
-          name="street"
-          placeholder="Street"
-          value={form.street}
-          onChange={handleChange}
-        />
-      </div>
-        */}
 
       {/* Row 4 */}
       <div className="flex flex-col">
@@ -292,9 +293,9 @@ export function CreateAgentForm({
           <label className="font-semibold text-xs mb-1">REFERRAL CODE</label>
           <input
             className="border rounded px-3 py-2"
-            name="refCode"
+            name="refer_code"
             placeholder="Referral Code"
-            value={form.refCode}
+            value={form.refer_code}
             onChange={handleChange}
           />
         </div>

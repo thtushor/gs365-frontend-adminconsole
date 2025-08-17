@@ -75,7 +75,46 @@ const AffiliateLayout = () => {
   });
   // Dummy balances (could come from API)
   const HighlightBox = ({ label, value }) => {
-    return (
+    const handleShare = (type) => {
+      const userReferCode = value || "N/A"; // fallback to default if no user data
+      const affiliateReferralLink = `https://gamestar365.com/affiliate-signup?refCode=${userReferCode}`;
+      const playerReferralLink = `https://gamestar365.com/register?refCode=${userReferCode}`;
+      if (navigator.share) {
+        navigator
+          .share({
+            title: "Gamestar 365",
+            text: "Check out this link!",
+            url: type === "player" ? playerReferralLink : affiliateReferralLink,
+          })
+          .then(() => console.log("Link shared successfully"))
+          .catch((error) => console.error("Error sharing", error));
+      } else {
+        alert("Share not supported on this browser.");
+      }
+    };
+    return label === "Referral Code" ? (
+      <div className="border-[#07122b] border text-black bg-white p-4 py-2 rounded shadow-md w-full sm:w-fit">
+        <div className="text-sm font-semibold text-gray-600">
+          REF: <span className="text-green-500">{value || "N/A"}</span>
+        </div>
+        <div className="text-[14px] mt-[2px] font-semibold truncate flex gap-1">
+          <button
+            type="button"
+            onClick={() => handleShare("player")}
+            className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
+          >
+            Player
+          </button>
+          <button
+            type="button"
+            onClick={() => handleShare("affiliate")}
+            className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
+          >
+            Affiliate
+          </button>
+        </div>
+      </div>
+    ) : (
       <div className="border-[#07122b] border text-black bg-white p-4 py-2 rounded shadow-md w-full sm:w-fit">
         <div className="text-xs font-medium text-gray-600">{label}</div>
         <div className="text-[20px] font-semibold truncate">{value || 0}</div>

@@ -3,6 +3,7 @@ import DataTable from "./DataTable";
 import ThumbnailImage from "./ThumbnailImage";
 import { useCountryData } from "../hooks/useCountryData";
 import Pagination from "./Pagination";
+import AssignCountryLanguageModal from "./AssignCountryLanguageModal";
 
 const defaultFilters = {
   searchKey: "",
@@ -12,12 +13,11 @@ const defaultFilters = {
 };
 
 const CountryList = () => {
-  
-  
   const [filters, setFilters] = useState(defaultFilters);
-
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const { useCountries, updateCountryStatus, isUpdatingCountryStatus } =
     useCountryData();
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   console.log({ filters });
   // Get countries with filters
@@ -159,6 +159,11 @@ const CountryList = () => {
           <button
             className="text-green-600 hover:bg-green-50 p-1 rounded"
             title="Edit"
+            type="button"
+            onClick={() => {
+              setSelectedCountry(row);
+              setIsAssignModalOpen(true);
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -197,7 +202,13 @@ const CountryList = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] p-6">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between items-center mb-4">
+        <button
+          className="bg-green-600 text-white px-[10px] cursor-pointer py-1 rounded hover:bg-green-700 transition font-medium"
+          onClick={() => setIsAssignModalOpen(true)}
+        >
+          Assign Language
+        </button>
         <button
           className="border border-green-400 text-green-700 px-6 py-1 rounded hover:bg-green-50 transition font-medium"
           onClick={() => window.print()}
@@ -259,6 +270,15 @@ const CountryList = () => {
           </>
         )}
       </div>
+
+      <AssignCountryLanguageModal
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        onSuccess={() => {
+          // Data will be automatically refreshed by React Query
+        }}
+        selectedCountry={selectedCountry}
+      />
     </div>
   );
 };

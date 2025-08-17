@@ -64,7 +64,9 @@ const AffiliatePersonalInfo = ({ info }) => {
         />
         <InfoBox
           label="Role"
-          value={info.role || "N/A"}
+          value={
+            info.role === "affiliate" ? "Sub Affiliate" : "Super Affiliate"
+          }
           color="border-indigo-400 text-indigo-700"
         />
         <InfoBox
