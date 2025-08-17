@@ -36,7 +36,7 @@ const CreateAffiliate = () => {
     try {
       const payload = {
         ...data,
-        role: "superAffiliate", // enforce fixed role
+        role: data?.refer_code ? "affiliate" : "superAffiliate", // enforce fixed role
         createdBy: user.id,
       };
 
@@ -99,6 +99,7 @@ const CreateAffiliate = () => {
           ref={formRef}
           roles={[]}
           isAffiliate
+          isRefVisible
         />
       </div>
 

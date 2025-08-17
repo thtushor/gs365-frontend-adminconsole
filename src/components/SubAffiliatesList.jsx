@@ -5,8 +5,10 @@ import { API_LIST, BASE_URL } from "../api/ApiList";
 import { Link, useParams } from "react-router-dom";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
+import { useAuth } from "../hooks/useAuth";
 
 const SubAffiliatesList = () => {
+  const { affiliateInfo } = useAuth();
   const { affiliateId } = useParams();
   const getRequest = useGetRequest();
   const [filters, setFilters] = useState({
@@ -206,14 +208,24 @@ const SubAffiliatesList = () => {
   const handlePageSizeChange = (size) => {
     setFilters((prev) => ({ ...prev, pageSize: size, page: 1 }));
   };
+
+  console.log(affiliateInfo?.role);
   return (
     <div className="bg-white p-4 rounded-md ">
-      <h1 className="mt-[-5px] text-base font-semibold bg-[#07122b] items-center gap-2 flex text-white px-[9px] w-fit rounded-md py-2  mb-4 text-[16px]">
-        <span className="text-white px-[6px] bg-green-500 rounded-sm block">
-          ID-{affiliateId}
-        </span>{" "}
-        Sub Affiliates List
-      </h1>
+      <div className="flex items-center justify-between w-full">
+        <h1 className="mt-[-5px] text-base font-semibold bg-[#07122b] items-center gap-2 flex text-white px-[9px] w-fit rounded-md py-2  mb-4 text-[16px]">
+          <span className="text-white px-[6px] bg-green-500 rounded-sm block">
+            ID-{affiliateId}
+          </span>{" "}
+          Sub Affiliates List
+        </h1>
+        <Link
+          to={`/create-affiliate?refCode=${affiliateInfo?.refCode}`}
+          className="mt-[-5px] text-base font-semibold bg-green-500 hover:bg-green-600 items-center gap-2 flex text-white px-[9px] w-fit rounded-md py-2  mb-4 text-[16px]"
+        >
+          + Sub Affiliate
+        </Link>
+      </div>
       {isLoading ? (
         <div className="text-center text-gray-500 py-8">Loading agents...</div>
       ) : isError ? (

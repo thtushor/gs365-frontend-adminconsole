@@ -64,7 +64,9 @@ export const useCountryData = () => {
   const queryClient = useQueryClient();
 
   // Get currencies query
-  const useCurrencies = (params = { page: 1, pageSize: 10000,status:"active" }) => {
+  const useCurrencies = (
+    params = { page: 1, pageSize: 10000, status: "active" }
+  ) => {
     return useQuery({
       queryKey: [QUERY_KEYS.CURRENCIES, params],
       queryFn: () => api.getCurrencies(params),
@@ -73,11 +75,13 @@ export const useCountryData = () => {
   };
 
   // Get languages query
-  const useLanguages = (params = {
-    page: 1,
-    pageSize: 10000,
-    status: "active",
-  }) => {
+  const useLanguages = (
+    params = {
+      page: 1,
+      pageSize: 10000,
+      status: "active",
+    }
+  ) => {
     return useQuery({
       queryKey: [QUERY_KEYS.LANGUAGES, params],
       queryFn: () => api.getLanguages(params),
@@ -86,11 +90,13 @@ export const useCountryData = () => {
   };
 
   // Get countries query
-  const useCountries = (params = {
-    page: 1,
-    pageSize: 10000,
-    status: "active",
-  }) => {
+  const useCountries = (
+    params = {
+      page: 1,
+      pageSize: 10000,
+      status: "active",
+    }
+  ) => {
     console.log({ params });
     return useQuery({
       queryKey: [QUERY_KEYS.COUNTRIES, { ...params }],

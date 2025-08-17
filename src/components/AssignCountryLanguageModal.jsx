@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import { useCountryData } from "../hooks/useCountryData";
 
-const AssignCountryLanguageModal = ({ isOpen, onClose, onSuccess }) => {
+const AssignCountryLanguageModal = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  selectedCountry,
+}) => {
   const [formData, setFormData] = useState({
     countryId: "",
-    languageId: "",
+    languageIds: [],
     status: "active",
   });
 
@@ -13,129 +19,167 @@ const AssignCountryLanguageModal = ({ isOpen, onClose, onSuccess }) => {
     useLanguages,
     assignCountryLanguage,
     isAssigningCountryLanguage,
+    updateCountryLanguage,
   } = useCountryData();
 
-  // Get countries and languages for dropdowns
   const { data: countriesResponse, isLoading: countriesLoading } = useCountries(
-    {
-      status: "active",
-    }
+    { status: "" }
   );
   const { data: languagesResponse, isLoading: languagesLoading } = useLanguages(
-    {
-      status: "active",
-    }
+    { status: "active" }
   );
 
-  // Extract arrays from API responses
-  const countries = countriesResponse || [];
+  const countries = countriesResponse?.data || [];
   const languages = languagesResponse?.data || [];
+
+  const countryOptions = countries.map((c) => ({ value: c.id, label: c.name }));
+  const languageOptions = languages.map((l) => ({
+    value: l.id,
+    label: `${l.code.toUpperCase()} - ${l.name}`,
+  }));
+
+  const statusOptions = [
+    { value: "active", label: "Active" },
+    { value: "inactive", label: "Inactive" },
+  ];
+
+  // 🔹 Prefill when editing
+  useEffect(() => {
+    if (selectedCountry) {
+      setFormData({
+        countryId: selectedCountry.id,
+        languageIds: selectedCountry.languages?.map((l) => l.id) || [],
+        status: selectedCountry.status,
+      });
+    } else {
+      setFormData({ countryId: "", languageIds: [], status: "active" });
+    }
+  }, [selectedCountry, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    assignCountryLanguage(formData, {
-      onSuccess: () => {
-        setFormData({ countryId: "", languageId: "", status: "active" });
-        onClose();
-        if (onSuccess) onSuccess();
-      },
-    });
-  };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const payload = {
+      countryId: formData.countryId,
+      languageIds: formData.languageIds,
+      status: formData.status,
+    };
+
+    if (selectedCountry) {
+      // 🔹 Update existing
+      updateCountryLanguage(
+        { id: selectedCountry.id, ...payload },
+        {
+          onSuccess: () => {
+            setFormData({ countryId: "", languageIds: [], status: "active" });
+            onClose();
+            if (onSuccess) onSuccess();
+          },
+        }
+      );
+    } else {
+      // 🔹 Assign new
+      assignCountryLanguage(payload, {
+        onSuccess: () => {
+          setFormData({ countryId: "", languageIds: [], status: "active" });
+          onClose();
+          if (onSuccess) onSuccess();
+        },
+      });
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        {/* Modal Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Assign Country Language</h2>
+          <h2 className="text-xl font-semibold">
+            {selectedCountry
+              ? "Edit Country Language"
+              : "Assign Country Language"}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            ✕
           </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit}>
+          {/* Country (disabled when editing) */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Country
             </label>
-            <select
-              name="countryId"
-              value={formData.countryId}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-              disabled={countriesLoading}
-            >
-              <option value="">Select Country</option>
-              {countries.map((country) => (
-                <option key={country.id} value={country.id}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              options={countryOptions}
+              value={
+                countryOptions.find(
+                  (opt) => opt.value === formData.countryId
+                ) || null
+              }
+              onChange={(selected) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  countryId: selected ? selected.value : "",
+                }))
+              }
+              isSearchable
+              placeholder="Select Country"
+              isDisabled={!!selectedCountry || countriesLoading} // disable if editing
+            />
           </div>
 
+          {/* Languages */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Language
+              Language(s)
             </label>
-            <select
-              name="languageId"
-              value={formData.languageId}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-              disabled={languagesLoading}
-            >
-              <option value="">Select Language</option>
-              {languages.map((language) => (
-                <option key={language.id} value={language.id}>
-                  {language.code.toUpperCase()} - {language.name}
-                </option>
-              ))}
-            </select>
+            <Select
+              options={languageOptions}
+              value={languageOptions.filter((opt) =>
+                formData.languageIds.includes(opt.value)
+              )}
+              onChange={(selected) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  languageIds: selected ? selected.map((s) => s.value) : [],
+                }))
+              }
+              isMulti
+              isSearchable
+              placeholder="Select Language(s)"
+              isDisabled={languagesLoading}
+            />
           </div>
 
-          <div className="mb-6">
+          {/* Status */}
+          {/* <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Status
             </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
+            <Select
+              options={statusOptions}
+              value={
+                statusOptions.find((opt) => opt.value === formData.status) ||
+                null
+              }
+              onChange={(selected) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  status: selected ? selected.value : "active",
+                }))
+              }
+              placeholder="Select Status"
+            />
+          </div> */}
 
+          {/* Buttons */}
           <div className="flex gap-3">
             <button
               type="button"
@@ -149,7 +193,11 @@ const AssignCountryLanguageModal = ({ isOpen, onClose, onSuccess }) => {
               disabled={isAssigningCountryLanguage}
               className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
             >
-              {isAssigningCountryLanguage ? "Assigning..." : "Assign"}
+              {isAssigningCountryLanguage
+                ? "Saving..."
+                : selectedCountry
+                ? "Update"
+                : "Assign"}
             </button>
           </div>
         </form>

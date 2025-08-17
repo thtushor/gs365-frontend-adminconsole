@@ -140,7 +140,15 @@ const AffiliateListPage = () => {
       field: "role",
       headerName: "Role",
       width: 120,
-      render: (_, row) => row.role,
+      render: (_, row) =>
+        row.role === "affiliate" ? "Sub Affiliate" : "Super Affiliate",
+    },
+    {
+      field: "commission_percentage",
+      headerName: "Total Com. %",
+      width: 120,
+
+      render: (_, row) => row.commission_percent || 0,
     },
     {
       field: "status",
@@ -157,18 +165,18 @@ const AffiliateListPage = () => {
         </span>
       ),
     },
-    {
-      field: "city",
-      headerName: "Address",
-      width: 120,
-      render: (_, row) => row.city,
-    },
-    {
-      field: "isLoggedIn",
-      headerName: "Is Logged In",
-      width: 100,
-      render: (_, row) => (row.isLoggedIn ? "Yes" : "No"),
-    },
+    // {
+    //   field: "city",
+    //   headerName: "Address",
+    //   width: 120,
+    //   render: (_, row) => row.city,
+    // },
+    // {
+    //   field: "isLoggedIn",
+    //   headerName: "Is Logged In",
+    //   width: 100,
+    //   render: (_, row) => (row.isLoggedIn ? "Yes" : "No"),
+    // },
     {
       field: "isVerified",
       headerName: "Is Verified",
@@ -200,36 +208,36 @@ const AffiliateListPage = () => {
       width: 120,
       render: (_, row) => row.device_type,
     },
-    {
-      field: "device_name",
-      headerName: "Device Name",
-      width: 120,
-      render: (_, row) => row.device_name,
-    },
-    {
-      field: "os_version",
-      headerName: "OS Version",
-      width: 120,
-      render: (_, row) => row.os_version,
-    },
-    {
-      field: "browser",
-      headerName: "Browser",
-      width: 120,
-      render: (_, row) => row.browser,
-    },
-    {
-      field: "browser_version",
-      headerName: "Browser Version",
-      width: 120,
-      render: (_, row) => row.browser_version,
-    },
-    {
-      field: "ip_address",
-      headerName: "IP Address",
-      width: 120,
-      render: (_, row) => row.ip_address,
-    },
+    // {
+    //   field: "device_name",
+    //   headerName: "Device Name",
+    //   width: 120,
+    //   render: (_, row) => row.device_name,
+    // },
+    // {
+    //   field: "os_version",
+    //   headerName: "OS Version",
+    //   width: 120,
+    //   render: (_, row) => row.os_version,
+    // },
+    // {
+    //   field: "browser",
+    //   headerName: "Browser",
+    //   width: 120,
+    //   render: (_, row) => row.browser,
+    // },
+    // {
+    //   field: "browser_version",
+    //   headerName: "Browser Version",
+    //   width: 120,
+    //   render: (_, row) => row.browser_version,
+    // },
+    // {
+    //   field: "ip_address",
+    //   headerName: "IP Address",
+    //   width: 120,
+    //   render: (_, row) => row.ip_address,
+    // },
     {
       field: "total_sub_affiliates",
       headerName: "Total Sub",
@@ -247,13 +255,6 @@ const AffiliateListPage = () => {
       headerName: "Total Withdraw",
       width: 120,
       render: (_, row) => row.total_withdraw || 0,
-    },
-    {
-      field: "commission_percentage",
-      headerName: "Total Com. %",
-      width: 120,
-
-      render: (_, row) => row.commission_percent || 0,
     },
     {
       field: "action",
@@ -364,8 +365,8 @@ const AffiliateListPage = () => {
           className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Roles</option>
-          <option value="affiliate">Affiliate</option>
           <option value="superAffiliate">Super Affiliate</option>
+          <option value="affiliate">Sub Affiliate</option>
         </select>
         <select
           name="status"
