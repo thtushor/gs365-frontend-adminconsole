@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGetRequest, usePostRequest } from "../Utils/apiClient";
-import { API_LIST, BASE_URL, DROPDOWN_ID } from "../api/ApiList";
+import { API_LIST, BASE_URL } from "../api/ApiList";
+import ImageUploader from "./shared/ImageUploader";
 
 // Define field schemas by dropdown ID
 const FIELD_SCHEMA = {
@@ -24,15 +25,21 @@ const FIELD_SCHEMA = {
       options: ["active", "inactive"],
       required: false,
     },
+    {
+      name: "imgUrl",
+      label: "Icon",
+      type: "file",
+      required: true,
+    },
   ],
 };
 
 const CreateDropdown = () => {
   const queryClient = useQueryClient();
   const [dropdownId, setDropdownId] = useState("");
-  console.log(dropdownId);
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
+  const [uploadRes, setUploadRes] = useState(null);
 
   const getRequest = useGetRequest();
   const postRequest = usePostRequest();
@@ -60,6 +67,7 @@ const CreateDropdown = () => {
       queryClient.invalidateQueries({ queryKey: ["dropdowns"] });
       setForm({});
       setDropdownId("");
+      setUploadRes(null);
     },
   });
 
@@ -69,8 +77,14 @@ const CreateDropdown = () => {
     const tempErrors = {};
     if (!dropdownId) tempErrors.dropdownId = "Please select a dropdown.";
     activeFields.forEach((field) => {
-      if (field.required && !form[field.name]) {
-        tempErrors[field.name] = `${field.label} is required.`;
+      if (field.required) {
+        if (field.type === "file") {
+          if (!uploadRes?.data?.original) {
+            tempErrors[field.name] = `${field.label} is required.`;
+          }
+        } else if (!form[field.name]) {
+          tempErrors[field.name] = `${field.label} is required.`;
+        }
       }
     });
     setErrors(tempErrors);
@@ -80,14 +94,23 @@ const CreateDropdown = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
-    mutation.mutate({ dropdownId: Number(dropdownId), ...form });
+
+    const payload = {
+      dropdownId: Number(dropdownId),
+      ...form,
+    };
+
+    // ✅ attach uploaded image url
+    if (uploadRes?.status === true && uploadRes.data?.original) {
+      payload.imgUrl = uploadRes.data.original;
+    }
+
+    mutation.mutate(payload);
   };
 
   const handleChange = (name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
-  console.log(form);
 
   if (isLoading) {
     return (
@@ -121,6 +144,7 @@ const CreateDropdown = () => {
               setDropdownId(e.target.value);
               setForm({});
               setErrors({});
+              setUploadRes(null);
             }}
           >
             <option value="">Select Dropdown</option>
@@ -153,6 +177,11 @@ const CreateDropdown = () => {
                   </option>
                 ))}
               </select>
+            ) : field.type === "file" ? (
+              <ImageUploader
+                setUploadRes={setUploadRes}
+                previewImage={form[field.name]}
+              />
             ) : (
               <input
                 type={field.type}

@@ -158,8 +158,8 @@ const GameList = ({ providerId }) => {
       ),
     },
     {
-      field: "isFavorite",
-      headerName: "Is Favorite",
+      field: "isExclusive",
+      headerName: "Is Exclusive",
       width: 150,
       render: (value) => (
         <span

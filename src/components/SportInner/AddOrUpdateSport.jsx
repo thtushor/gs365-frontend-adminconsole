@@ -18,7 +18,7 @@ const defaultForm = {
   ggrPercent: "",
   categoryId: "",
   providerId: "",
-  isFavorite: false,
+  isExclusive: false,
 };
 
 const AddOrUpdateSport = () => {
@@ -102,7 +102,7 @@ const AddOrUpdateSport = () => {
         : data.providerInfo?.id
         ? data.providerInfo?.id?.toString()
         : "",
-      isFavorite: data.isFavorite || false,
+      isExclusive: data.isExclusive || false,
     });
   };
 
@@ -438,15 +438,15 @@ const AddOrUpdateSport = () => {
           </div>
 
           <div className="col-span-full sm:col-span-1">
-            <label className="block mb-1 font-medium">Is Favorite?</label>
+            <label className="block mb-1 font-medium">Is Exclusive?</label>
             <button
               type="button"
               onClick={() =>
-                setForm((prev) => ({ ...prev, isFavorite: !prev.isFavorite }))
+                setForm((prev) => ({ ...prev, isExclusive: !prev.isExclusive }))
               }
               className="w-full border px-3 py-[3px] rounded cursor-pointer"
             >
-              {form.isFavorite ? (
+              {form.isExclusive ? (
                 <MdToggleOn className="text-green-500" size={33} />
               ) : (
                 <MdToggleOff className="text-red-500" size={33} />
