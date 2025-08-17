@@ -12,8 +12,8 @@ const defaultFilters = {
 };
 
 const CountryList = () => {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("active");
+  
+  
   const [filters, setFilters] = useState(defaultFilters);
 
   const { useCountries, updateCountryStatus, isUpdatingCountryStatus } =
@@ -214,7 +214,7 @@ const CountryList = () => {
             <input
               className="border rounded px-3 py-2 w-full"
               placeholder="Search countries..."
-              value={search}
+              value={filters.searchKey}
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, searchKey: e.target.value }))
               }
@@ -223,7 +223,7 @@ const CountryList = () => {
           <div>
             <select
               className="border rounded px-3 py-2"
-              value={statusFilter}
+              value={filters.status}
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, status: e.target.value }))
               }

@@ -131,6 +131,10 @@ export const API_LIST = {
   GATEWAY_ACCOUNTS_BY_PROVIDER_GATEWAY:
     "/api/gateway-provider-accounts/provider",
   PAYMENT_TRANSACTION: "/api/transactions",
+
+  // Settings
+  GET_SETTINGS: "/api/settings",
+  UPDATE_SETTINGS: "/api/settings/update",
 };
 
 export const DROPDOWN_ID = {

@@ -2,7 +2,6 @@ import React, { Children } from "react";
 import {
   FaUserFriends,
   FaMoneyCheckAlt,
-  FaWallet,
   FaListUl,
   FaGamepad,
   FaUserPlus,
@@ -45,15 +44,16 @@ import CoinAnalyticsPage from "../components/CoinAnalyticsPage";
 import ProviderPaymentsPage from "../components/ProviderPaymentsPage";
 import AffiliatePanelPage from "../components/AffiliatePanelPage";
 import TurnoverSettingsPage from "../components/TurnoverSettingsPage";
+import SystemSettingsPage from "../components/SystemSettingsPage";
 import BackupRestorePage from "../components/BackupRestorePage";
 import OwnerAccountControlPage from "../components/OwnerAccountControlPage";
-import { BiLoader } from "react-icons/bi";
+import { BiLoader, BiMessage, BiTrophy } from "react-icons/bi";
 import OwnerPermissionPage from "../components/OwnerPermissionPage";
 import SportsListPage from "../components/SportsListPage";
 import { GiAmericanFootballBall } from "react-icons/gi";
 import { FiStar } from "react-icons/fi";
 import { TbFileStar } from "react-icons/tb";
-import { BsStarFill } from "react-icons/bs";
+import { BsStarFill, BsTrophy } from "react-icons/bs";
 import AddPopularSports from "../components/AddPopularSports";
 import PopularSportsList from "../components/PopularSportsList";
 import AddSlider from "../components/AddSlider";
@@ -71,7 +71,7 @@ import CurrencyList from "../components/CurrencyList";
 import CountryManagementDemo from "../components/CountryManagementDemo";
 import DropdownConfiguration from "../components/DropdownConfiguration";
 import { VscGitPullRequestCreate } from "react-icons/vsc";
-import { MdAddchart, MdDisplaySettings } from "react-icons/md";
+import { MdAddchart, MdDisplaySettings, MdMessage } from "react-icons/md";
 import CreatePromotion from "../components/CreatePromotion";
 import PromotionsList from "../components/PromotionsList";
 import Banner from "../components/Banner";
@@ -125,9 +125,40 @@ export const menu = [
   },
   {
     label: "Players",
-    path: "/players",
     icon: <FaUserFriends />,
-    component: PlayerListPage, // Full DB list, max winning filter, etc.
+    children: [
+      {
+        label: "Player List",
+        path: "/players",
+        component: PlayerListPage,
+        icon: <FaUserFriends />,
+      },
+      {
+        label: "Transactions",
+        path: "/transactions",
+        component: TransactionsPage,
+        icon: <FaMoneyCheckAlt />,
+      },
+      {
+        label: "Win/Loss",
+        path: "/win-loss",
+        component: ComingSoon,
+        icon: <BiTrophy/>
+      },
+      {
+        label: "Betting Wager",
+        path: "/betting-wager",
+        component: ComingSoon,
+        icon: <BiTrophy/>
+      },
+      {
+        label: "Message/Chat Box",
+        path: "/message-chat-box",
+        component: ComingSoon,
+        icon: <BiMessage/>
+      },
+        ],
+    // Full DB list, max winning filter, etc.
   },
   {
     label: "Finance",
@@ -512,6 +543,12 @@ export const menu = [
     label: "Settings",
     icon: <FaCogs />,
     children: [
+      {
+        label: "System Settings",
+        path: "/settings/system",
+        component: SystemSettingsPage,
+        icon: <FaCogs />,
+      },
       {
         label: "Turnover",
         path: "/settings/turnover",
