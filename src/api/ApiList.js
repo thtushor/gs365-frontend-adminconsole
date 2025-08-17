@@ -1,6 +1,6 @@
-// export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "https://gs-backend-73tu.onrender.com";
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = "https://glorypos.com/gs-server";
+
+// export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
