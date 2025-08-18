@@ -250,15 +250,15 @@ const SportProvidersList = () => {
       {/* Table */}
       {isLoading ? (
         <div className="text-center text-gray-500 py-8">
-          Loading game providers...
+          Loading sports providers...
         </div>
       ) : isError ? (
         <div className="text-center text-red-500 py-8">
-          Failed to load game providers: {error?.message || "Unknown error"}
+          Failed to load sports providers: {error?.message || "Unknown error"}
         </div>
       ) : sports_providers.length === 0 ? (
         <div className="text-center text-gray-500 py-8">
-          No game providers found.
+          No sport providers found.
         </div>
       ) : (
         <>
