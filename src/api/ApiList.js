@@ -25,6 +25,7 @@ export const API_LIST = {
   REGISTER_PLAYERS: "/api/users/register",
   EDIT_PLAYERS: "/api/users/update",
   DELETE_PLAYERS: "/api/users/delete",
+  GET_PLAYER_PROFILE: "/api/admin/players/:playerID/profile",
   // Agent list
   CREATE_AGENT: "/api/admin/create-agent",
   AGENT_LIST: "/api/admin/agents",

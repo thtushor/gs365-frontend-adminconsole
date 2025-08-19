@@ -21,6 +21,7 @@ import {
 import Dashboard from "../components/Dashboard";
 import ComingSoon from "../components/ComingSoon";
 import PlayerListPage from "../components/PlayerListPage";
+import PlayerProfile from "../components/PlayerProfile";
 import BettingWagerPage from "../components/BettingWagerPage";
 import AllDepositPage from "../components/AllDepositPage";
 import PendingDepositPage from "../components/PendingDepositPage";
@@ -540,6 +541,12 @@ export const menu = [
         icon: <FaGlobe />,
       },
     ],
+  },
+  {
+    label: "Player Profile",
+    path: "/players/:playerId/profile",
+    component: PlayerProfile,
+    skipFromMenu: true,
   },
   {
     label: "Settings",

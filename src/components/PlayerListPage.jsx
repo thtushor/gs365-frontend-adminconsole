@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import PlayerListFilter from "./PlayerListFilter";
 import PlayerListTable from "./PlayerListTable";
 import Pagination from "./Pagination";
-import Tabs from "./Tabs";
-import { FaUsers, FaUser, FaExchangeAlt, FaDice } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
 import ReusableModal from "./ReusableModal";
 import PlayerForm from "./PlayerForm";
-import PlayerWagerTab from "./PlayerWagerTab";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 
@@ -68,11 +67,10 @@ const defaultFilters = {
 
 const PlayerListPage = () => {
   const [filters, setFilters] = useState(defaultFilters);
-  const [activeTab, setActiveTab] = useState("players");
   const [modalOpen, setModalOpen] = useState(false);
   const [editPlayer, setEditPlayer] = useState(null);
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { user } = useAuth();
 
@@ -164,7 +162,7 @@ const PlayerListPage = () => {
   };
 
   const handlePlayerSelect = (player) => {
-    setSelectedPlayer(player);
+    navigate(`/players/${player.id}/profile`);
   };
 
   const handleDeletePlayer = (player) => {
@@ -190,86 +188,51 @@ const PlayerListPage = () => {
 
   return (
     <div className="bg-[#f5f5f5] w-full min-h-full p-4">
-      <Tabs
-        tabs={[
-          { label: "Players", value: "players", icon: <FaUsers /> },
-          { label: "Profile", value: "profile", icon: <FaUser /> },
-          {
-            label: "Transaction",
-            value: "transaction",
-            icon: <FaExchangeAlt />,
-          },
-          { label: "Wagers", value: "wagers", icon: <FaDice /> },
-        ]}
-        value={activeTab}
-        onChange={setActiveTab}
-      >
-        {/* Players Tab */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">PLAYER LIST</h2>
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">PLAYER LIST</h2>
-            <div>
-              <button
-                className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium mr-2"
-                onClick={handleAddPlayer}
-              >
-                Add Player
-              </button>
-              <button className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium">
-                Print
-              </button>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4 mb-4">
-            <PlayerListFilter filters={filters} onChange={handleFilterChange} />
-          </div>
-          <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">
-            {isLoading ? (
-              <div className="text-center text-gray-500 py-8">
-                Loading players...
-              </div>
-            ) : isError ? (
-              <div className="text-center text-red-500 py-8">
-                Failed to load players.
-              </div>
-            ) : (
-              <>
-                <PlayerListTable
-                  players={players}
-                  onEdit={handleEditPlayer}
-                  onDelete={handleDeletePlayer}
-                  onSelect={handlePlayerSelect}
-                  selectedPlayer={selectedPlayer}
-                />
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  pageSize={pageSize}
-                  pageSizeOptions={[10, 20, 50, 100]}
-                  onPageChange={handlePageChange}
-                  onPageSizeChange={handlePageSizeChange}
-                />
-              </>
-            )}
-          </div>
+          <button
+            className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium mr-2"
+            onClick={handleAddPlayer}
+          >
+            Add Player
+          </button>
+          <button className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium">
+            Print
+          </button>
         </div>
-        {/* Profile Tab */}
-        <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
-          <FaUser className="text-4xl mb-2" />
-          <div className="text-lg font-semibold">Profile Info</div>
-          <div className="mt-2">Select a player to view profile details.</div>
-        </div>
-        {/* Transaction Tab */}
-        <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
-          <FaExchangeAlt className="text-4xl mb-2" />
-          <div className="text-lg font-semibold">Transactions</div>
-          <div className="mt-2">
-            Select a player to view transaction history.
+      </div>
+      <div className="bg-white rounded-lg shadow p-4 mb-4">
+        <PlayerListFilter filters={filters} onChange={handleFilterChange} />
+      </div>
+      <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">
+        {isLoading ? (
+          <div className="text-center text-gray-500 py-8">
+            Loading players...
           </div>
-        </div>
-        {/* Wagers Tab */}
-        <PlayerWagerTab selectedPlayerId={selectedPlayer?.id} />
-      </Tabs>
+        ) : isError ? (
+          <div className="text-center text-red-500 py-8">
+            Failed to load players.
+          </div>
+        ) : (
+          <>
+            <PlayerListTable
+              players={players}
+              onEdit={handleEditPlayer}
+              onDelete={handleDeletePlayer}
+              onSelect={handlePlayerSelect}
+            />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              pageSizeOptions={[10, 20, 50, 100]}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </>
+        )}
+      </div>
       <ReusableModal
         open={modalOpen}
         onClose={handleModalClose}

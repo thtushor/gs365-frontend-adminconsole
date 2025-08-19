@@ -1,7 +1,7 @@
 import { FaEdit, FaTrash } from "react-icons/fa";
 import DataTable from "./DataTable";
 
-const PlayerListTable = ({ players, onEdit, onDelete, onSelect, selectedPlayer }) => {
+const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const columns = [
     {
       field: "id",
@@ -12,6 +12,14 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect, selectedPlayer }
       field: "fullname",
       headerName: "FULLNAME",
       width: 200,
+      render: (value, row) => (
+        <button
+          onClick={() => onSelect && onSelect(row)}
+          className="text-green-500 hover:text-green-700 font-medium cursor-pointer hover:underline"
+        >
+          {value}
+        </button>
+      ),
     },
     {
       field: "username",
@@ -207,8 +215,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect, selectedPlayer }
       columns={columns} 
       data={players} 
       onRowClick={onSelect}
-      selectedRow={selectedPlayer}
-      selectable={true}
+      selectable={false}
     />
   );
 };
