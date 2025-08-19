@@ -2,8 +2,14 @@ import { Link, Outlet, useParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import Axios from "../api/axios";
-import { FaUser, FaExchangeAlt, FaDice, FaGamepad } from "react-icons/fa";
+import { FaUser, FaExchangeAlt, FaDice, FaGamepad, FaEdit } from "react-icons/fa";
 import PlayerProfileStats from "./PlayerProfileStats";
+import ReusableModal from "./ReusableModal";
+import PlayerForm from "./PlayerForm";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useAuth } from "../hooks/useAuth";
 
 export const playerRoutes = [
   {
@@ -27,6 +33,9 @@ export const playerRoutes = [
 const PlayerProfile = () => {
   const { playerId } = useParams();
   const location = useLocation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const {
     data: playerDetails,
@@ -41,6 +50,25 @@ const PlayerProfile = () => {
     },
     keepPreviousData: true,
     enabled: !!playerId,
+  });
+
+  // Edit mutation
+  const editMutation = useMutation({
+    mutationFn: async ({ id, ...data }) => {
+      const res = await Axios.post(`${API_LIST.EDIT_PLAYERS}/${id}`, data);
+      if (!res.data.status)
+        throw new Error(res.data.message || "Failed to update player");
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["playerProfile", playerId] });
+      queryClient.invalidateQueries({ queryKey: ["players"] });
+      setModalOpen(false);
+      toast.success("Player updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update player");
+    },
   });
 
   // Highlight Box component for displaying stats
@@ -62,6 +90,18 @@ const PlayerProfile = () => {
         </div>
       </div>
     );
+  };
+
+  const handleEditProfile = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleFormSubmit = (formData) => {
+    editMutation.mutate({ id: playerId, ...formData });
   };
 
   if (isLoading) {
@@ -124,12 +164,12 @@ const PlayerProfile = () => {
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
               <FaUser className="text-white text-2xl" />
             </div>
-            <div>
+            <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-800">{playerDetails.fullname}</h1>
               <p className="text-gray-600">@{playerDetails.username}</p>
               <p className="text-sm text-gray-500">{playerDetails.email}</p>
             </div>
-            <div className="ml-auto">
+            <div className="flex items-center gap-3">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                 playerDetails.status === 'active' 
                   ? 'bg-green-100 text-green-800' 
@@ -137,6 +177,13 @@ const PlayerProfile = () => {
               }`}>
                 {playerDetails.status}
               </span>
+              <button
+                onClick={handleEditProfile}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
+              >
+                <FaEdit />
+                Edit Profile
+              </button>
             </div>
           </div>
           
@@ -243,6 +290,21 @@ const PlayerProfile = () => {
           <Outlet />
         )}
       </main>
+
+      {/* Edit Profile Modal */}
+      <ReusableModal
+        open={modalOpen}
+        onClose={handleModalClose}
+        title="Edit Player Profile"
+        onSave={null}
+      >
+        <PlayerForm
+          initialValues={playerDetails}
+          onSubmit={handleFormSubmit}
+          loading={editMutation.isPending}
+          isEdit={true}
+        />
+      </ReusableModal>
     </div>
   );
 };
