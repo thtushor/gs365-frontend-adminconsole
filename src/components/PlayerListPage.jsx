@@ -29,6 +29,25 @@ const mapPlayer = (p) => ({
   ip_address: p.ip_address,
   status: p.status || "active",
   created: new Date(p.created_at).toLocaleDateString(),
+  // New fields from updated API
+  isVerified: p.isVerified,
+  currencyCode: p.currencyCode,
+  currencyName: p.currencyName,
+  referrerName: p.referrerName,
+  referrerRole: p.referrerRole,
+  userReferrerName: p.userReferrerName,
+  userReferrerUsername: p.userReferrerUsername,
+  affiliateName: p.affiliateName,
+  affiliateRole: p.affiliateRole,
+  agentName: p.agentName,
+  agentRole: p.agentRole,
+  totalBalance: p.totalBalance,
+  totalDeposits: p.totalDeposits,
+  totalWithdrawals: p.totalWithdrawals,
+  totalWins: p.totalWins,
+  totalLosses: p.totalLosses,
+  pendingDeposits: p.pendingDeposits,
+  pendingWithdrawals: p.pendingWithdrawals,
 });
 
 const defaultFilters = {
@@ -38,6 +57,13 @@ const defaultFilters = {
   keyword: "",
   page: 1,
   pageSize: 10,
+  createdBy: "",
+  referred_by: "",
+  referred_by_admin_user: "",
+  userType: "all",
+  currencyId: "",
+  dateFrom: "",
+  dateTo: "",
 };
 
 const PlayerListPage = () => {

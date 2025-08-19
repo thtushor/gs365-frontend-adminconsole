@@ -8,7 +8,6 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect, selectedPlayer }
       headerName: "Player ID",
       width: 100,
     },
-
     {
       field: "fullname",
       headerName: "FULLNAME",
@@ -30,48 +29,151 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect, selectedPlayer }
       width: 150,
     },
     {
-      field: "role",
-      headerName: "ROLE",
-      width: 100,
-    },
-    {
       field: "status",
       headerName: "STATUS",
       width: 100,
     },
     {
-      field: "created",
-      headerName: "CREATED DATE",
+      field: "isVerified",
+      headerName: "VERIFIED",
+      width: 100,
+      render: (value) => (
+        <span className={`px-2 py-1 rounded text-xs ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+          {value ? 'Yes' : 'No'}
+        </span>
+      ),
+    },
+    {
+      field: "currencyCode",
+      headerName: "CURRENCY",
+      width: 120,
+      render: (value, row) => (
+        <div>
+          <div className="font-medium">{value}</div>
+          <div className="text-xs text-gray-500">{row.currencyName}</div>
+        </div>
+      ),
+    },
+    {
+      field: "userReferrerName",
+      headerName: "REF BY PLAYER",
       width: 150,
+      render: (value, row) => (
+        <div>
+          {value ? (
+            <>
+              <div className="font-medium">{value}</div>
+              <div className="text-xs text-gray-500">@{row.userReferrerUsername}</div>
+            </>
+          ) : (
+            <span className="text-gray-400">-</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      field: "affiliateName",
+      headerName: "AFFILIATE",
+      width: 150,
+      render: (value, row) => (
+        <div>
+          {value ? (
+            <>
+              <div className="font-medium">{value}</div>
+              <div className="text-xs text-gray-500">{row.affiliateRole}</div>
+            </>
+          ) : (
+            <span className="text-gray-400">-</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      field: "agentName",
+      headerName: "AGENT",
+      width: 150,
+      render: (value, row) => (
+        <div>
+          {value ? (
+            <>
+              <div className="font-medium">{value}</div>
+              <div className="text-xs text-gray-500">{row.agentRole}</div>
+            </>
+          ) : (
+            <span className="text-gray-400">-</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      field: "totalBalance",
+      headerName: "BALANCE",
+      width: 120,
+      render: (value) => (
+        <span className="font-medium text-green-600">${value || 0}</span>
+      ),
+    },
+    {
+      field: "totalDeposits",
+      headerName: "DEPOSITS",
+      width: 120,
+      render: (value) => (
+        <span className="font-medium text-blue-600">${value || 0}</span>
+      ),
+    },
+    {
+      field: "totalWithdrawals",
+      headerName: "WITHDRAWALS",
+      width: 120,
+      render: (value) => (
+        <span className="font-medium text-orange-600">${value || 0}</span>
+      ),
+    },
+    {
+      field: "totalWins",
+      headerName: "WINS",
+      width: 100,
+      render: (value) => (
+        <span className="font-medium text-green-600">${value || 0}</span>
+      ),
+    },
+    {
+      field: "totalLosses",
+      headerName: "LOSSES",
+      width: 100,
+      render: (value) => (
+        <span className="font-medium text-red-600">${value || 0}</span>
+      ),
+    },
+    {
+      field: "pendingDeposits",
+      headerName: "PENDING DEP",
+      width: 120,
+      render: (value) => (
+        <span className="font-medium text-yellow-600">${value || 0}</span>
+      ),
+    },
+    {
+      field: "pendingWithdrawals",
+      headerName: "PENDING WIT",
+      width: 120,
+      render: (value) => (
+        <span className="font-medium text-yellow-600">${value || 0}</span>
+      ),
     },
     {
       field: "device_type",
       headerName: "DEVICE TYPE",
-      width: 150,
-    },
-    {
-      field: "device_name",
-      headerName: "DEVICE NAME",
-      width: 150,
-    },
-    {
-      field: "os_version",
-      headerName: "OS VERSION",
-      width: 150,
-    },
-    {
-      field: "browser",
-      headerName: "BROWSER",
-      width: 150,
-    },
-    {
-      field: "browser_version",
-      headerName: "BROWSER VERSION",
-      width: 150,
+      width: 120,
     },
     {
       field: "ip_address",
       headerName: "IP ADDRESS",
+      width: 150,
+    },
+    {
+      field: "created",
+      headerName: "CREATED DATE",
       width: 150,
     },
     {
