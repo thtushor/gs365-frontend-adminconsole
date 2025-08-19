@@ -14,6 +14,18 @@ export const useBetResults = (filters = {}, options = {}) => {
   });
 };
 
+export const usePlayerRankings = (params = {}, options = {}) => {
+  return useQuery({
+    queryKey: ["playerRankings", params],
+    queryFn: async () => {
+      const res = await Axios.get(API_LIST.GET_PLAYER_RANKINGS, { params });
+      return res.data;
+    },
+    keepPreviousData: true,
+    ...options,
+  });
+};
+
 export const useGames = () => {
   return useQuery({
     queryKey: ["games"],

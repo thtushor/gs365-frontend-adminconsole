@@ -40,6 +40,7 @@ import TransactionsPage from "../components/TransactionsPage";
 import AddSportPage from "../components/AddSportPage";
 import PlayersPage from "../components/PlayersPage";
 import NetProfitLossPage from "../components/NetProfitLossPage";
+import WinLossPage from "../components/WinLossPage";
 import ProductAnalyticsPage from "../components/ProductAnalyticsPage";
 import CoinAnalyticsPage from "../components/CoinAnalyticsPage";
 import ProviderPaymentsPage from "../components/ProviderPaymentsPage";
@@ -143,7 +144,7 @@ export const menu = [
       {
         label: "Win/Loss",
         path: "/win-loss",
-        component: ComingSoon,
+        component: WinLossPage,
         icon: <BiTrophy/>
       },
       {

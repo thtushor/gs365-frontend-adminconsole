@@ -137,6 +137,8 @@ export const API_LIST = {
 
   // Bet Results
   GET_BET_RESULTS: "/api/bet-results",
+  // Bet Results Rankings
+  GET_PLAYER_RANKINGS: "/api/bet-results/rankings/players",
 
   // Games
   GET_ALL_GAMES: "/api/games/games",
