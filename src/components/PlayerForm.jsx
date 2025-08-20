@@ -10,6 +10,7 @@ const defaultForm = {
   refer_code: "",
   isAgreeWithTerms: false,
   status: "active",
+  isLoggedIn: false,
 };
 
 const PlayerForm = ({ initialValues, onSubmit, loading, isEdit }) => {
@@ -130,28 +131,39 @@ const PlayerForm = ({ initialValues, onSubmit, loading, isEdit }) => {
           />
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="isAgreeWithTerms"
-          checked={form.isAgreeWithTerms}
-          onChange={handleChange}
-        />
-        <label className="text-xs">Agree with terms *</label>
-      </div>
-      <div>
-        <label className="block text-xs font-medium mb-1">Status *</label>
-        <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-          className="border rounded px-3 py-2 w-full"
-          required
-        >
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </div>
+                     <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="isAgreeWithTerms"
+            checked={form.isAgreeWithTerms}
+            onChange={handleChange}
+          />
+          <label className="text-xs">Agree with terms *</label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="isLoggedIn"
+            checked={form.isLoggedIn}
+            onChange={handleChange}
+          />
+          <label className="text-xs">Is Logged In</label>
+        </div>
+        <div>
+          <label className="block text-xs font-medium mb-1">Status *</label>
+          <select
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            className="border rounded px-3 py-2 w-full"
+            required
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      
+      
       <div className="flex justify-end">
         <button
           type="submit"

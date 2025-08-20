@@ -22,6 +22,7 @@ import Dashboard from "../components/Dashboard";
 import ComingSoon from "../components/ComingSoon";
 import PlayerListPage from "../components/PlayerListPage";
 import PlayerProfile from "../components/PlayerProfile";
+import PlayerTransactionsPage from "../components/PlayerTransactionsPage";
 import BettingWagerPage from "../components/BettingWagerPage";
 import AllDepositPage from "../components/AllDepositPage";
 import PendingDepositPage from "../components/PendingDepositPage";
@@ -546,6 +547,12 @@ export const menu = [
     label: "Player Profile",
     path: "/players/:playerId/profile",
     component: PlayerProfile,
+    skipFromMenu: true,
+  },
+  {
+    label: "Player Transactions",
+    path: "/players/:playerId/profile/transactions",
+    component: PlayerTransactionsPage,
     skipFromMenu: true,
   },
   {

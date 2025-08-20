@@ -52,7 +52,7 @@ const PlayerProfile = () => {
     enabled: !!playerId,
   });
 
-  // Edit mutation
+  // Edit mutation - following PlayerListPage pattern
   const editMutation = useMutation({
     mutationFn: async ({ id, ...data }) => {
       const res = await Axios.post(`${API_LIST.EDIT_PLAYERS}/${id}`, data);
@@ -61,8 +61,8 @@ const PlayerProfile = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["playerProfile", playerId] });
       queryClient.invalidateQueries({ queryKey: ["players"] });
+      queryClient.invalidateQueries({ queryKey: ["playerProfile", playerId] });
       setModalOpen(false);
       toast.success("Player updated successfully!");
     },
