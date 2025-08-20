@@ -51,6 +51,8 @@ const GameProviderLayout = () => {
     return true;
   });
 
+  console.log(gameProviderDetails?.data);
+
   // Dummy balances (could come from API)
   const HighlightBox = ({ label, value }) => {
     return (
@@ -84,7 +86,11 @@ const GameProviderLayout = () => {
         ) : (
           <button
             className="bg-green-500 text-white cursor-pointer px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-            onClick={() => navigate("/add-game")}
+            onClick={() =>
+              navigate(
+                `/add-game?parentId=${gameProviderDetails?.data?.parentId}&providerId=${gameProviderDetails?.data?.id}`
+              )
+            }
           >
             Create Game
           </button>
