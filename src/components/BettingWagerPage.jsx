@@ -3,8 +3,9 @@ import { useBetResults, useGames, useUsers } from "../hooks/useBetResults";
 import { FaFilter, FaDownload, FaEye } from "react-icons/fa";
 import StatusChip from "./shared/StatusChip";
 import Pagination from "./Pagination";
+import { useNavigate, useParams } from "react-router-dom";
 
-const BettingWagerPage = () => {
+const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) => {
   const [filters, setFilters] = useState({
     userId: "",
     gameId: "",
@@ -23,12 +24,17 @@ const BettingWagerPage = () => {
     sortOrder: "desc",
   });
 
+  const { playerId: paramPlayerId } = useParams();
+  const playerId = propPlayerId || paramPlayerId;
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
+  const navigate = useNavigate();
 
   // Fetch bet results
   const { data: betResults, isLoading: betResultsLoading, error: betResultsError } = useBetResults({
     ...filters,
+    userId: playerId,
     page: currentPage,
     pageSize,
   });
@@ -111,14 +117,16 @@ const BettingWagerPage = () => {
 
   return (
     <div className="bg-[#f5f5f5] w-full min-h-full p-4">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Betting Wager</h1>
-        <div className="flex gap-2">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2">
-            <FaDownload />
-            Export
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        {playerId && (
+          <button
+            onClick={() => navigate(`/players/${playerId}/profile`)}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          >
+            Back to Profile
           </button>
-        </div>
+        )}
       </div>
 
       {/* Filters */}

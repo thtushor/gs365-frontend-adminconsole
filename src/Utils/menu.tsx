@@ -556,6 +556,12 @@ export const menu = [
     skipFromMenu: true,
   },
   {
+    label: "Player Wagers",
+    path: "/players/:playerId/profile/wagers",
+    component: BettingWagerPage,
+    skipFromMenu: true,
+  },
+  {
     label: "Settings",
     icon: <FaCogs />,
     children: [
