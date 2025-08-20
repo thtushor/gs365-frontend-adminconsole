@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useGetRequest, usePostRequest } from "../../Utils/apiClient";
@@ -22,17 +22,28 @@ const defaultForm = {
 };
 
 const AddOrUpdateGame = () => {
+  const location = useLocation();
   const [parentProviderId, setParentProviderId] = useState(null);
   const [form, setForm] = useState(defaultForm);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
   const getRequest = useGetRequest();
   const postRequest = usePostRequest();
 
   const queryParams = new URLSearchParams(location.search);
   const gameId = queryParams.get("gameId");
+  const parentId = queryParams.get("parentId");
+  const providerId = queryParams.get("providerId");
+
+  useEffect(() => {
+    if (parentId) {
+      setParentProviderId(parentId);
+    }
+    if (parentId && providerId) {
+      setForm((prev) => ({ ...prev, parentId, providerId }));
+    }
+  }, [parentId, providerId]);
 
   const isEditMode = !!gameId;
 
