@@ -361,9 +361,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Bet Placed At
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
-                </th>
+                </th> */}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -385,8 +385,10 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bet.id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {bet.userId}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-green-500 font-medium cursor-pointer hover:underline" onClick={() => {
+                      navigate(`/players/${bet?.userId}/profile`, { state: { user: bet?.user } });
+                    }}>
+                      {bet?.user?.fullname || bet?.user?.username || bet?.userId}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -429,12 +431,12 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDate(bet.betPlacedAt)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 flex items-center gap-1">
                         <FaEye />
                         View
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               )}
@@ -444,7 +446,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
       </div>
 
       {/* Pagination */}
-      {pagination && pagination.totalPages > 1 && (
+      {pagination && pagination.totalPages > 0 && (
         <div className="mt-6">
           <Pagination
             currentPage={currentPage}
