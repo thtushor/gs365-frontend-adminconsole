@@ -353,6 +353,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                   Multiplier
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Balance
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Bet Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -415,6 +418,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bet.multiplier}x
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatAmount(bet.userBalance?.currentBalance||0)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusChip
