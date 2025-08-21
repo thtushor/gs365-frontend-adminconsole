@@ -2,9 +2,13 @@ import React, { useState, useMemo } from "react";
 import { FaFilter } from "react-icons/fa";
 import Pagination from "./Pagination";
 import { usePlayerRankings, useGames, useUsers } from "../hooks/useBetResults";
+import { useNavigate } from "react-router-dom";
 
 interface PlayerRanking {
   userId: number;
+  userBalance: {
+    currentBalance: number;
+  };
   user?: {
     id: number;
     username: string;
@@ -53,6 +57,7 @@ const WinLossPage = () => {
 
   const { data: gamesData } = useGames();
   const { data: usersData } = useUsers();
+  const navigate = useNavigate()
 
   const { data, isLoading, error } = usePlayerRankings(filters, { keepPreviousData: true });
 
@@ -239,7 +244,7 @@ const WinLossPage = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Game</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Bets</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wins</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Losses</th>
@@ -265,10 +270,12 @@ const WinLossPage = () => {
                 rankings.map((row: PlayerRanking) => (
                   <tr key={`${row.userId}-${row.rank}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.rank}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm hover:underline text-green-500 font-medium cursor-pointer" onClick={() => {
+                      navigate(`/players/${row.userId}/profile`, { state: { user: row.user } });
+                    }}>
                       {row.user?.fullname || row.user?.username || row.userId}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.game?.name || "-"}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatAmount(row.userBalance.currentBalance||0)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.totalBets}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-green-700 font-medium">{row.totalWins}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-red-700 font-medium">{row.totalLosses}</td>
