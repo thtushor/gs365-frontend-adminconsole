@@ -46,6 +46,7 @@ const PaymentGatewaysPage = () => {
     countryId: "",
     network: "",
     currencyConversionRate: "",
+    bonus: 0
   });
 
   // React Query hooks
@@ -78,6 +79,7 @@ const PaymentGatewaysPage = () => {
       maxWithdraw: "",
       countryId: "",
       network: "",
+      bonus:0,
       currencyConversionRate: "",
     });
     setUploadedImage(null);
@@ -106,6 +108,7 @@ const PaymentGatewaysPage = () => {
       countryId: gateway.countryId || "",
       network: gateway.network || "",
       currencyConversionRate: gateway.currencyConversionRate || "",
+      bonus: gateway.bonus,
     });
     setUploadedImage(gateway.iconUrl ? [gateway.iconUrl] : null);
     setModalOpen(true);

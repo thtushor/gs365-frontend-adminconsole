@@ -94,7 +94,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
 
   const formatAmount = (amount) => {
     if (!amount || amount === "0.00") return "-";
-    return `$${parseFloat(amount).toFixed(2)}`;
+    return `${parseFloat(amount).toFixed(2)} BDT`;
   };
 
   const getBetStatusColor = (status) => {
@@ -341,6 +341,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                   Game
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Bet Balance at bet tme
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Bet Amount
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -352,8 +355,11 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Multiplier
                 </th>
+               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Balance at bet end
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Balance
+                  Current Balance
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Bet Status
@@ -408,6 +414,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatAmount(bet.betBalance)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatAmount(bet.betAmount)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
@@ -418,6 +427,10 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bet.multiplier}x
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatAmount(Number(bet.betBalance)+Number(bet.winAmount)-Number(bet.lossAmount))}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatAmount(bet.userBalance?.currentBalance||0)}
