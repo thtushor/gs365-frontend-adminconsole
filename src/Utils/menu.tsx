@@ -118,6 +118,7 @@ import SportChildProviderList from "../components/SportProviderInner/SportChildP
 import SportsTransactionHistory from "../components/SportProviderInner/SportsTransactionHistory";
 import ProviderWiseGameList from "../components/GameProviderInner/ProviderWiseGameList";
 import SportsProviderWiseSport from "../components/SportProviderInner/SportsProviderWiseSport";
+import EventList from "../components/EventList";
 
 export const menu = [
   {
@@ -147,21 +148,21 @@ export const menu = [
         label: "Win/Loss",
         path: "/win-loss",
         component: WinLossPage,
-        icon: <BiTrophy/>
+        icon: <BiTrophy />,
       },
       {
         label: "Betting Wager",
         path: "/betting-wager",
         component: BettingWagerPage,
-        icon: <BiTrophy/>
+        icon: <BiTrophy />,
       },
       {
         label: "Message/Chat Box",
         path: "/message-chat-box",
         component: ComingSoon,
-        icon: <BiMessage/>
+        icon: <BiMessage />,
       },
-        ],
+    ],
     // Full DB list, max winning filter, etc.
   },
   {
@@ -653,6 +654,11 @@ export const menu = [
         label: "Responsible Gaming",
         path: "/responsible-gaming",
         component: ResponsibleGaming,
+      },
+      {
+        label: "Events",
+        path: "/event",
+        component: EventList,
       },
     ],
   },

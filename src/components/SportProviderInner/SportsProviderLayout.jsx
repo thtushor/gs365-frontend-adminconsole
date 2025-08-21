@@ -83,7 +83,11 @@ const SportsProviderLayout = () => {
         ) : (
           <button
             className="bg-green-500 text-white cursor-pointer px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-            onClick={() => navigate("/add-sport")}
+            onClick={() =>
+              navigate(
+                `/add-sport?parentId=${sportProviderDetails?.data?.parentId}&providerId=${sportProviderDetails?.data?.id}`
+              )
+            }
           >
             Create Sport
           </button>
