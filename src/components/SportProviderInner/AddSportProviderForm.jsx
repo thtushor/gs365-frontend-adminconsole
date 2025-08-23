@@ -6,6 +6,7 @@ import Select from "react-select";
 import { API_LIST, BASE_URL, SINGLE_IMAGE_UPLOAD_URL } from "../../api/ApiList";
 import { useCurrencies } from "../shared/useCurrencies";
 import { useGetRequest, usePostRequest } from "../../Utils/apiClient";
+import { MdToggleOff, MdToggleOn } from "react-icons/md";
 // Updated default form to match backend keys
 const defaultForm = {
   logo: null,
@@ -20,6 +21,8 @@ const defaultForm = {
   telegram: "",
   country: "",
   status: "inactive",
+  isMenu: false,
+  icon: null,
 };
 
 const AddSportProviderForm = ({
@@ -65,6 +68,8 @@ const AddSportProviderForm = ({
     if (!data && !refParentId) return;
     setForm({
       logo: data?.logo || null,
+      isMenu: data?.isMenu || false,
+      icon: data?.icon || null,
       name: data?.name || "",
       parentId: data?.parentId || "",
       providerIp: data?.providerIp || "",
@@ -141,7 +146,9 @@ const AddSportProviderForm = ({
       if (!validate()) return;
 
       let logoUrl = form.logo;
+      let iconUrl = form.icon;
 
+      // Upload Logo if it's a File
       if (form.logo instanceof File) {
         const imageForm = new FormData();
         imageForm.append("file", form.logo);
@@ -158,19 +165,45 @@ const AddSportProviderForm = ({
 
         const imageData = await uploadResponse.json();
         if (!imageData?.status || !imageData.data?.original) {
-          toast.error("Invalid image upload response");
+          toast.error("Invalid logo upload response");
           return;
         }
 
         logoUrl = imageData.data.original;
       }
 
-      const formWithLogoUrl = {
+      // Upload Icon if isMenu is true and icon is a File
+      if (form.isMenu && form.icon instanceof File) {
+        const iconForm = new FormData();
+        iconForm.append("file", form.icon);
+
+        const uploadIconResponse = await fetch(SINGLE_IMAGE_UPLOAD_URL, {
+          method: "POST",
+          body: iconForm,
+        });
+
+        if (!uploadIconResponse.ok) {
+          toast.error("Icon upload failed");
+          return;
+        }
+
+        const iconData = await uploadIconResponse.json();
+        if (!iconData?.status || !iconData.data?.original) {
+          toast.error("Invalid icon upload response");
+          return;
+        }
+
+        iconUrl = iconData.data.original;
+      }
+
+      const formWithUploads = {
         ...form,
         logo: logoUrl,
+        icon: form.isMenu ? iconUrl : null,
+        isMenu: !isParentProvider ? form.isMenu : false,
       };
 
-      mutation.mutate(formWithLogoUrl);
+      mutation.mutate(formWithUploads);
     } catch (error) {
       console.error("Submit error:", error);
     } finally {
@@ -418,6 +451,47 @@ const AddSportProviderForm = ({
               <option value="inactive">Inactive</option>
             </select>
           </div>
+
+          {!isParentProvider && (
+            <>
+              <div className="flex flex-col">
+                <label className="font-semibold text-xs mb-1">
+                  IS MENU ? <span className="text-red-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setForm((prev) => ({ ...prev, isMenu: !prev.isMenu }))
+                  }
+                  className="w-full border px-3 py-[3px] rounded cursor-pointer flex items-center justify-center"
+                >
+                  {form.isMenu ? (
+                    <MdToggleOn className="text-green-500" size={33} />
+                  ) : (
+                    <MdToggleOff className="text-red-500" size={33} />
+                  )}
+                </button>
+              </div>
+
+              {/* Icon Upload Field (Visible only when isMenu is true) */}
+              {form.isMenu && (
+                <div className="flex flex-col">
+                  <label className="font-semibold text-xs mb-1">
+                    MENU ICON <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    className="border rounded px-3 py-2"
+                    name="icon"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleChange}
+                    required={!providerId}
+                  />
+                </div>
+              )}
+            </>
+          )}
+
           {/* Submit Button */}
           <div className="md:col-span-2 flex justify-end mt-2">
             {!isParentProvider && parentProviderList.length < 1 ? (

@@ -122,6 +122,7 @@ const DropzoneBox = ({
 };
 
 const ImageUploader = ({
+  showBg = false,
   isMultiple = false,
   previewImage,
   setUploadRes = () => {},
@@ -284,7 +285,7 @@ const ImageUploader = ({
               className=" rounded-lg overflow-hidden top-1 left-1"
             >
               <div
-                className="relative"
+                className={`relative ${showBg ? "bg-gray-300" : ""}`}
                 style={{
                   boxShadow: "0 1px 4px #0001",
                 }}
