@@ -31,6 +31,13 @@ const FIELD_SCHEMA = {
       type: "file",
       required: true,
     },
+    {
+      name: "isMenu",
+      label: "Is Menu?",
+      type: "select",
+      options: ["Yes", "No"],
+      required: false,
+    },
   ],
 };
 
@@ -170,7 +177,9 @@ const CreateDropdown = () => {
                 value={form[field.name] || ""}
                 onChange={(e) => handleChange(field.name, e.target.value)}
               >
-                <option value="">Select {field.label}</option>
+                <option value="">{`${
+                  field.label === "Is Menu?" ? "" : "Select "
+                }${field.label}`}</option>
                 {field.options.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}
@@ -181,6 +190,7 @@ const CreateDropdown = () => {
               <ImageUploader
                 setUploadRes={setUploadRes}
                 previewImage={form[field.name]}
+                showBg
               />
             ) : (
               <input

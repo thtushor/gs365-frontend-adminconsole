@@ -149,6 +149,20 @@ const GameProvidersList = () => {
       ),
     },
     {
+      field: "isMenu",
+      headerName: "Is Menu ?",
+      width: 100,
+      render: (value) => (
+        <span
+          className={`px-2 py-1 rounded-full pb-1 capitalize block text-xs font-medium ${
+            value ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {value ? "Yes" : "No"}
+        </span>
+      ),
+    },
+    {
       field: "status",
       headerName: "Status",
       width: 100,
