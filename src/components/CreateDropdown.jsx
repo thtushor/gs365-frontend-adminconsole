@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGetRequest, usePostRequest } from "../Utils/apiClient";
 import { API_LIST, BASE_URL } from "../api/ApiList";
@@ -41,7 +41,7 @@ const FIELD_SCHEMA = {
   ],
 };
 
-const CreateDropdown = () => {
+const CreateDropdown = ({ editedData, setEditedData }) => {
   const queryClient = useQueryClient();
   const [dropdownId, setDropdownId] = useState("");
   const [form, setForm] = useState({});
@@ -51,6 +51,7 @@ const CreateDropdown = () => {
   const getRequest = useGetRequest();
   const postRequest = usePostRequest();
 
+  // ✅ Fetch dropdown list
   const {
     data: dropdowns,
     isLoading,
@@ -64,6 +65,28 @@ const CreateDropdown = () => {
       }),
   });
 
+  // ✅ Pre-fill form for edit
+  useEffect(() => {
+    if (editedData && editedData.id) {
+      // Assume dropdownId comes from editedData or infer from context
+      // If you don't have dropdownId in editedData, you'll need to manage this based on the UI
+      const detectedDropdownId = dropdowns?.data?.find((d) =>
+        d.options?.some((opt) => opt.id === editedData.id)
+      )?.id;
+
+      if (detectedDropdownId) {
+        setDropdownId(detectedDropdownId.toString());
+      }
+
+      setForm({
+        title: editedData.title || "",
+        status: editedData.status || "",
+        isMenu: editedData.isMenu ? "Yes" : "No",
+        imgUrl: editedData.imgUrl || "",
+      });
+    }
+  }, [editedData, dropdowns]);
+
   const mutation = useMutation({
     mutationFn: (payload) =>
       postRequest({
@@ -72,9 +95,7 @@ const CreateDropdown = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["dropdowns"] });
-      setForm({});
-      setDropdownId("");
-      setUploadRes(null);
+      resetForm();
     },
   });
 
@@ -86,7 +107,7 @@ const CreateDropdown = () => {
     activeFields.forEach((field) => {
       if (field.required) {
         if (field.type === "file") {
-          if (!uploadRes?.data?.original) {
+          if (!uploadRes?.data?.original && !form.imgUrl) {
             tempErrors[field.name] = `${field.label} is required.`;
           }
         } else if (!form[field.name]) {
@@ -107,9 +128,14 @@ const CreateDropdown = () => {
       ...form,
     };
 
-    // ✅ attach uploaded image url
+    // ✅ attach uploaded image url if new image uploaded
     if (uploadRes?.status === true && uploadRes.data?.original) {
       payload.imgUrl = uploadRes.data.original;
+    }
+
+    // ✅ If editing, include id
+    if (editedData?.id) {
+      payload.id = editedData.id;
     }
 
     mutation.mutate(payload);
@@ -117,6 +143,14 @@ const CreateDropdown = () => {
 
   const handleChange = (name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const resetForm = () => {
+    setForm({});
+    setDropdownId("");
+    setErrors({});
+    setUploadRes(null);
+    setEditedData(null); // clear edit mode
   };
 
   if (isLoading) {
@@ -138,7 +172,7 @@ const CreateDropdown = () => {
   return (
     <div className="max-w-md py-3 px-5 bg-white rounded-xl border border-green-300">
       <h2 className="text-[18px] font-semibold mb-2 text-left">
-        Create Dropdown
+        {editedData ? "Update Dropdown" : "Create Dropdown"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -153,6 +187,7 @@ const CreateDropdown = () => {
               setErrors({});
               setUploadRes(null);
             }}
+            disabled={!!editedData} // prevent changing dropdown in edit mode
           >
             <option value="">Select Dropdown</option>
             {dropdowns?.data?.map((dd) => (
@@ -189,7 +224,7 @@ const CreateDropdown = () => {
             ) : field.type === "file" ? (
               <ImageUploader
                 setUploadRes={setUploadRes}
-                previewImage={form[field.name]}
+                previewImage={form.imgUrl} // ✅ show old image if available
                 showBg
               />
             ) : (
@@ -209,14 +244,30 @@ const CreateDropdown = () => {
           </div>
         ))}
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={mutation.isLoading}
-          className="bg-green-500 text-white px-8 py-2 rounded hover:bg-green-600 transition font-semibold text-sm"
-        >
-          {mutation.isLoading ? "Submitting..." : "Submit"}
-        </button>
+        {/* Buttons */}
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            disabled={mutation.isLoading}
+            className="bg-green-500 cursor-pointer text-white px-8 py-2 rounded hover:bg-green-600 transition font-semibold text-sm"
+          >
+            {mutation.isLoading
+              ? "Processing..."
+              : editedData
+              ? "Update"
+              : "Submit"}
+          </button>
+
+          {editedData && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="bg-gray-500 text-white px-5 py-2 rounded cursor-pointer hover:bg-gray-600 transition font-semibold text-sm"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

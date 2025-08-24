@@ -81,7 +81,12 @@ const ExpandableDataTable = ({ columns, data = [], subTableConfig }) => {
                         <table className="text-sm w-full border border-gray-200 rounded overflow-hidden border-collapse">
                           <thead>
                             <tr className="text-gray-600 bg-gray-100 border-b border-gray-200">
-                              {subTableConfig.columns.map((col, i) => (
+                              {(row.name?.toLowerCase() === "categories"
+                                ? subTableConfig.columns
+                                : subTableConfig.columns.filter(
+                                    (col) => col.field !== "isMenu"
+                                  )
+                              ).map((col, i) => (
                                 <th
                                   key={i}
                                   className={`px-2 py-1 border border-gray-200 ${
@@ -101,7 +106,12 @@ const ExpandableDataTable = ({ columns, data = [], subTableConfig }) => {
                                 key={subRow.id || idx}
                                 className="border-t border-gray-200 hover:bg-gray-50"
                               >
-                                {subTableConfig.columns.map((col, j) => (
+                                {(row.name?.toLowerCase() === "categories"
+                                  ? subTableConfig.columns
+                                  : subTableConfig.columns.filter(
+                                      (col) => col.field !== "isMenu"
+                                    )
+                                ).map((col, j) => (
                                   <td
                                     key={j}
                                     className={`px-2 py-1 border border-gray-200 ${
@@ -114,7 +124,8 @@ const ExpandableDataTable = ({ columns, data = [], subTableConfig }) => {
                                       ? col.render(
                                           subRow[col.field],
                                           subRow,
-                                          idx
+                                          idx,
+                                          row
                                         )
                                       : subRow[col.field]}
                                   </td>

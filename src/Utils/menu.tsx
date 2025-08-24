@@ -119,6 +119,7 @@ import SportsTransactionHistory from "../components/SportProviderInner/SportsTra
 import ProviderWiseGameList from "../components/GameProviderInner/ProviderWiseGameList";
 import SportsProviderWiseSport from "../components/SportProviderInner/SportsProviderWiseSport";
 import EventList from "../components/EventList";
+import MenuManagement from "../components/MenuManagement";
 
 export const menu = [
   {
@@ -671,6 +672,11 @@ export const menu = [
         label: "Dropdowns",
         path: "/dropdowns",
         component: DropdownConfiguration,
+      },
+      {
+        label: "Menu Management",
+        path: "/menu-management",
+        component: MenuManagement,
       },
       {
         label: "StatusChip Demo",

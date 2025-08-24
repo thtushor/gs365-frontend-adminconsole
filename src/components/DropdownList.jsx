@@ -5,12 +5,18 @@ import { useGetRequest, useUpdateRequest } from "../Utils/apiClient";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
 import ExpandableDataTable from "./ExpandableDataTable";
-import { MdDeleteOutline, MdToggleOff, MdToggleOn } from "react-icons/md";
+import {
+  MdDeleteOutline,
+  MdEdit,
+  MdModeEditOutline,
+  MdToggleOff,
+  MdToggleOn,
+} from "react-icons/md";
 import BaseModal from "./shared/BaseModal";
 import StatusChangePopup from "./inner_component/StatusChangePopup";
 import DeleteDropdownOption from "./DeleteDropdownOption";
 
-const DropdownList = () => {
+const DropdownList = ({ setEditedData }) => {
   const getRequest = useGetRequest();
   const updateDropdownStatus = useUpdateRequest();
   const queryClient = useQueryClient();
@@ -143,15 +149,20 @@ const DropdownList = () => {
         field: "isMenu",
         headerName: "Is Menu ?",
         width: 100,
-        render: (value) => (
-          <span
-            className={`px-2 py-1 rounded-full pb-1 capitalize block text-xs font-medium ${
-              value ? "text-green-500" : "text-red-500"
-            }`}
-          >
-            {value ? "Yes" : "No"}
-          </span>
-        ),
+        render: (value, row, index, parentRow) => {
+          console.log(parentRow);
+          return parentRow?.name?.toLowerCase() === "categories" ? (
+            <span
+              className={`px-2 py-1 rounded-full pb-1 capitalize block text-xs font-medium ${
+                value ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {value ? "Yes" : "No"}
+            </span>
+          ) : (
+            "-"
+          );
+        },
       },
       {
         field: "created_by",
@@ -165,13 +176,22 @@ const DropdownList = () => {
       {
         field: "action",
         headerName: "Action",
+        align: "center",
         render: (value, row) => (
-          <button
-            onClick={() => handleDeleteOption(row)}
-            className="text-red-600 hover:text-red-800 cursor-pointer text-[20px]"
-          >
-            <MdDeleteOutline size={20} />
-          </button>
+          <div className="flex gap-2 justify-center">
+            <button
+              onClick={() => setEditedData(row)}
+              className="text-green-500 bg-green-100 w-[30px] flex items-center justify-center rounded-md border border-green-500 h-[30px] hover:text-green-700 cursor-pointer text-[20px]"
+            >
+              <MdEdit size={20} />
+            </button>
+            <button
+              onClick={() => handleDeleteOption(row)}
+              className="text-red-600 hover:text-red-800 cursor-pointer text-[20px] bg-red-100 w-[30px] flex items-center justify-center rounded-md border border-red-500 h-[30px]"
+            >
+              <MdDeleteOutline size={20} />
+            </button>
+          </div>
         ),
       },
     ],
