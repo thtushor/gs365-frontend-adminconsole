@@ -1,4 +1,4 @@
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaDollarSign, FaEdit, FaTrash } from "react-icons/fa";
 import DataTable from "./DataTable";
 
 const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
@@ -191,6 +191,13 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       align: "center",
       render: (value, row) => (
         <div className="flex justify-center gap-2">
+          <button
+            className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
+            title="Edit"
+            // onClick={() => onEdit && onEdit(row)}
+          >
+            <FaDollarSign />
+          </button>
           <button
             className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
             title="Edit"
