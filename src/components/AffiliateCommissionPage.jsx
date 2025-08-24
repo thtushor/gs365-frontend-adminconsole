@@ -5,11 +5,13 @@ import { API_LIST } from "../api/ApiList";
 import DataTable from "./DataTable";
 import ReusableModal from "./ReusableModal";
 import Pagination from "./Pagination";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaTrash, FaEdit, FaFilter } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
 import { formatDateTime } from "../Utils/dateUtils";
+import { useUsers } from "../hooks/useBetResults";
+import { useAffiliates } from "../hooks/useAffiliates";
 
 const defaultFilters = {
   search: "",
@@ -28,6 +30,13 @@ const AffiliateCommissionListPage = () => {
   const [selectedAgent, setSelectedAgent] = useState(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  // Fetch users and affiliates for filters
+  const { data: usersData } = useUsers();
+  const { data: affiliatesData } = useAffiliates();
+  
+  const users = usersData?.users?.data || [];
+  const affiliates = affiliatesData?.data || [];
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [API_LIST.AFFILIATE_COMMISSION_LIST, filters],
@@ -193,6 +202,10 @@ const AffiliateCommissionListPage = () => {
     setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
   };
 
+  const handleReset = () => {
+    setFilters(defaultFilters);
+  };
+
   const handlePageChange = (page) => {
     setFilters((prev) => ({ ...prev, page }));
   };
@@ -217,32 +230,71 @@ const AffiliateCommissionListPage = () => {
       </div>
       
       {/* Filter Bar */}
-      <form className="flex flex-wrap gap-2 items-center mb-4">
-        <input
-          type="text"
-          name="search"
-          placeholder="Search..."
-          value={filters.search}
-          onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
-        <input
-          type="number"
-          name="adminUserId"
-          placeholder="Affiliate ID"
-          value={filters.adminUserId}
-          onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
-        <input
-          type="number"
-          name="playerId"
-          placeholder="Player ID"
-          value={filters.playerId}
-          onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
-      </form>
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <FaFilter className="text-blue-500" />
+          <h3 className="text-lg font-semibold">Filters</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <input
+              type="text"
+              name="search"
+              placeholder="Search..."
+              value={filters.search}
+              onChange={handleFilterChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Affiliate</label>
+            <select
+              name="adminUserId"
+              value={filters.adminUserId}
+              onChange={handleFilterChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Affiliates</option>
+              {affiliates.map((affiliate) => (
+                <option key={affiliate.id} value={affiliate.id}>
+                  {affiliate.fullname || affiliate.username} ({affiliate.role === "affiliate" ? "Sub Affiliate" : affiliate.role === "superAffiliate" ? "Super Affiliate" : affiliate.role})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Player</label>
+            <select
+              name="playerId"
+              value={filters.playerId}
+              onChange={handleFilterChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Players</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.fullname || user.username}
+                </option>
+              ))}
+            </select>
+          </div>
+
+         
+        </div>
+
+        <div className="flex gap-2 mt-4">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+          >
+            Reset Filters
+          </button>
+        </div>
+      </div>
       
       <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">
         {isLoading ? (
