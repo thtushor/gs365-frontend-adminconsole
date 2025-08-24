@@ -5,6 +5,11 @@ import StatusChip from "./shared/StatusChip";
 import Pagination from "./Pagination";
 import { useNavigate, useParams } from "react-router-dom";
 
+export const formatAmount = (amount) => {
+  if (!amount || amount === "0.00") return "-";
+  return `${parseFloat(amount).toFixed(2)} BDT`;
+};
+
 const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) => {
   const [filters, setFilters] = useState({
     userId: "",
@@ -65,6 +70,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
     setCurrentPage(1);
     setFilters(prev => ({ ...prev, limit: size, offset: 0 }));
   };
+  
 
   const handleResetFilters = () => {
     setFilters({
@@ -92,10 +98,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
     return new Date(dateString).toLocaleString();
   };
 
-  const formatAmount = (amount) => {
-    if (!amount || amount === "0.00") return "-";
-    return `${parseFloat(amount).toFixed(2)} BDT`;
-  };
+  
 
   const getBetStatusColor = (status) => {
     switch (status) {

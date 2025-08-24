@@ -41,7 +41,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       const payload = {
         userId: selectedPlayer.id,
         amount: parseFloat(depositForm.amount),
-        currencyId: selectedPlayer.currencyId,
+        currencyId: selectedPlayer.currencyId||10,
         promotionId: depositForm.promotionId || null,
         notes: depositForm.notes || null,
         attachment: depositForm.attachment || null,
@@ -303,7 +303,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                 readOnly
               />
             </div>
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Currency
               </label>
@@ -313,7 +313,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                 value={`${selectedPlayer?.currencyCode || ""} (${selectedPlayer?.currencyName || ""})`}
                 readOnly
               />
-            </div>
+            </div> */}
           </div>
           
           <div>
@@ -331,7 +331,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
             />
           </div>
           
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Promotion ID (Optional)
             </label>
@@ -342,7 +342,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               value={depositForm.promotionId}
               onChange={(e) => setDepositForm({...depositForm, promotionId: e.target.value})}
             />
-          </div>
+          </div> */}
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -357,7 +357,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
             />
           </div>
           
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Attachment URL (Optional)
             </label>
@@ -368,7 +368,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               value={depositForm.attachment}
               onChange={(e) => setDepositForm({...depositForm, attachment: e.target.value})}
             />
-          </div>
+          </div> */}
         </div>
       </ReusableModal>
     </>

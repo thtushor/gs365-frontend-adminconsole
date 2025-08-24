@@ -4,6 +4,7 @@ import DataTable from "./DataTable";
 import Pagination from "./Pagination";
 import ReusableModal from "./ReusableModal";
 import { useNavigate, useParams } from "react-router-dom";
+import { formatAmount } from "./BettingWagerPage";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -95,7 +96,7 @@ const TransactionsPage = ({ playerId: propPlayerId, title = "Transactions" }) =>
         width: 140,
         render: (value, row) => (
           <span className="font-medium">
-            {value != null ? `${value} ${row.currencySymbol || ''}` : "-"}
+            {value != null ? `${formatAmount(value)}` : "-"}
           </span>
         ),
       },
