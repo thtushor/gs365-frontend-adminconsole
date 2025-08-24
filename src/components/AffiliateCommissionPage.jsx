@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
@@ -7,7 +7,7 @@ import ReusableModal from "./ReusableModal";
 import Pagination from "./Pagination";
 import { FaTrash, FaEdit, FaFilter } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
 import { formatDateTime } from "../Utils/dateUtils";
 import { useUsers } from "../hooks/useBetResults";
@@ -30,6 +30,7 @@ const AffiliateCommissionListPage = () => {
   const [selectedAgent, setSelectedAgent] = useState(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { affiliateId } = useParams();
 
   // Fetch users and affiliates for filters
   const { data: usersData } = useUsers();
@@ -37,6 +38,16 @@ const AffiliateCommissionListPage = () => {
   
   const users = usersData?.users?.data || [];
   const affiliates = affiliatesData?.data || [];
+
+  // Set adminUserId from affiliateId parameter if available
+  useEffect(() => {
+    if (affiliateId) {
+      setFilters(prev => ({
+        ...prev,
+        adminUserId: affiliateId
+      }));
+    }
+  }, [affiliateId]);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [API_LIST.AFFILIATE_COMMISSION_LIST, filters],
@@ -203,7 +214,12 @@ const AffiliateCommissionListPage = () => {
   };
 
   const handleReset = () => {
-    setFilters(defaultFilters);
+    const resetFilters = { ...defaultFilters };
+    // Preserve affiliateId if it exists in URL
+    if (affiliateId) {
+      resetFilters.adminUserId = affiliateId;
+    }
+    setFilters(resetFilters);
   };
 
   const handlePageChange = (page) => {
@@ -249,22 +265,23 @@ const AffiliateCommissionListPage = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Affiliate</label>
-            <select
-              name="adminUserId"
-              value={filters.adminUserId}
-              onChange={handleFilterChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Affiliates</option>
-              {affiliates.map((affiliate) => (
-                <option key={affiliate.id} value={affiliate.id}>
-                  {affiliate.fullname || affiliate.username} ({affiliate.role === "affiliate" ? "Sub Affiliate" : affiliate.role === "superAffiliate" ? "Super Affiliate" : affiliate.role})
-                </option>
-              ))}
-            </select>
-          </div>
+                     <div>
+             <label className="block text-sm font-medium text-gray-700 mb-1">Affiliate</label>
+             <select
+               name="adminUserId"
+               value={filters.adminUserId}
+               onChange={handleFilterChange}
+               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               disabled={!!affiliateId}
+             >
+               <option value="">All Affiliates</option>
+               {affiliates.map((affiliate) => (
+                 <option key={affiliate.id} value={affiliate.id}>
+                   {affiliate.fullname || affiliate.username} ({affiliate.role === "affiliate" ? "Sub Affiliate" : affiliate.role === "superAffiliate" ? "Super Affiliate" : affiliate.role})
+                 </option>
+               ))}
+             </select>
+           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Player</label>

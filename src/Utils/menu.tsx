@@ -713,12 +713,17 @@ export const affiliateOutsideRoute = [
   {
     label: "Sub Affiliate C. History",
     path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
-    component: SubAffiliateComHistory,
+    component: AffiliateCommissionListPage,
   },
   {
     label: "Player C. History",
     path: "/affiliate-list/:affiliateId/player-commission-history",
-    component: AffiliatePlayerComHistory,
+    component: AffiliateCommissionListPage,
+  },
+  {
+    label: "Affiliate Commission History",
+    path: "/affiliate-list/:affiliateId/affiliate-commission-history",
+    component: AffiliateCommissionListPage,
   },
 ];
 export const gameProviderOutsideRoute = [
