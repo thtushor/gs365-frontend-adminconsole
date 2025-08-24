@@ -119,6 +119,7 @@ import SportsTransactionHistory from "../components/SportProviderInner/SportsTra
 import ProviderWiseGameList from "../components/GameProviderInner/ProviderWiseGameList";
 import SportsProviderWiseSport from "../components/SportProviderInner/SportsProviderWiseSport";
 import EventList from "../components/EventList";
+import AffiliateCommissionListPage from "../components/AffiliateCommissionPage";
 
 export const menu = [
   {
@@ -215,6 +216,13 @@ export const menu = [
         icon: <FaListUl />,
         props: {},
       },
+      {
+        label: "Affiliate Commissions",
+        path: "/affiliate-commissions",
+        component: AffiliateCommissionListPage,
+        icon: <FaListUl />,
+        props: {},
+      }
     ],
   },
   {
