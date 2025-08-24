@@ -133,6 +133,7 @@ export const API_LIST = {
   GATEWAY_ACCOUNTS_BY_PROVIDER_GATEWAY:
     "/api/gateway-provider-accounts/provider",
   PAYMENT_TRANSACTION: "/api/transactions",
+  DEPOSIT_TRANSACTION: "/api/transactions/deposit",
 
   // Settings
   GET_SETTINGS: "/api/settings",

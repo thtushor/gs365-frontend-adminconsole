@@ -1,7 +1,64 @@
 import { FaDollarSign, FaEdit, FaTrash } from "react-icons/fa";
 import DataTable from "./DataTable";
+import { useState } from "react";
+import ReusableModal from "./ReusableModal";
+import Axios from "../api/axios";
+import { API_LIST } from "../api/ApiList";
+import { toast } from "react-toastify";
 
 const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
+  const [depositModalOpen, setDepositModalOpen] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [depositForm, setDepositForm] = useState({
+    amount: "",
+    promotionId: "",
+    notes: "",
+    attachment: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleOpenDepositModal = (player) => {
+    setSelectedPlayer(player);
+    setDepositForm({
+      amount: "",
+      promotionId: "",
+      notes: "",
+      attachment: "",
+    });
+    setDepositModalOpen(true);
+  };
+
+  const handleDepositSubmit = async () => {
+    if (!selectedPlayer) return;
+    
+    if (!depositForm.amount || parseFloat(depositForm.amount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        userId: selectedPlayer.id,
+        amount: parseFloat(depositForm.amount),
+        currencyId: selectedPlayer.currencyId,
+        promotionId: depositForm.promotionId || null,
+        notes: depositForm.notes || null,
+        attachment: depositForm.attachment || null,
+      };
+      
+      await Axios.post(API_LIST.DEPOSIT_TRANSACTION, payload);
+      toast.success("Deposit added successfully");
+      setDepositModalOpen(false);
+      // Optionally refresh the player data here
+    } catch (error) {
+      const message = error?.response?.data?.message || "Failed to add deposit";
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const columns = [
     {
       field: "id",
@@ -193,8 +250,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         <div className="flex justify-center gap-2">
           <button
             className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
-            title="Edit"
-            // onClick={() => onEdit && onEdit(row)}
+            title="Add Deposit"
+            onClick={() => handleOpenDepositModal(row)}
           >
             <FaDollarSign />
           </button>
@@ -218,12 +275,103 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   ];
 
   return (
-    <DataTable 
-      columns={columns} 
-      data={players} 
-      onRowClick={onSelect}
-      selectable={false}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={players}
+        onRowClick={onSelect}
+        selectable={false}
+      />
+      <ReusableModal
+        open={depositModalOpen}
+        onClose={() => setDepositModalOpen(false)}
+        title={`Add Deposit for ${selectedPlayer?.fullname || "Player"}`}
+        onSave={handleDepositSubmit}
+        isLoading={isSubmitting}
+        loadingText="Adding Deposit..."
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Player ID
+              </label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2 bg-gray-100"
+                value={selectedPlayer?.id || ""}
+                readOnly
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Currency
+              </label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2 bg-gray-100"
+                value={`${selectedPlayer?.currencyCode || ""} (${selectedPlayer?.currencyName || ""})`}
+                readOnly
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Amount *
+            </label>
+            <input
+              type="number"
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter amount"
+              value={depositForm.amount}
+              onChange={(e) => setDepositForm({...depositForm, amount: e.target.value})}
+              min="0"
+              step="0.01"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Promotion ID (Optional)
+            </label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter promotion ID"
+              value={depositForm.promotionId}
+              onChange={(e) => setDepositForm({...depositForm, promotionId: e.target.value})}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notes (Optional)
+            </label>
+            <textarea
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter notes"
+              rows={3}
+              value={depositForm.notes}
+              onChange={(e) => setDepositForm({...depositForm, notes: e.target.value})}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Attachment URL (Optional)
+            </label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter attachment URL"
+              value={depositForm.attachment}
+              onChange={(e) => setDepositForm({...depositForm, attachment: e.target.value})}
+            />
+          </div>
+        </div>
+      </ReusableModal>
+    </>
   );
 };
 
