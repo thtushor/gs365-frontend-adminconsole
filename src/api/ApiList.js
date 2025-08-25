@@ -29,6 +29,7 @@ export const API_LIST = {
   CREATE_AGENT: "/api/admin/create-agent",
   AGENT_LIST: "/api/admin/agents",
   AFFILIATE_LIST: "/api/admin/affiliates",
+  AFFILIATE_COMMISSION_LIST: "/api/commissions",
   AFFILIATE_PROFILE: "/api/admin/affiliates",
   GET_SUB_AFFILIATES: "/sub-affiliates-list",
   GET_PLAYERS_LIST: "/players-list",
@@ -134,6 +135,7 @@ export const API_LIST = {
   GATEWAY_ACCOUNTS_BY_PROVIDER_GATEWAY:
     "/api/gateway-provider-accounts/provider",
   PAYMENT_TRANSACTION: "/api/transactions",
+  DEPOSIT_TRANSACTION: "/api/transactions/deposit",
 
   // Settings
   GET_SETTINGS: "/api/settings",

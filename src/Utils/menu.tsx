@@ -119,6 +119,7 @@ import SportsTransactionHistory from "../components/SportProviderInner/SportsTra
 import ProviderWiseGameList from "../components/GameProviderInner/ProviderWiseGameList";
 import SportsProviderWiseSport from "../components/SportProviderInner/SportsProviderWiseSport";
 import EventList from "../components/EventList";
+import AffiliateCommissionListPage from "../components/AffiliateCommissionPage";
 import MenuManagement from "../components/MenuManagement";
 
 export const menu = [
@@ -213,6 +214,13 @@ export const menu = [
         label: "Affiliate List",
         path: "/affiliate-list",
         component: AffiliateListPage,
+        icon: <FaListUl />,
+        props: {},
+      },
+      {
+        label: "Affiliate Commissions",
+        path: "/affiliate-commissions",
+        component: AffiliateCommissionListPage,
         icon: <FaListUl />,
         props: {},
       },
@@ -711,12 +719,17 @@ export const affiliateOutsideRoute = [
   {
     label: "Sub Affiliate C. History",
     path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
-    component: SubAffiliateComHistory,
+    component: AffiliateCommissionListPage,
   },
   {
     label: "Player C. History",
     path: "/affiliate-list/:affiliateId/player-commission-history",
-    component: AffiliatePlayerComHistory,
+    component: AffiliateCommissionListPage,
+  },
+  {
+    label: "Affiliate Commission History",
+    path: "/affiliate-list/:affiliateId/affiliate-commission-history",
+    component: AffiliateCommissionListPage,
   },
 ];
 export const gameProviderOutsideRoute = [
