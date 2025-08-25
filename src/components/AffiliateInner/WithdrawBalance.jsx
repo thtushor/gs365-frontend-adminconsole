@@ -10,7 +10,7 @@ const WithdrawBalance = () => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-md mb-6">
+    <div className="bg-white p-4 rounded-md mb-6" id="withdraw-section">
       <h1 className="mt-[-5px] text-base font-semibold bg-[#07122b] text-white px-3 w-fit rounded-full py-1 pt-[2px] mb-2">
         Withdraw Balance
       </h1>

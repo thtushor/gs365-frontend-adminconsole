@@ -42,7 +42,7 @@ const AffiliatePlayerList = () => {
       width: 140,
       render: (_, row) => (
         <Link
-          to={`/players/${row?.id}`}
+          to={`/players/${row?.id}/profile`}
           className="text-green-500 cursor-pointer font-semibold"
         >
           {row.username}
@@ -68,12 +68,6 @@ const AffiliatePlayerList = () => {
       render: (_, row) => row.email,
     },
     {
-      field: "role",
-      headerName: "Role",
-      width: 120,
-      render: (_, row) => row.role,
-    },
-    {
       field: "status",
       headerName: "Status",
       width: 100,
@@ -89,12 +83,6 @@ const AffiliatePlayerList = () => {
       ),
     },
     {
-      field: "city",
-      headerName: "City",
-      width: 120,
-      render: (_, row) => row.city,
-    },
-    {
       field: "isLoggedIn",
       headerName: "Is Logged In",
       width: 100,
@@ -107,10 +95,10 @@ const AffiliatePlayerList = () => {
       render: (_, row) => (row.isVerified ? "Yes" : "No"),
     },
     {
-      field: "refCode",
+      field: "refer_code",
       headerName: "Referral Code",
       width: 120,
-      render: (_, row) => row.refCode,
+      render: (_, row) => row.refer_code,
     },
     {
       field: "lastIp",
@@ -155,37 +143,24 @@ const AffiliatePlayerList = () => {
       width: 120,
       render: (_, row) => row.browser_version,
     },
-    {
-      field: "ip_address",
-      headerName: "IP Address",
-      width: 120,
-      render: (_, row) => row.ip_address,
-    },
-    {
-      field: "total_balance",
-      headerName: "Total Balance",
-      width: 120,
-      render: (_, row) => row.total_balance || 0,
-    },
-    {
-      field: "total_deposit",
-      headerName: "Total Deposit",
-      width: 120,
-      render: (_, row) => row.total_deposit || 0,
-    },
-    {
-      field: "total_withdraw",
-      headerName: "Total Withdraw",
-      width: 120,
-      render: (_, row) => row.total_withdraw || 0,
-    },
-    {
-      field: "player_affiliate_commission",
-      headerName: "Affiliate Com. %",
-      width: 120,
-
-      render: (_, row) => row.player_affiliate_commission || 0,
-    },
+    // {
+    //   field: "total_balance",
+    //   headerName: "Total Balance",
+    //   width: 120,
+    //   render: (_, row) => row.total_balance || 0,
+    // },
+    // {
+    //   field: "total_deposit",
+    //   headerName: "Total Deposit",
+    //   width: 120,
+    //   render: (_, row) => row.total_deposit || 0,
+    // },
+    // {
+    //   field: "total_withdraw",
+    //   headerName: "Total Withdraw",
+    //   width: 120,
+    //   render: (_, row) => row.total_withdraw || 0,
+    // },
   ];
 
   const agents = data?.data || [];

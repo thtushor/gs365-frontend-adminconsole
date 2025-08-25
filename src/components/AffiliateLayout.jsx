@@ -55,6 +55,38 @@ const AffiliateLayout = () => {
     enabled: !!affiliateId,
   });
 
+  console.log(affiliateDetails?.data?.minTrx);
+  console.log(affiliateDetails?.data?.maxTrx);
+
+  const {
+    data: affiliateCommissionDetails,
+    isLoading: affiliateCommissionLoading,
+    isError: affiliateCommissionError,
+  } = useQuery({
+    queryKey: ["affiliateCommission", affiliateId],
+    queryFn: () =>
+      getRequest({
+        url: `${BASE_URL}${API_LIST.GET_TOTAL_COMMISSION}/${affiliateId}`,
+        errorMessage: "Failed to fetch affiliate commission details",
+      }),
+    keepPreviousData: true,
+    enabled: !!affiliateId,
+  });
+
+  const withdrawAbleBalance = () => {
+    if (!affiliateCommissionDetails?.data) {
+      return 0;
+    }
+    const totalLoss = Math.abs(
+      Number(affiliateCommissionDetails?.data?.totalLossCommission || 0)
+    );
+    const totalWin = Math.abs(
+      Number(affiliateCommissionDetails?.data?.totalWinCommission || 0)
+    );
+
+    return (totalWin - totalLoss).toFixed(2);
+  };
+
   useEffect(() => {
     if (affiliateDetails?.data && !isError) {
       setAffiliateInfo(affiliateDetails.data);
@@ -74,7 +106,7 @@ const AffiliateLayout = () => {
     return true;
   });
   // Dummy balances (could come from API)
-  const HighlightBox = ({ label, value }) => {
+  const HighlightBox = ({ label, value, role }) => {
     const handleShare = (type) => {
       const userReferCode = value || "N/A"; // fallback to default if no user data
       const affiliateReferralLink = `https://gamestar365.com/affiliate-signup?refCode=${userReferCode}`;
@@ -103,28 +135,65 @@ const AffiliateLayout = () => {
             onClick={() => handleShare("player")}
             className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
           >
-            Player
+            Player <span>{role === "superAffiliate" ? "" : "Refer"}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => handleShare("affiliate")}
-            className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
-          >
-            Affiliate
-          </button>
+
+          {role === "superAffiliate" && (
+            <button
+              type="button"
+              onClick={() => handleShare("affiliate")}
+              className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
+            >
+              Affiliate
+            </button>
+          )}
         </div>
       </div>
     ) : (
-      <div className="border-[#07122b] border text-black bg-white p-4 py-2 rounded shadow-md w-full sm:w-fit">
-        <div className="text-xs font-medium text-gray-600">{label}</div>
-        <div className="text-[20px] font-semibold truncate">{value || 0}</div>
+      <div
+        className={`relative z-[1] ${
+          label === "Main Balance"
+            ? "bg-orange-400 text-white border-orange-400"
+            : label === "Downline Balance"
+            ? "bg-red-500 text-white border-red-500"
+            : label === "Withdrawable Balance"
+            ? "bg-green-400 text-white border-green-400"
+            : "bg-white text-black border-[#07122b]"
+        } border   p-4 py-2 rounded shadow-md w-full sm:w-fit`}
+      >
+        <div
+          className={`text-xs font-medium ${
+            label === "Main Balance" ||
+            label === "Downline Balance" ||
+            label === "Withdrawable Balance"
+              ? "text-white"
+              : "text-gray-600"
+          }`}
+        >
+          {label}
+        </div>
+        <div className="text-[20px] font-bold truncate">{value || 0}</div>
+        {label === "Withdrawable Balance" && (
+          <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
+            {value >= Number(affiliateDetails?.data?.minTrx) &&
+            value <= affiliateDetails?.data?.maxTrx ? (
+              <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
+                Withdrawable
+              </div>
+            ) : (
+              <p className="bg-red-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-red-500 text-red-500">
+                Not Withdrawable
+              </p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
 
   return (
     <div>
-      <nav className="bg-[#07122b] sticky top-[-24px] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3">
+      <nav className="bg-[#07122b] sticky top-[-24px] z-[5] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3">
         <ul className="flex gap-4 flex-wrap">
           {filteredRoutes.map(({ label, path }) => {
             const to = path.replace(":affiliateId", affiliateId);
@@ -157,15 +226,19 @@ const AffiliateLayout = () => {
           <div className="flex gap-4 flex-wrap whitespace-nowrap">
             <HighlightBox
               label="Main Balance"
-              value={affiliateDetails?.data?.main_balance}
+              value={Number(
+                affiliateCommissionDetails?.data?.totalWinCommission || 0
+              ).toFixed(2)}
             />
             <HighlightBox
               label="Downline Balance"
-              value={affiliateDetails?.data?.downline_balance}
+              value={Number(
+                affiliateCommissionDetails?.data?.totalLossCommission || 0
+              ).toFixed(2)}
             />
             <HighlightBox
               label="Withdrawable Balance"
-              value={affiliateDetails?.data?.withdrawable_balance}
+              value={withdrawAbleBalance()}
             />
           </div>
           <div className="flex gap-4 flex-wrap whitespace-nowrap ">
@@ -176,6 +249,7 @@ const AffiliateLayout = () => {
             <HighlightBox
               label="Referral Code"
               value={affiliateDetails?.data?.refCode || "N/A"}
+              uplineDetails={affiliateDetails?.data?.role}
             />
             <HighlightBox
               label="Min-Max Withdraw Limit"

@@ -43,7 +43,7 @@ const AffiliatePersonalInfo = ({ info }) => {
         />
         <InfoBox
           label="Upline Affiliate"
-          value={info.referred_by || "N/A"}
+          value={info.referred_by ? info.referDetails?.fullname : "N/A"}
           color="border-orange-400 text-orange-700"
         />
         <InfoBox

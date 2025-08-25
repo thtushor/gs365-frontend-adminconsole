@@ -3,6 +3,22 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useCurrencies } from "./useCurrencies";
 import Select from "react-select";
 import { useLocation } from "react-router-dom";
+import { API_LIST, BASE_URL } from "../../api/ApiList";
+
+// simple debounce hook
+function useDebounce(value, delay = 500) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebounced(value);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+
+  return debounced;
+}
 
 const defaultForm = {
   username: "",
@@ -35,15 +51,21 @@ export function CreateAgentForm({
   const refCodeFromUrl = queryParams.get("refCode") || "";
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
 
-  // Format options for react-select
   const currencyOptions =
     currencyList?.map((currency) => ({
       value: currency.id,
       label: `${currency.name} (${currency.code})`,
     })) || [];
+
   const [form, setForm] = useState(initialValues || defaultForm);
   const [showPassword, setShowPassword] = useState(false);
-  console.log(form);
+
+  // state for referral details
+  const [refDetails, setRefDetails] = useState(null);
+
+  // debounce refer_code
+  const debouncedRefCode = useDebounce(form.refer_code, 600);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -53,7 +75,7 @@ export function CreateAgentForm({
     e.preventDefault();
     if (isAffiliate) {
       if (!form.commission_percent) {
-        return alert("Commission percentage is not required.");
+        return alert("Commission percentage is required.");
       }
     }
     onSubmit(form);
@@ -65,7 +87,7 @@ export function CreateAgentForm({
         (c) => c.id === 11 || c.code === "BDT"
       );
       if (bdtCurrency) {
-        setForm((prev) => ({ ...prev, currency: bdtCurrency.id })); // save just the id
+        setForm((prev) => ({ ...prev, currency: bdtCurrency.id }));
       }
     }
   }, [currencyList]);
@@ -80,11 +102,68 @@ export function CreateAgentForm({
     }
   }, [refCodeFromUrl]);
 
+  // fetch referral details when debouncedRefCode changes
+  const [refLoading, setRefLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchReferralDetails = async () => {
+      if (!debouncedRefCode) {
+        setRefDetails(null);
+        return;
+      }
+
+      setRefLoading(true); // ✅ Start loading
+      try {
+        const token = localStorage.getItem("token"); // ✅ Get token
+        const response = await fetch(
+          `${BASE_URL}${API_LIST.GET_DETAILS_BY_REFER_CODE}/${debouncedRefCode}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // ✅ Add token in header
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch referral details");
+        }
+
+        const data = await response.json();
+
+        if (data?.data?.id) {
+          const supAff = data?.data;
+          setRefDetails(supAff);
+          setForm((prev) => ({
+            ...prev,
+            commission_percent: supAff?.commission_percent
+              ? Number(supAff?.commission_percent) / 2
+              : null,
+            role: "affiliate",
+            minTrx: supAff?.minTrx || "",
+            maxTrx: supAff?.maxTrx || "",
+            currency: supAff?.currency || null,
+          }));
+        } else {
+          setRefDetails(null);
+        }
+      } catch (error) {
+        console.error("Error fetching referral details:", error);
+        setRefDetails(null);
+      } finally {
+        setRefLoading(false); // ✅ Stop loading
+      }
+    };
+
+    fetchReferralDetails();
+  }, [debouncedRefCode]);
+  console.log(refDetails);
   return (
     <form
       className="grid grid-cols-1 md:grid-cols-3 gap-4"
       onSubmit={handleSubmit}
     >
+      {/* role */}
       {!isAffiliate && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
@@ -106,6 +185,7 @@ export function CreateAgentForm({
         </div>
       )}
 
+      {/* username */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">
           USERNAME <span className="text-red-500">*</span>
@@ -119,6 +199,8 @@ export function CreateAgentForm({
           required
         />
       </div>
+
+      {/* fullname */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">
           FULL NAME <span className="text-red-500">*</span>
@@ -132,7 +214,8 @@ export function CreateAgentForm({
           required
         />
       </div>
-      {/* Row 2 */}
+
+      {/* email */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">
           EMAIL ADDRESS <span className="text-red-500">*</span>
@@ -147,6 +230,8 @@ export function CreateAgentForm({
           required
         />
       </div>
+
+      {/* phone */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">
           PHONE NUMBER <span className="text-red-500">*</span>
@@ -161,7 +246,9 @@ export function CreateAgentForm({
           type="text"
         />
       </div>
-      <div className="flex flex-col">
+
+      {/* commission */}
+      <div className="flex flex-col relative">
         <label className="font-semibold text-xs mb-1">
           COMMISSION % <span className="text-red-500">*</span>
         </label>
@@ -173,8 +260,16 @@ export function CreateAgentForm({
           onChange={handleChange}
           required
           type="number"
+          readOnly={refLoading}
         />
+        {refLoading && (
+          <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+            Upline Searching...
+          </p>
+        )}
       </div>
+
+      {/* password */}
       {!isEdit && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
@@ -201,8 +296,9 @@ export function CreateAgentForm({
           </div>
         </div>
       )}
-      {/* Currency Dropdown */}
-      <div className="flex flex-col">
+
+      {/* currency */}
+      <div className="flex flex-col relative">
         <label className="font-semibold text-xs mb-1">CURRENCY</label>
         {currencyLoading ? (
           <p className="text-gray-500 text-sm">Loading currencies...</p>
@@ -227,9 +323,17 @@ export function CreateAgentForm({
                 overflowY: "auto",
               }),
             }}
+            isDisabled={refLoading}
           />
         )}
+        {refLoading && (
+          <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+            Upline Searching...
+          </p>
+        )}
       </div>
+
+      {/* address */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">Address</label>
         <input
@@ -241,8 +345,8 @@ export function CreateAgentForm({
         />
       </div>
 
-      {/* Row 4 */}
-      <div className="flex flex-col">
+      {/* min/max trx */}
+      <div className="flex flex-col relative">
         <label className="font-semibold text-xs mb-1">
           MINIMUM TRANSACTION <span className="text-red-500">*</span>
         </label>
@@ -255,9 +359,15 @@ export function CreateAgentForm({
           value={form.minTrx}
           onChange={handleChange}
           required
+          readOnly={refLoading}
         />
+        {refLoading && (
+          <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+            Upline Searching...
+          </p>
+        )}
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col relative">
         <label className="font-semibold text-xs mb-1">
           MAXIMUM TRANSACTION <span className="text-red-500">*</span>
         </label>
@@ -270,8 +380,16 @@ export function CreateAgentForm({
           value={form.maxTrx}
           onChange={handleChange}
           required
+          readOnly={refLoading}
         />
+        {refLoading && (
+          <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+            Upline Searching...
+          </p>
+        )}
       </div>
+
+      {/* status */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">
           STATUS <span className="text-red-500">*</span>
@@ -288,8 +406,9 @@ export function CreateAgentForm({
         </select>
       </div>
 
+      {/* referral code */}
       {isRefVisible && (
-        <div className="flex flex-col">
+        <div className="flex flex-col relative">
           <label className="font-semibold text-xs mb-1">REFERRAL CODE</label>
           <input
             className="border rounded px-3 py-2"
@@ -297,10 +416,25 @@ export function CreateAgentForm({
             placeholder="Referral Code"
             value={form.refer_code}
             onChange={handleChange}
+            readOnly={refLoading}
           />
+          {refLoading ? (
+            <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+              Searching...
+            </p>
+          ) : refDetails ? (
+            <p className="text-green-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-green-500 bg-white rounded-full px-2">
+              Referral found: {refDetails?.fullname || refDetails?.username}
+            </p>
+          ) : debouncedRefCode ? (
+            <p className="text-red-500 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-red-500 bg-white rounded-full px-2">
+              Invalid referral code
+            </p>
+          ) : null}
         </div>
       )}
-      {/* Button row */}
+
+      {/* button */}
       <div className="md:col-span-3 flex justify-end mt-2">
         <button
           type="submit"
