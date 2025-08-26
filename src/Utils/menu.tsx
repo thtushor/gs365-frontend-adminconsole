@@ -121,6 +121,7 @@ import ProviderWiseGameList from "../components/GameProviderInner/ProviderWiseGa
 import SportsProviderWiseSport from "../components/SportProviderInner/SportsProviderWiseSport";
 import EventList from "../components/EventList";
 import AffiliateCommissionListPage from "../components/AffiliateCommissionPage";
+import PlayerGamesPage from "../components/PlayerGamesPage";
 
 export const menu = [
   {
@@ -572,12 +573,18 @@ export const menu = [
     component: PlayerTransactionsPage,
     skipFromMenu: true,
   },
-  {
-    label: "Player Wagers",
-    path: "/players/:playerId/profile/wagers",
-    component: BettingWagerPage,
-    skipFromMenu: true,
-  },
+        {
+        label: "Player Wagers",
+        path: "/players/:playerId/profile/wagers",
+        component: BettingWagerPage,
+        skipFromMenu: true,
+      },
+      {
+        label: "Player Games",
+        path: "/players/:playerId/profile/games",
+        component: PlayerGamesPage,
+        skipFromMenu: true,
+      },
   {
     label: "Settings",
     icon: <FaCogs />,

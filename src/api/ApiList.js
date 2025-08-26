@@ -9,6 +9,7 @@ export const MULTIPLE_IMAGE_UPLOAD_URL = `${Image_BASE_URL}/uploads`;
 
 export const API_LIST = {
   DASHBOARD: "/api/dashboard",
+  GAME_STATS: "/api/game-stats",
   LOGIN: `/api/admin/login`,
   REGISTER: `/api/admin/registration`,
   CREATE_ADMIN: `/api/admin/create-admin`,
