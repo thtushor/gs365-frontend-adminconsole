@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { useSettings, useUpdateSettings } from "../hooks/useSettings";
 import { FaCogs, FaTimes, FaEdit, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { formatAmount } from "./BettingWagerPage";
 
 const SystemSettingsPage = () => {
   const [editingId, setEditingId] = useState(null);
-  const [editValue, setEditValue] = useState("");
+  const [editValue, setEditValue] = useState({
+    defaultTurnover: 0,
+    adminBalance: 0
+  });
   
   const { data: settingsData, isLoading, isError } = useSettings();
   const updateSettingsMutation = useUpdateSettings();
@@ -14,22 +18,33 @@ const SystemSettingsPage = () => {
 
   const handleEdit = (setting) => {
     setEditingId(setting.id);
-    setEditValue(setting.defaultTurnover || "");
+    setEditValue({
+      defaultTurnover: setting.defaultTurnover,
+      adminBalance: setting.adminBalance
+    });
   };
 
   const handleSave = async (settingId) => {
-    if (!editValue || editValue < 1) {
+    if (!editValue.defaultTurnover || editValue.defaultTurnover < 1) {
       toast.error("Please enter a valid turnover value (minimum 1)");
+      return;
+    }
+
+    if (!editValue.adminBalance || editValue.adminBalance < 1) {
+      toast.error("Please enter a valid adminBalance value (minimum 1)");
       return;
     }
 
     try {
       await updateSettingsMutation.mutateAsync({
         id: settingId,
-        data: { defaultTurnover: Number(editValue) }
+        data: { defaultTurnover: Number(editValue.defaultTurnover),adminBalance: Number(editValue.adminBalance) }
       });
       setEditingId(null);
-      setEditValue("");
+      setEditValue({
+        defaultTurnover: 0,
+        adminBalance: 0
+      });
     } catch (error) {
       console.error("Failed to update setting:", error);
     }
@@ -93,6 +108,7 @@ const SystemSettingsPage = () => {
           ) : (
             <div className="space-y-4">
               {settings.map((setting) => (
+                <>
                 <div
                   key={setting.id}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
@@ -112,8 +128,11 @@ const SystemSettingsPage = () => {
                         <input
                           type="number"
                           min="1"
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
+                          value={editValue.defaultTurnover}
+                          onChange={(e) => setEditValue((prev)=>({
+                            ...prev,
+                            defaultTurnover: e.target.value
+                          }))}
                           className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="Enter value"
                         />
@@ -144,6 +163,64 @@ const SystemSettingsPage = () => {
                     )}
                   </div>
                 </div>
+
+                {/* admin balance */}
+
+                <div
+                  key={setting.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+                >
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">
+                    Admin Balance
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Current value: {formatAmount(setting.adminBalance || 0)}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    {editingId === setting.id ? (
+                      <>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editValue.adminBalance}
+                          onChange={(e) => setEditValue((prev)=>({
+                            ...prev,
+                            adminBalance: e.target.value
+                          }))}
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter value"
+                        />
+                        <button
+                          onClick={() => handleSave(setting.id)}
+                          disabled={updateSettingsMutation.isLoading}
+                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                        >
+                          <FaSave className="mr-2" />
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancel}
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                          <FaTimes className="mr-2" />
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => handleEdit(setting)}
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                      >
+                        <FaEdit className="mr-2" />
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                </div>
+                </>
               ))}
             </div>
           )}
