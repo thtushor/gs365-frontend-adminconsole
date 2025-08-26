@@ -69,6 +69,7 @@ import ProviderList from "../components/ProviderList";
 import LoginHistoryPage from "../components/LoginHistoryPage";
 import CreateAffiliate from "../components/CreateAffiliate";
 import AffiliateListPage from "../components/AffiliateListPage";
+import PlayerLoginHistoryPage from "../components/PlayerLoginHistoryPage";
 import CountryManagementPage from "../components/CountryManagementPage";
 import CountryList from "../components/CountryList";
 import CurrencyList from "../components/CurrencyList";
@@ -145,6 +146,13 @@ export const menu = [
         path: "/transactions",
         component: TransactionsPage,
         icon: <FaMoneyCheckAlt />,
+      },
+      {
+        label: "Login History",
+        path: "/players/:playerId/login-history",
+        component: PlayerLoginHistoryPage,
+        icon: <FaHistory />,
+        skipFromMenu: true,
       },
       {
         label: "Win/Loss",

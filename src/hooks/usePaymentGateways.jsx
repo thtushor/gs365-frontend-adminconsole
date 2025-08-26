@@ -13,7 +13,10 @@ export const usePaymentGateways = (filters = {}) => {
   return useQuery({
     queryKey: [QUERY_KEYS.PAYMENT_GATEWAYS, filters],
     queryFn: async () => {
-      const params = {};
+      const params = {
+        page: 1,
+        pageSize: 10000,
+      };
       if (filters.status) params.status = filters.status;
       if (filters.countryId) params.countryId = filters.countryId;
       if (filters.methodId) params.methodId = filters.methodId;
@@ -21,6 +24,8 @@ export const usePaymentGateways = (filters = {}) => {
       if (filters.network) params.network = filters.network;
       if (filters.paymentMethodTypeId)
         params.paymentMethodTypeId = filters.paymentMethodTypeId;
+      if (filters.page) params.page = filters.page;
+      if (filters.pageSize) params.pageSize = filters.pageSize;
 
       const response = await Axios.get(API_LIST.PAYMENT_GATEWAY, { params });
       return response.data;

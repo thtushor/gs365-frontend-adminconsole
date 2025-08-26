@@ -15,6 +15,7 @@ import PaymentGatewayForm from "./shared/PaymentGatewayForm";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { usePaymentMethods } from "../hooks/usePaymentMethods";
+import Pagination from "./Pagination";
 
 const PaymentGatewaysPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -31,6 +32,8 @@ const PaymentGatewaysPage = () => {
     methodId: "",
     name: "",
     network: "",
+    page: 1,
+    pageSize: 10,
   });
 
   // Form data
@@ -56,6 +59,8 @@ const PaymentGatewaysPage = () => {
     isError,
     error,
   } = usePaymentGateways(filters);
+
+  console.log({paymentGateways});
 
   const { data: paymentMethodTypes } = usePaymentMethodTypes();
   const { useCountries } = useCountryData();
@@ -401,6 +406,14 @@ const PaymentGatewaysPage = () => {
         isLoading={isLoading}
         isError={isError}
         error={error}
+      />
+
+      <Pagination
+        totalPages={paymentGateways?.pagination?.totalPages || 0}
+        currentPage={filters.page || 1}
+        pageSize={filters.pageSize || 10}
+        onPageChange={(page) => handleFilterChange("page", page)}
+        onPageSizeChange={(pageSize) => handleFilterChange("pageSize", pageSize)}
       />
 
       {/* Create/Edit Modal */}

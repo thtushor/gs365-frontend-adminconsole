@@ -28,6 +28,10 @@ export const playerRoutes = [
     label: "Games",
     path: "/players/:playerId/profile/games",
   },
+  {
+    label: "Login History",
+    path: "/players/:playerId/login-history",
+  },
 ];
 
 const PlayerProfile = () => {
@@ -267,7 +271,7 @@ const PlayerProfile = () => {
           <div className="flex gap-4 flex-wrap whitespace-nowrap">
             <HighlightBox
               label="Total Bets"
-              value={betResultsSummary.totalBets}
+              value={betResultsSummary.totalBets?.toString()}
               color="blue"
             />
             <HighlightBox
