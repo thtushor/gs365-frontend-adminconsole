@@ -1,4 +1,23 @@
+/**
+ * Dashboard Component
+ * 
+ * Displays real-time dashboard statistics fetched from the API.
+ * Features:
+ * - Real-time data from dashboard API
+ * - Beautiful skeleton loading states
+ * - Auto-refresh every 5 minutes
+ * - Manual refresh with loading states
+ * - Error handling with retry functionality
+ * - Toast notifications for user feedback
+ * - Responsive grid layout
+ * - Last updated timestamp
+ */
+
+import { useState, useEffect } from "react";
 import DashboardCard from "./DashboardCard";
+import { API_LIST } from "../api/ApiList";
+import Axios from "../api/axios";
+import { toast } from "react-toastify";
 import {
   FaUserFriends,
   FaMoneyCheckAlt,
@@ -17,153 +36,371 @@ import {
   FaHeartbeat,
   FaFire,
   FaRegStar,
+
 } from "react-icons/fa";
 
-const cards = [
-  {
-    title: "Total Players",
-    value: "10,721",
-    icon: <FaUserFriends className="text-3xl" />,
-    color: "border-green-400",
-    textColor: "text-green-600",
-    trend: "up",
-  },
-  {
-    title: "Total Agents",
-    value: "672",
-    icon: <FaUserPlus className="text-3xl" />,
-    color: "border-blue-400",
-    textColor: "text-green-600",
-    trend: "up",
-  },
-  {
-    title: "Total Deposit",
-    value: "৳1,26,56,672",
-    icon: <FaMoneyCheckAlt className="text-3xl" />,
-    color: "border-purple-400",
-    textColor: "text-green-600",
-    trend: "up",
-  },
-  {
-    title: "Total Withdraw",
-    value: "৳26,56,672",
-    icon: <FaWallet className="text-3xl" />,
-    color: "border-orange-400",
-    textColor: "text-red-600",
-    trend: "down",
-  },
-  {
-    title: "Active Players (24h)",
-    value: "1,234",
-    icon: <FaUsers className="text-3xl" />,
-    color: "border-cyan-400",
-    textColor: "text-cyan-600",
-    trend: "up",
-  },
-  {
-    title: "Online Players",
-    value: "98",
-    icon: <FaRegClock className="text-3xl" />,
-    color: "border-emerald-400",
-    textColor: "text-emerald-600",
-    trend: "up",
-  },
-  {
-    title: "Pending Deposits",
-    value: "12",
-    icon: <FaRegCheckCircle className="text-3xl" />,
-    color: "border-yellow-400",
-    textColor: "text-yellow-600",
-    trend: "neutral",
-  },
-  {
-    title: "Pending Withdrawals",
-    value: "7",
-    icon: <FaRegTimesCircle className="text-3xl" />,
-    color: "border-pink-400",
-    textColor: "text-pink-600",
-    trend: "neutral",
-  },
-  {
-    title: "Total Bets Placed",
-    value: "56,789",
-    icon: <FaGamepad className="text-3xl" />,
-    color: "border-indigo-400",
-    textColor: "text-indigo-600",
-    trend: "up",
-  },
-  {
-    title: "Total Bets Won",
-    value: "32,100",
-    icon: <FaTrophy className="text-3xl" />,
-    color: "border-green-300",
-    textColor: "text-green-500",
-    trend: "up",
-  },
-  {
-    title: "Total Bets Lost",
-    value: "24,689",
-    icon: <FaRegSadTear className="text-3xl" />,
-    color: "border-red-300",
-    textColor: "text-red-500",
-    trend: "down",
-  },
-  {
-    title: "Total Commission Earned",
-    value: "৳2,34,567",
-    icon: <FaCoins className="text-3xl" />,
-    color: "border-yellow-300",
-    textColor: "text-yellow-500",
-    trend: "up",
-  },
-  {
-    title: "Popular Game (Today)",
-    value: "Roulette",
-    icon: <FaFire className="text-3xl" />,
-    color: "border-orange-300",
-    textColor: "text-orange-500",
-    trend: "neutral",
-  },
-  {
-    title: "Revenue (This Month)",
-    value: "৳12,34,567",
-    icon: <FaChartLine className="text-3xl" />,
-    color: "border-lime-400",
-    textColor: "text-lime-600",
-    trend: "up",
-  },
-  {
-    title: "New Registrations (Today)",
-    value: "45",
-    icon: <FaRegStar className="text-3xl" />,
-    color: "border-blue-300",
-    textColor: "text-blue-500",
-    trend: "up",
-  },
-  {
-    title: "Support Tickets (Open)",
-    value: "3",
-    icon: <FaRegLifeRing className="text-3xl" />,
-    color: "border-fuchsia-400",
-    textColor: "text-fuchsia-600",
-    trend: "neutral",
-  },
-  {
-    title: "System Health",
-    value: "Good",
-    icon: <FaHeartbeat className="text-3xl" />,
-    color: "border-green-300",
-    textColor: "text-green-500",
-    trend: "up",
-  },
-];
-
-const Dashboard = () => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    {cards.map((card, idx) => (
-      <DashboardCard key={idx} {...card} index={idx} />
-    ))}
+// Skeleton loading component
+const DashboardCardSkeleton = () => (
+  <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-l-gray-300 animate-pulse">
+    <div className="flex items-center justify-between mb-4">
+      <div className="h-6 bg-gray-200 rounded w-24"></div>
+      <div className="h-8 w-8 bg-gray-200 rounded"></div>
+    </div>
+    <div className="h-8 bg-gray-200 rounded w-20 mb-2"></div>
+    <div className="h-4 bg-gray-200 rounded w-16"></div>
   </div>
 );
+
+const Dashboard = () => {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  const fetchDashboardData = async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+      setError(null);
+      const response = await Axios.get(API_LIST.DASHBOARD);
+      if (response.data.success) {
+        setDashboardData(response.data.data);
+        setLastUpdated(new Date());
+        if (isRefresh) {
+          toast.success("Dashboard data refreshed successfully!");
+        }
+      } else {
+        setError("Failed to fetch dashboard data");
+        if (isRefresh) {
+          toast.error("Failed to refresh dashboard data");
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError("Error loading dashboard data");
+      if (isRefresh) {
+        toast.error("Error refreshing dashboard data");
+      }
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+    
+    // Auto-refresh every 5 minutes
+    const interval = setInterval(() => {
+      fetchDashboardData();
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  // Show skeleton loading while data is being fetched initially
+  if (loading && !dashboardData) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="h-8 bg-gray-200 rounded w-64 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 20 }).map((_, idx) => (
+            <DashboardCardSkeleton key={idx} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Error Loading Dashboard</h3>
+          <p className="text-gray-500">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Define cards based on actual API data
+  const cards = [
+    {
+      title: "Total Players",
+      value: dashboardData?.totalPlayers?.toLocaleString() || "0",
+      icon: <FaUserFriends className="text-3xl" />,
+      color: "border-green-400",
+      textColor: "text-green-600",
+      trend: "up",
+      subtitle: "Registered users"
+    },
+    {
+      title: "Total Agents",
+      value: dashboardData?.totalAgent?.toLocaleString() || "0",
+      icon: <FaUserPlus className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "up",
+      subtitle: "Active agents"
+    },
+    {
+      title: "Total Affiliates",
+      value: dashboardData?.totalAffiliate?.toLocaleString() || "0",
+      icon: <FaUsers className="text-3xl" />,
+      color: "border-purple-400",
+      textColor: "text-purple-600",
+      trend: "up",
+      subtitle: "Affiliate partners"
+    },
+    {
+      title: "Total Deposit",
+      value: `৳${dashboardData?.totalDeposit?.toLocaleString() || "0"}`,
+      icon: <FaMoneyCheckAlt className="text-3xl" />,
+      color: "border-green-400",
+      textColor: "text-green-600",
+      trend: "up",
+      subtitle: "All time deposits"
+    },
+    {
+      title: "Total Withdraw",
+      value: `৳${dashboardData?.totalWithdraw?.toLocaleString() || "0"}`,
+      icon: <FaWallet className="text-3xl" />,
+      color: "border-orange-400",
+      textColor: "text-orange-600",
+      trend: "down",
+      subtitle: "All time withdrawals"
+    },
+    {
+      title: "Total Turnover",
+      value: `৳${((dashboardData?.totalDeposit || 0) + (dashboardData?.totalWithdraw || 0)).toLocaleString()}`,
+      icon: <FaCoins className="text-3xl" />,
+      color: "border-cyan-400",
+      textColor: "text-cyan-600",
+      trend: "up",
+      subtitle: "Total transaction volume"
+    },
+    {
+      title: "Online Players",
+      value: dashboardData?.totalOnlinePlayers?.toLocaleString() || "0",
+      icon: <FaRegClock className="text-3xl" />,
+      color: "border-emerald-400",
+      textColor: "text-emerald-600",
+      trend: "up",
+      subtitle: "Currently online"
+    },
+    {
+      title: "Player Activity Ratio",
+      value: dashboardData?.totalPlayers && dashboardData?.totalOnlinePlayers 
+        ? `${((dashboardData.totalOnlinePlayers / dashboardData.totalPlayers) * 100).toFixed(1)}%`
+        : "0%",
+      icon: <FaUsers className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "up",
+      subtitle: "Online vs total players"
+    },
+    {
+      title: "Pending Deposits",
+      value: dashboardData?.pendingDeposit?.toLocaleString() || "0",
+      icon: <FaRegCheckCircle className="text-3xl" />,
+      color: "border-yellow-400",
+      textColor: "text-yellow-600",
+      trend: "neutral",
+      subtitle: "Awaiting approval"
+    },
+    {
+      title: "Pending Withdrawals",
+      value: dashboardData?.pendingWithdraw?.toLocaleString() || "0",
+      icon: <FaRegTimesCircle className="text-3xl" />,
+      color: "border-pink-400",
+      textColor: "text-pink-600",
+      trend: "neutral",
+      subtitle: "Awaiting approval"
+    },
+    {
+      title: "Total Bets Placed",
+      value: dashboardData?.totalBetPlaced?.toLocaleString() || "0",
+      icon: <FaGamepad className="text-3xl" />,
+      color: "border-indigo-400",
+      textColor: "text-indigo-600",
+      trend: "up",
+      subtitle: "All time bets"
+    },
+    {
+      title: "Total Bets Won",
+      value: dashboardData?.totalBetWin?.toLocaleString() || "0",
+      icon: <FaTrophy className="text-3xl" />,
+      color: "border-green-300",
+      textColor: "text-green-500",
+      trend: "up",
+      subtitle: "Successful bets"
+    },
+    {
+      title: "Total Bets Lost",
+      value: dashboardData?.totalBetLost?.toLocaleString() || "0",
+      icon: <FaRegSadTear className="text-3xl" />,
+      color: "border-red-300",
+      textColor: "text-red-500",
+      trend: "down",
+      subtitle: "Unsuccessful bets"
+    },
+    {
+      title: "Win/Loss Ratio",
+      value: dashboardData?.totalBetWin && dashboardData?.totalBetLost 
+        ? `${((dashboardData.totalBetWin / (dashboardData.totalBetWin + dashboardData.totalBetLost)) * 100).toFixed(1)}%`
+        : "0%",
+      icon: <FaTrophy className="text-3xl" />,
+      color: "border-emerald-400",
+      textColor: "text-emerald-600",
+      trend: "up",
+      subtitle: "Success rate"
+    },
+    {
+      title: "Net Profit/Loss",
+      value: dashboardData?.totalBetWin && dashboardData?.totalBetLost 
+        ? `৳${(dashboardData.totalBetWin - dashboardData.totalBetLost).toLocaleString()}`
+        : "৳0",
+      icon: <FaChartLine className="text-3xl" />,
+      color: dashboardData?.totalBetWin && dashboardData?.totalBetLost && (dashboardData.totalBetWin - dashboardData.totalBetLost) > 0 
+        ? "border-green-400" 
+        : "border-red-400",
+      textColor: dashboardData?.totalBetWin && dashboardData?.totalBetLost && (dashboardData.totalBetWin - dashboardData.totalBetLost) > 0 
+        ? "text-green-600" 
+        : "text-red-600",
+      trend: dashboardData?.totalBetWin && dashboardData?.totalBetLost && (dashboardData.totalBetWin - dashboardData.totalBetLost) > 0 ? "up" : "down",
+      subtitle: "Betting performance"
+    },
+    {
+      title: "Total Games",
+      value: dashboardData?.totalGames?.toLocaleString() || "0",
+      icon: <FaGamepad className="text-3xl" />,
+      color: "border-blue-300",
+      textColor: "text-blue-500",
+      trend: "neutral",
+      subtitle: "Available games"
+    },
+    {
+      title: "Main Balance",
+      value: `৳${dashboardData?.mainBalance?.toLocaleString() || "0"}`,
+      icon: <FaCoins className="text-3xl" />,
+      color: "border-yellow-300",
+      textColor: "text-yellow-500",
+      trend: "up",
+      subtitle: "System balance"
+    },
+    {
+      title: "Total Bonus Coins",
+      value: dashboardData?.totalBonusCoin?.toLocaleString() || "0",
+      icon: <FaRegStar className="text-3xl" />,
+      color: "border-purple-300",
+      textColor: "text-purple-500",
+      trend: "neutral",
+      subtitle: "Bonus distributed"
+    },
+    {
+      title: "Game Provider Payments",
+      value: `৳${dashboardData?.totalGameProvidersPayment?.toLocaleString() || "0"}`,
+      icon: <FaChartLine className="text-3xl" />,
+      color: "border-lime-400",
+      textColor: "text-lime-600",
+      trend: "up",
+      subtitle: "Paid to providers"
+    },
+    {
+      title: "Sports Provider Payments",
+      value: `৳${dashboardData?.totalSportsProvidersPayment?.toLocaleString() || "0"}`,
+      icon: <FaFire className="text-3xl" />,
+      color: "border-orange-300",
+      textColor: "text-orange-500",
+      trend: "up",
+      subtitle: "Paid to sports providers"
+    },
+    {
+      title: "Game Provider Pending",
+      value: `৳${dashboardData?.gameProviderPendingPayment?.toLocaleString() || "0"}`,
+      icon: <FaRegClock className="text-3xl" />,
+      color: "border-amber-400",
+      textColor: "text-amber-600",
+      trend: "neutral",
+      subtitle: "Pending payments"
+    },
+    {
+      title: "Sports Provider Pending",
+      value: `৳${dashboardData?.sportsProviderPendingPayment?.toLocaleString() || "0"}`,
+      icon: <FaRegClock className="text-3xl" />,
+      color: "border-amber-400",
+      textColor: "text-amber-600",
+      trend: "neutral",
+      subtitle: "Pending payments"
+    }
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Dashboard Header */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Dashboard Overview</h1>
+            <p className="text-gray-600">Real-time statistics and insights</p>
+            <div className="flex items-center gap-4 mt-1">
+              {lastUpdated && (
+                <p className="text-xs text-gray-400">
+                  Last updated: {lastUpdated.toLocaleString()}
+                </p>
+              )}
+              <p className="text-xs text-gray-400">
+                Showing {cards.length} metrics
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => fetchDashboardData(true)}
+            disabled={loading || refreshing}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              loading || refreshing
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700'
+            }`}
+          >
+            {refreshing ? 'Refreshing...' : 'Refresh Data'}
+          </button>
+        </div>
+      </div>
+      
+      {/* Dashboard Cards Grid */}
+      <div className="relative">
+        {refreshing && dashboardData && (
+          <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-2"></div>
+              <p className="text-gray-600">Refreshing data...</p>
+            </div>
+          </div>
+        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {cards.map((card, idx) => (
+            <DashboardCard key={idx} {...card} index={idx} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default Dashboard;

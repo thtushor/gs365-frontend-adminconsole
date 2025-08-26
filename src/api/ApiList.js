@@ -1,5 +1,5 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -8,6 +8,7 @@ export const SINGLE_IMAGE_UPLOAD_URL = `${Image_BASE_URL}/upload`;
 export const MULTIPLE_IMAGE_UPLOAD_URL = `${Image_BASE_URL}/uploads`;
 
 export const API_LIST = {
+  DASHBOARD: "/api/dashboard",
   LOGIN: `/api/admin/login`,
   REGISTER: `/api/admin/registration`,
   CREATE_ADMIN: `/api/admin/create-admin`,
