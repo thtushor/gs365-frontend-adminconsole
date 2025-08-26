@@ -5,6 +5,7 @@ import { API_LIST } from '../api/ApiList';
 import axios from '../api/axios';
 import { FaArrowLeft } from 'react-icons/fa';
 import { BiLoader } from 'react-icons/bi';
+import DataTable from './DataTable';
 import Pagination from './Pagination';
 
 const PlayerGamesPage = () => {
@@ -57,8 +58,103 @@ const PlayerGamesPage = () => {
   };
 
   const formatPercentage = (value) => {
-    return `${value.toFixed(2)}%`;
+    return `${(Number(value||0)).toFixed(2)}%`;
   };
+
+  const columns = [
+    {
+      field: "game",
+      headerName: "Game",
+      width: 250,
+      render: (value) => (
+        <div className="flex items-center">
+          <img 
+            src={value?.gameLogo || '/placeholder-game.png'} 
+            alt={value?.name}
+            className="w-10 h-10 rounded-lg object-cover"
+            onError={(e) => {
+              e.target.src = '/placeholder-game.png';
+            }}
+          />
+          <div className="ml-3">
+            <div className="text-sm font-medium text-gray-900">
+              {value?.name || 'Unknown Game'}
+            </div>
+            <div className="text-sm text-gray-500">
+              {value?.status || 'Unknown Status'}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      field: "provider",
+      headerName: "Provider",
+      width: 200,
+      render: (value) => (
+        <div className="flex items-center">
+          <img 
+            src={value?.logo || '/placeholder-provider.png'} 
+            alt={value?.name}
+            className="w-8 h-8 rounded-full object-cover"
+            onError={(e) => {
+              e.target.src = '/placeholder-provider.png';
+            }}
+          />
+          <div className="ml-3">
+            <div className="text-sm font-medium text-gray-900">
+              {value?.name || 'Unknown Provider'}
+            </div>
+            <div className="text-sm text-gray-500">
+              {value?.country || 'Unknown Country'}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      field: "totalBets",
+      headerName: "Bets",
+      width: 100,
+      render: (value) => <span className="text-sm text-gray-900">{value}</span>,
+    },
+    {
+      field: "totalBetAmount",
+      headerName: "Bet Amount",
+      width: 150,
+      render: (value) => <span className="text-sm text-gray-900">{formatCurrency(value)}</span>,
+    },
+    {
+      field: "totalWinAmount",
+      headerName: "Win Amount",
+      width: 150,
+      render: (value) => <span className="text-sm text-green-600 font-medium">{formatCurrency(value)}</span>,
+    },
+    {
+      field: "totalLossAmount",
+      headerName: "Loss Amount",
+      width: 150,
+      render: (value) => <span className="text-sm text-red-600 font-medium">{formatCurrency(value)}</span>,
+    },
+    {
+      field: "winRate",
+      headerName: "Win Rate",
+      width: 120,
+      render: (value) => <span className="text-sm text-gray-900">{formatPercentage(value)}</span>,
+    },
+    {
+      field: "lastBetPlaced",
+      headerName: "Last Bet",
+      width: 150,
+      render: (value) => (
+        <div className="flex items-center">
+          <span className="text-sm text-gray-500">
+            {value ? new Date(value).toLocaleDateString() : 'N/A'}
+          </span>
+        </div>
+      ),
+    },
+  ];
 
 
 
@@ -92,116 +188,11 @@ const PlayerGamesPage = () => {
             <h2 className="text-lg font-semibold text-gray-900">Game Performance Details</h2>
           </div>
           
-          <div className="overflow-x-auto">
-            {isLoading ? (
-              <div className="text-center text-gray-500 py-8">
-                Loading game statistics...
-              </div>
-            ) : isError ? (
-              <div className="text-center text-red-500 py-8">
-                Failed to load game statistics.
-              </div>
-            ) : (
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Game
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Provider
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Bets
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Bet Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Win Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Loss Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Win Rate
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Bet
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {gameStats.map((stat, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <img 
-                            src={stat.game?.gameLogo || '/placeholder-game.png'} 
-                            alt={stat.game?.name}
-                            className="w-10 h-10 rounded-lg object-cover"
-                            onError={(e) => {
-                              e.target.src = '/placeholder-game.png';
-                            }}
-                          />
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">
-                              {stat.game?.name || 'Unknown Game'}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {stat.game?.status || 'Unknown Status'}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <img 
-                            src={stat.provider?.logo || '/placeholder-provider.png'} 
-                            alt={stat.provider?.name}
-                            className="w-8 h-8 rounded-full object-cover"
-                            onError={(e) => {
-                              e.target.src = '/placeholder-provider.png';
-                            }}
-                          />
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">
-                              {stat.provider?.name || 'Unknown Provider'}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {stat.provider?.country || 'Unknown Country'}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {stat.totalBets}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatCurrency(stat.totalBetAmount)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
-                        {formatCurrency(stat.totalWinAmount)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">
-                        {formatCurrency(stat.totalLossAmount)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatPercentage(stat.winRate)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <span className="text-sm text-gray-500">
-                            {stat.lastBetPlaced ? new Date(stat.lastBetPlaced).toLocaleDateString() : 'N/A'}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+          <DataTable 
+            data={gameStats}
+            columns={columns}
+            loading={isLoading}
+          />
 
           <Pagination
             currentPage={currentPage}
