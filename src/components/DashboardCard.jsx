@@ -50,7 +50,7 @@ const DashboardCard = ({
     
     <div className="flex flex-col gap-1">
       <span className="text-sm text-gray-500 font-medium">{title}</span>
-      <span className={`text-2xl font-bold ${textColor}`}>
+      <span className={`text-xl font-bold ${textColor}`}>
         {value}
       </span>
       {subtitle && (

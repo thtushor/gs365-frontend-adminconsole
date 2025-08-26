@@ -18,6 +18,7 @@ import DashboardCard from "./DashboardCard";
 import { API_LIST } from "../api/ApiList";
 import Axios from "../api/axios";
 import { toast } from "react-toastify";
+import { formatAmount } from "./BettingWagerPage";
 import {
   FaUserFriends,
   FaMoneyCheckAlt,
@@ -36,7 +37,7 @@ import {
   FaHeartbeat,
   FaFire,
   FaRegStar,
-
+  // FaGamepadAlt,
 } from "react-icons/fa";
 
 // Skeleton loading component
@@ -111,7 +112,7 @@ const Dashboard = () => {
           <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.from({ length: 20 }).map((_, idx) => (
+          {Array.from({ length: 23 }).map((_, idx) => (
             <DashboardCardSkeleton key={idx} />
           ))}
         </div>
@@ -138,26 +139,105 @@ const Dashboard = () => {
     );
   }
 
-  // Define cards based on actual API data
+  // Define cards based on the exact structure shown in the image
   const cards = [
+    // Row 1 (2 cards)
     {
-      title: "Total Players",
-      value: dashboardData?.totalPlayers?.toLocaleString() || "0",
-      icon: <FaUserFriends className="text-3xl" />,
+      title: "Main Balance",
+      value: formatAmount(dashboardData?.mainBalance || "0"),
+      icon: <FaCoins className="text-3xl" />,
+      color: "border-yellow-400",
+      textColor: "text-yellow-600",
+      trend: "up",
+      subtitle: "System balance"
+    },
+    {
+      title: "Total Profit",
+      value: formatAmount((dashboardData?.totalBetWin || 0) - (dashboardData?.totalBetLost || 0)),
+      icon: <FaChartLine className="text-3xl" />,
       color: "border-green-400",
       textColor: "text-green-600",
       trend: "up",
-      subtitle: "Registered users"
+      subtitle: "Net profit from betting"
+    },
+    
+    // Row 2 (4 cards)
+    {
+      title: "Total Win",
+      value: formatAmount(dashboardData?.totalBetWin || "0"),
+      icon: <FaTrophy className="text-3xl" />,
+      color: "border-green-400",
+      textColor: "text-green-600",
+      trend: "up",
+      subtitle: "Total winnings"
     },
     {
-      title: "Total Agents",
-      value: dashboardData?.totalAgent?.toLocaleString() || "0",
-      icon: <FaUserPlus className="text-3xl" />,
+      title: "Total Loss",
+      value: formatAmount(dashboardData?.totalBetLost || "0"),
+      icon: <FaRegSadTear className="text-3xl" />,
+      color: "border-red-400",
+      textColor: "text-red-600",
+      trend: "down",
+      subtitle: "Total losses"
+    },
+    {
+      title: "Total Deposit",
+      value: formatAmount(dashboardData?.totalDeposit || "0"),
+      icon: <FaMoneyCheckAlt className="text-3xl" />,
+      color: "border-green-400",
+      textColor: "text-green-600",
+      trend: "up",
+      subtitle: "All time deposits"
+    },
+    {
+      title: "Total Withdraw",
+      value: formatAmount(dashboardData?.totalWithdraw || "0"),
+      icon: <FaWallet className="text-3xl" />,
+      color: "border-orange-400",
+      textColor: "text-orange-600",
+      trend: "down",
+      subtitle: "All time withdrawals"
+    },
+    
+    // Row 3 (4 cards)
+    {
+      title: "Player Pending Deposit",
+      value: formatAmount(dashboardData?.pendingDeposit || "0"),
+      icon: <FaRegCheckCircle className="text-3xl" />,
+      color: "border-yellow-400",
+      textColor: "text-yellow-600",
+      trend: "neutral",
+      subtitle: "Awaiting approval"
+    },
+    {
+      title: "Player Pending Withdraw",
+      value: formatAmount(dashboardData?.pendingWithdraw || "0"),
+      icon: <FaRegTimesCircle className="text-3xl" />,
+      color: "border-pink-400",
+      textColor: "text-pink-600",
+      trend: "neutral",
+      subtitle: "Awaiting approval"
+    },
+    {
+      title: "Total Bonus coin",
+      value: formatAmount(dashboardData?.totalBonusCoin || "0"),
+      icon: <FaRegStar className="text-3xl" />,
+      color: "border-purple-400",
+      textColor: "text-purple-600",
+      trend: "neutral",
+      subtitle: "Bonus distributed"
+    },
+    {
+      title: "Total Discount coin",
+      value: formatAmount(dashboardData?.totalDiscountCoin || "0"),
+      icon: <FaCoins className="text-3xl" />,
       color: "border-blue-400",
       textColor: "text-blue-600",
-      trend: "up",
-      subtitle: "Active agents"
+      trend: "neutral",
+      subtitle: "Discount coins"
     },
+    
+    // Row 4 (4 cards)
     {
       title: "Total Affiliates",
       value: dashboardData?.totalAffiliate?.toLocaleString() || "0",
@@ -168,31 +248,22 @@ const Dashboard = () => {
       subtitle: "Affiliate partners"
     },
     {
-      title: "Total Deposit",
-      value: `৳${dashboardData?.totalDeposit?.toLocaleString() || "0"}`,
-      icon: <FaMoneyCheckAlt className="text-3xl" />,
+      title: "Total Agent",
+      value: dashboardData?.totalAgent?.toLocaleString() || "0",
+      icon: <FaUserPlus className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "up",
+      subtitle: "Active agents"
+    },
+    {
+      title: "Total Players",
+      value: dashboardData?.totalPlayers?.toLocaleString() || "0",
+      icon: <FaUserFriends className="text-3xl" />,
       color: "border-green-400",
       textColor: "text-green-600",
       trend: "up",
-      subtitle: "All time deposits"
-    },
-    {
-      title: "Total Withdraw",
-      value: `৳${dashboardData?.totalWithdraw?.toLocaleString() || "0"}`,
-      icon: <FaWallet className="text-3xl" />,
-      color: "border-orange-400",
-      textColor: "text-orange-600",
-      trend: "down",
-      subtitle: "All time withdrawals"
-    },
-    {
-      title: "Total Turnover",
-      value: `৳${((dashboardData?.totalDeposit || 0) + (dashboardData?.totalWithdraw || 0)).toLocaleString()}`,
-      icon: <FaCoins className="text-3xl" />,
-      color: "border-cyan-400",
-      textColor: "text-cyan-600",
-      trend: "up",
-      subtitle: "Total transaction volume"
+      subtitle: "Registered users"
     },
     {
       title: "Online Players",
@@ -203,38 +274,11 @@ const Dashboard = () => {
       trend: "up",
       subtitle: "Currently online"
     },
+    
+    // Row 5 (4 cards)
     {
-      title: "Player Activity Ratio",
-      value: dashboardData?.totalPlayers && dashboardData?.totalOnlinePlayers 
-        ? `${((dashboardData.totalOnlinePlayers / dashboardData.totalPlayers) * 100).toFixed(1)}%`
-        : "0%",
-      icon: <FaUsers className="text-3xl" />,
-      color: "border-blue-400",
-      textColor: "text-blue-600",
-      trend: "up",
-      subtitle: "Online vs total players"
-    },
-    {
-      title: "Pending Deposits",
-      value: dashboardData?.pendingDeposit?.toLocaleString() || "0",
-      icon: <FaRegCheckCircle className="text-3xl" />,
-      color: "border-yellow-400",
-      textColor: "text-yellow-600",
-      trend: "neutral",
-      subtitle: "Awaiting approval"
-    },
-    {
-      title: "Pending Withdrawals",
-      value: dashboardData?.pendingWithdraw?.toLocaleString() || "0",
-      icon: <FaRegTimesCircle className="text-3xl" />,
-      color: "border-pink-400",
-      textColor: "text-pink-600",
-      trend: "neutral",
-      subtitle: "Awaiting approval"
-    },
-    {
-      title: "Total Bets Placed",
-      value: dashboardData?.totalBetPlaced?.toLocaleString() || "0",
+      title: "Total Bet Placed",
+      value: formatAmount(dashboardData?.totalBetPlaced || "0"),
       icon: <FaGamepad className="text-3xl" />,
       color: "border-indigo-400",
       textColor: "text-indigo-600",
@@ -242,8 +286,8 @@ const Dashboard = () => {
       subtitle: "All time bets"
     },
     {
-      title: "Total Bets Won",
-      value: dashboardData?.totalBetWin?.toLocaleString() || "0",
+      title: "Total Bet Win",
+      value: formatAmount(dashboardData?.totalBetWin || "0"),
       icon: <FaTrophy className="text-3xl" />,
       color: "border-green-300",
       textColor: "text-green-500",
@@ -251,8 +295,8 @@ const Dashboard = () => {
       subtitle: "Successful bets"
     },
     {
-      title: "Total Bets Lost",
-      value: dashboardData?.totalBetLost?.toLocaleString() || "0",
+      title: "Total Bet Lost",
+      value: formatAmount(dashboardData?.totalBetLost || "0"),
       icon: <FaRegSadTear className="text-3xl" />,
       color: "border-red-300",
       textColor: "text-red-500",
@@ -260,93 +304,51 @@ const Dashboard = () => {
       subtitle: "Unsuccessful bets"
     },
     {
-      title: "Win/Loss Ratio",
-      value: dashboardData?.totalBetWin && dashboardData?.totalBetLost 
-        ? `${((dashboardData.totalBetWin / (dashboardData.totalBetWin + dashboardData.totalBetLost)) * 100).toFixed(1)}%`
-        : "0%",
-      icon: <FaTrophy className="text-3xl" />,
-      color: "border-emerald-400",
-      textColor: "text-emerald-600",
+      title: "Total Game Providers Payment",
+      value: formatAmount(dashboardData?.totalGameProvidersPayment || "0"),
+      icon: <FaChartLine className="text-3xl" />,
+      color: "border-lime-400",
+      textColor: "text-lime-600",
       trend: "up",
-      subtitle: "Success rate"
+      subtitle: "Paid to game providers"
+    },
+    
+    // Row 6 (4 cards)
+    {
+      title: "Total Sports Provider Payment",
+      value: formatAmount(dashboardData?.totalSportsProvidersPayment || "0"),
+      icon: <FaFire className="text-3xl" />,
+      color: "border-orange-400",
+      textColor: "text-orange-600",
+      trend: "up",
+      subtitle: "Paid to sports providers"
     },
     {
-      title: "Net Profit/Loss",
-      value: dashboardData?.totalBetWin && dashboardData?.totalBetLost 
-        ? `৳${(dashboardData.totalBetWin - dashboardData.totalBetLost).toLocaleString()}`
-        : "৳0",
-      icon: <FaChartLine className="text-3xl" />,
-      color: dashboardData?.totalBetWin && dashboardData?.totalBetLost && (dashboardData.totalBetWin - dashboardData.totalBetLost) > 0 
-        ? "border-green-400" 
-        : "border-red-400",
-      textColor: dashboardData?.totalBetWin && dashboardData?.totalBetLost && (dashboardData.totalBetWin - dashboardData.totalBetLost) > 0 
-        ? "text-green-600" 
-        : "text-red-600",
-      trend: dashboardData?.totalBetWin && dashboardData?.totalBetLost && (dashboardData.totalBetWin - dashboardData.totalBetLost) > 0 ? "up" : "down",
-      subtitle: "Betting performance"
+      title: "Game Provider Pending Payment",
+      value: formatAmount(dashboardData?.gameProviderPendingPayment || "0"),
+      icon: <FaRegClock className="text-3xl" />,
+      color: "border-amber-400",
+      textColor: "text-amber-600",
+      trend: "neutral",
+      subtitle: "Pending payments"
+    },
+    {
+      title: "Sports Provider Pending Payment",
+      value: formatAmount(dashboardData?.sportsProviderPendingPayment || "0"),
+      icon: <FaRegClock className="text-3xl" />,
+      color: "border-amber-400",
+      textColor: "text-amber-600",
+      trend: "neutral",
+      subtitle: "Pending payments"
     },
     {
       title: "Total Games",
       value: dashboardData?.totalGames?.toLocaleString() || "0",
       icon: <FaGamepad className="text-3xl" />,
-      color: "border-blue-300",
-      textColor: "text-blue-500",
+      color: "border-blue-400",
+      textColor: "text-blue-600",
       trend: "neutral",
       subtitle: "Available games"
-    },
-    {
-      title: "Main Balance",
-      value: `৳${dashboardData?.mainBalance?.toLocaleString() || "0"}`,
-      icon: <FaCoins className="text-3xl" />,
-      color: "border-yellow-300",
-      textColor: "text-yellow-500",
-      trend: "up",
-      subtitle: "System balance"
-    },
-    {
-      title: "Total Bonus Coins",
-      value: dashboardData?.totalBonusCoin?.toLocaleString() || "0",
-      icon: <FaRegStar className="text-3xl" />,
-      color: "border-purple-300",
-      textColor: "text-purple-500",
-      trend: "neutral",
-      subtitle: "Bonus distributed"
-    },
-    {
-      title: "Game Provider Payments",
-      value: `৳${dashboardData?.totalGameProvidersPayment?.toLocaleString() || "0"}`,
-      icon: <FaChartLine className="text-3xl" />,
-      color: "border-lime-400",
-      textColor: "text-lime-600",
-      trend: "up",
-      subtitle: "Paid to providers"
-    },
-    {
-      title: "Sports Provider Payments",
-      value: `৳${dashboardData?.totalSportsProvidersPayment?.toLocaleString() || "0"}`,
-      icon: <FaFire className="text-3xl" />,
-      color: "border-orange-300",
-      textColor: "text-orange-500",
-      trend: "up",
-      subtitle: "Paid to sports providers"
-    },
-    {
-      title: "Game Provider Pending",
-      value: `৳${dashboardData?.gameProviderPendingPayment?.toLocaleString() || "0"}`,
-      icon: <FaRegClock className="text-3xl" />,
-      color: "border-amber-400",
-      textColor: "text-amber-600",
-      trend: "neutral",
-      subtitle: "Pending payments"
-    },
-    {
-      title: "Sports Provider Pending",
-      value: `৳${dashboardData?.sportsProviderPendingPayment?.toLocaleString() || "0"}`,
-      icon: <FaRegClock className="text-3xl" />,
-      color: "border-amber-400",
-      textColor: "text-amber-600",
-      trend: "neutral",
-      subtitle: "Pending payments"
     }
   ];
 
