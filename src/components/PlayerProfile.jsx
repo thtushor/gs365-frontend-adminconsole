@@ -28,6 +28,10 @@ export const playerRoutes = [
     label: "Games",
     path: "/players/:playerId/profile/games",
   },
+  {
+    label: "Login History",
+    path: "/players/:playerId/login-history",
+  },
 ];
 
 const PlayerProfile = () => {
