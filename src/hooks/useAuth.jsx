@@ -16,6 +16,7 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [affiliateInfo, setAffiliateInfo] = useState(null);
+  const [affiliateCommission, setAffiliateCommission] = useState(null);
   const [gameProviderInfo, setGameProviderInfo] = useState(null);
   const [sportProviderInfo, setSportProviderInfo] = useState(null);
   const [user, setUser] = useState(null);
@@ -121,6 +122,8 @@ export function AuthProvider({ children }) {
         setGameProviderInfo,
         sportProviderInfo,
         setSportProviderInfo,
+        setAffiliateCommission,
+        affiliateCommission,
       }}
     >
       {children}

@@ -32,6 +32,7 @@ export const API_LIST = {
   AFFILIATE_LIST: "/api/admin/affiliates",
   AFFILIATE_COMMISSION_LIST: "/api/commissions",
   GET_TOTAL_COMMISSION: "/api/commissions/total-commission",
+  CREATE_AFFILIATE_WITHDRAW: "/api/transactions/affiliate-withdraw",
   AFFILIATE_PROFILE: "/api/admin/affiliates",
   GET_SUB_AFFILIATES: "/sub-affiliates-list",
   GET_DETAILS_BY_REFER_CODE: "/api/admin/details-by-referer",

@@ -37,7 +37,7 @@ const AffiliateLayout = () => {
   const location = useLocation();
   const getRequest = useGetRequest();
 
-  const { user, setAffiliateInfo } = useAuth();
+  const { user, setAffiliateInfo, setAffiliateCommission } = useAuth();
 
   const {
     data: affiliateDetails,
@@ -73,18 +73,27 @@ const AffiliateLayout = () => {
     enabled: !!affiliateId,
   });
 
+  useEffect(() => {
+    if (affiliateCommissionDetails?.data) {
+      setAffiliateCommission(affiliateCommissionDetails?.data);
+    }
+  }, [affiliateCommissionDetails]);
+
   const withdrawAbleBalance = () => {
     if (!affiliateCommissionDetails?.data) {
       return 0;
     }
-    const totalLoss = Math.abs(
-      Number(affiliateCommissionDetails?.data?.totalLossCommission || 0)
-    );
+    const totalLoss = (
+      Number(affiliateDetails?.data?.remainingBalance) +
+      Math.abs(
+        Number(affiliateCommissionDetails?.data?.totalLossCommission || 0)
+      )
+    ).toFixed(2);
     const totalWin = Math.abs(
       Number(affiliateCommissionDetails?.data?.totalWinCommission || 0)
     );
 
-    return (totalWin - totalLoss).toFixed(2);
+    return (totalLoss - totalWin).toFixed(2);
   };
 
   useEffect(() => {
@@ -175,8 +184,8 @@ const AffiliateLayout = () => {
         <div className="text-[20px] font-bold truncate">{value || 0}</div>
         {label === "Withdrawable Balance" && (
           <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
-            {value >= Number(affiliateDetails?.data?.minTrx) &&
-            value <= affiliateDetails?.data?.maxTrx ? (
+            {Number(value) >= Number(affiliateDetails?.data?.minTrx) &&
+            Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
               <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
                 Withdrawable
               </div>
@@ -222,43 +231,52 @@ const AffiliateLayout = () => {
       </nav>
 
       <main className="p-4 bg-[#07122b] mt-5 rounded-lg">
-        <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
-          <div className="flex gap-4 flex-wrap whitespace-nowrap">
-            <HighlightBox
-              label="Main Balance"
-              value={Number(
-                affiliateCommissionDetails?.data?.totalWinCommission || 0
-              ).toFixed(2)}
-            />
-            <HighlightBox
-              label="Downline Balance"
-              value={Number(
-                affiliateCommissionDetails?.data?.totalLossCommission || 0
-              ).toFixed(2)}
-            />
-            <HighlightBox
-              label="Withdrawable Balance"
-              value={withdrawAbleBalance()}
-            />
+        {isLoading || affiliateCommissionLoading ? (
+          "Loading...."
+        ) : (
+          <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
+            <div className="flex gap-4 flex-wrap whitespace-nowrap">
+              <HighlightBox
+                label="Main Balance"
+                value={(
+                  Number(affiliateDetails?.data?.remainingBalance) +
+                  Math.abs(
+                    Number(
+                      affiliateCommissionDetails?.data?.totalLossCommission || 0
+                    )
+                  )
+                ).toFixed(2)}
+              />
+              <HighlightBox
+                label="Downline Balance"
+                value={Number(
+                  affiliateCommissionDetails?.data?.totalWinCommission || 0
+                ).toFixed(2)}
+              />
+              <HighlightBox
+                label="Withdrawable Balance"
+                value={withdrawAbleBalance()}
+              />
+            </div>
+            <div className="flex gap-4 flex-wrap whitespace-nowrap ">
+              <HighlightBox
+                label="Commission %"
+                value={`${affiliateDetails?.data?.commission_percent || 0}%`}
+              />
+              <HighlightBox
+                label="Referral Code"
+                value={affiliateDetails?.data?.refCode || "N/A"}
+                uplineDetails={affiliateDetails?.data?.role}
+              />
+              <HighlightBox
+                label="Min-Max Withdraw Limit"
+                value={`${affiliateDetails?.data?.minTrx || 0} - ${
+                  affiliateDetails?.data?.maxTrx || 0
+                }`}
+              />
+            </div>
           </div>
-          <div className="flex gap-4 flex-wrap whitespace-nowrap ">
-            <HighlightBox
-              label="Commission %"
-              value={`${affiliateDetails?.data?.commission_percent || 0}%`}
-            />
-            <HighlightBox
-              label="Referral Code"
-              value={affiliateDetails?.data?.refCode || "N/A"}
-              uplineDetails={affiliateDetails?.data?.role}
-            />
-            <HighlightBox
-              label="Min-Max Withdraw Limit"
-              value={`${affiliateDetails?.data?.minTrx || 0} - ${
-                affiliateDetails?.data?.maxTrx || 0
-              }`}
-            />
-          </div>
-        </div>
+        )}
         <Outlet />
       </main>
     </div>
