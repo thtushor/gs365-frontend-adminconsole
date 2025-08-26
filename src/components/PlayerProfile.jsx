@@ -267,7 +267,7 @@ const PlayerProfile = () => {
           <div className="flex gap-4 flex-wrap whitespace-nowrap">
             <HighlightBox
               label="Total Bets"
-              value={betResultsSummary.totalBets}
+              value={betResultsSummary.totalBets?.toString()}
               color="blue"
             />
             <HighlightBox
