@@ -1,6 +1,8 @@
 import React from "react";
 
 const DataTable = ({ columns, isLoading, data = [], onRowClick, selectedRow, selectable = false }) => {
+
+  console.log({gameStats: data})
   if (!Array.isArray(data)) {
     return (
       <p className="text-red-300 text-center">Table Data format is not valid</p>
