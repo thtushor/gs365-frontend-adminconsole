@@ -123,6 +123,7 @@ import EventList from "../components/EventList";
 import AffiliateCommissionListPage from "../components/AffiliateCommissionPage";
 import PlayerGamesPage from "../components/PlayerGamesPage";
 import MenuManagement from "../components/MenuManagement";
+import AffiliateWithdrawRequestListPage from "../components/AffiliateWithdrawRequestListPage";
 
 export const menu = [
   {
@@ -230,6 +231,13 @@ export const menu = [
         label: "Affiliate Commissions",
         path: "/affiliate-commissions",
         component: AffiliateCommissionListPage,
+        icon: <FaListUl />,
+        props: {},
+      },
+      {
+        label: "Withdraw Request",
+        path: "/affiliate-withdraw-requests",
+        component: AffiliateWithdrawRequestListPage,
         icon: <FaListUl />,
         props: {},
       },
@@ -731,18 +739,18 @@ export const affiliateOutsideRoute = [
     path: "/affiliate-list/:affiliateId/withdraw-history",
     component: AffiliateWithdrawHistory,
   },
+  // {
+  //   label: "Sub Affiliate C. History",
+  //   path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
+  //   component: AffiliateCommissionListPage,
+  // },
+  // {
+  //   label: "Player C. History",
+  //   path: "/affiliate-list/:affiliateId/player-commission-history",
+  //   component: AffiliateCommissionListPage,
+  // },
   {
-    label: "Sub Affiliate C. History",
-    path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
-    component: AffiliateCommissionListPage,
-  },
-  {
-    label: "Player C. History",
-    path: "/affiliate-list/:affiliateId/player-commission-history",
-    component: AffiliateCommissionListPage,
-  },
-  {
-    label: "Affiliate Commission History",
+    label: "Commission History",
     path: "/affiliate-list/:affiliateId/affiliate-commission-history",
     component: AffiliateCommissionListPage,
   },

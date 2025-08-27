@@ -10,7 +10,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatAmount } from "./BettingWagerPage";
 import { formatDate } from "../Utils/dateUtils";
 import { API_LIST } from "../api/ApiList";
-import { useAuth } from "../hooks/useAuth";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -28,30 +27,17 @@ const defaultFilters = {
   sortOrder: "desc",
   userId: "",
   userType: "affiliate",
-  affiliateId: "",
 };
 
-const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
-  const { affiliateInfo } = useAuth();
-  console.log(affiliateInfo);
+const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
   const [filters, setFilters] = useState({
     ...defaultFilters,
-    affiliateId: affiliateInfo?.id || "",
   });
   const [selectedTx, setSelectedTx] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [updatePayload, setUpdatePayload] = useState({ status: "", notes: "" });
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (affiliateInfo?.id) {
-      setFilters((f) => ({
-        ...f,
-        affiliateId: affiliateInfo?.id || "",
-      }));
-    }
-  }, [affiliateInfo?.id]);
 
   const { data, isLoading } = useTransactions(filters);
   const updateMutation = useUpdateTransactionStatus();
@@ -101,7 +87,7 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
           </span>
         ),
       },
-      // { field: "givenTransactionId", headerName: "Trx Number", width: 150 },
+      //   { field: "givenTransactionId", headerName: "Trx Number", width: 150 },
       {
         field: "status",
         headerName: "Status",
@@ -145,12 +131,30 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
             >
               View
             </button>
+
+            {row?.status === "pending" && (
+              <button
+                className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
+                onClick={() => handleOpenModal(row)}
+              >
+                Update
+              </button>
+            )}
           </div>
         ),
       },
     ],
     [navigate]
   );
+
+  const handleOpenModal = (row) => {
+    setSelectedTx(row);
+    setUpdatePayload({
+      status: row?.status || "pending",
+      notes: row?.notes || "",
+    });
+    setModalOpen(true);
+  };
 
   const handleViewTransaction = (row) => {
     setSelectedTx(row);
@@ -441,6 +445,41 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
             </div>
           </div>
         )}
+      </ReusableModal>
+
+      {/* Update Status Modal */}
+      <ReusableModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={`Update Transaction #${selectedTx?.id}`}
+        onSave={handleUpdate}
+        isLoading={updateMutation.isPending}
+        loadingText="Updating..."
+      >
+        <div className="space-y-3">
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={updatePayload.status}
+            onChange={(e) =>
+              setUpdatePayload((p) => ({ ...p, status: e.target.value }))
+            }
+          >
+            {statusOptions.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+          <textarea
+            className="w-full border rounded px-3 py-2"
+            rows={4}
+            placeholder="Notes"
+            value={updatePayload.notes}
+            onChange={(e) =>
+              setUpdatePayload((p) => ({ ...p, notes: e.target.value }))
+            }
+          />
+        </div>
       </ReusableModal>
     </div>
   );

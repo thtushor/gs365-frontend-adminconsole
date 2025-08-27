@@ -35,16 +35,16 @@ const AffiliateCommissionListPage = () => {
   // Fetch users and affiliates for filters
   const { data: usersData } = useUsers();
   const { data: affiliatesData } = useAffiliates();
-  
+
   const users = usersData?.users?.data || [];
   const affiliates = affiliatesData?.data || [];
 
   // Set adminUserId from affiliateId parameter if available
   useEffect(() => {
     if (affiliateId) {
-      setFilters(prev => ({
+      setFilters((prev) => ({
         ...prev,
-        adminUserId: affiliateId
+        adminUserId: affiliateId,
       }));
     }
   }, [affiliateId]);
@@ -57,17 +57,20 @@ const AffiliateCommissionListPage = () => {
         page: filters.page,
         pageSize: filters.pageSize,
       };
-      
+
       if (filters.adminUserId) {
         params.adminUserId = Number(filters.adminUserId);
       }
-      
+
       if (filters.playerId) {
         params.playerId = Number(filters.playerId);
       }
-      
-      const res = await Axios.get(API_LIST.AFFILIATE_COMMISSION_LIST, { params });
-      if (!res.data.status) throw new Error("Failed to fetch affiliate commissions");
+
+      const res = await Axios.get(API_LIST.AFFILIATE_COMMISSION_LIST, {
+        params,
+      });
+      if (!res.data.status)
+        throw new Error("Failed to fetch affiliate commissions");
       return res.data;
     },
     keepPreviousData: true,
@@ -100,11 +103,14 @@ const AffiliateCommissionListPage = () => {
           >
             {row?.adminUser?.username}
           </Link>
-          <p className="text-sm text-gray-600">
-            {row?.adminUser?.fullname}
-          </p>
+          <p className="text-sm text-gray-600">{row?.adminUser?.fullname}</p>
           <p className="text-xs text-gray-500">
-            Role: {row?.adminUser?.role === "affiliate" ? "Sub Affiliate" : row?.adminUser?.role === "superAffiliate" ? "Super Affiliate" : row?.adminUser?.role}
+            Role:{" "}
+            {row?.adminUser?.role === "affiliate"
+              ? "Sub Affiliate"
+              : row?.adminUser?.role === "superAffiliate"
+              ? "Super Affiliate"
+              : row?.adminUser?.role}
           </p>
         </div>
       ),
@@ -121,9 +127,7 @@ const AffiliateCommissionListPage = () => {
           >
             {row?.user?.username}
           </Link>
-          <p className="text-sm text-gray-600">
-            {row?.user?.fullname}
-          </p>
+          <p className="text-sm text-gray-600">{row?.user?.fullname}</p>
         </div>
       ),
     },
@@ -137,18 +141,26 @@ const AffiliateCommissionListPage = () => {
             <span className="font-semibold">ID:</span> {row?.betResults?.id}
           </p>
           <p className="text-sm">
-            <span className="font-semibold">Status:</span> 
-            <span className={`ml-1 px-2 py-1 text-xs rounded-full ${
-              row?.betResults?.betStatus === "win" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}>
+            <span className="font-semibold">Status:</span>
+            <span
+              className={`ml-1 px-2 py-1 text-xs rounded-full ${
+                row?.betResults?.betStatus === "win"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
               {row?.betResults?.betStatus}
             </span>
           </p>
           <p className="text-sm">
-            <span className="font-semibold">Amount:</span> {row?.betResults?.betAmount}
+            <span className="font-semibold">Amount:</span>{" "}
+            {row?.betResults?.betAmount}
           </p>
           <p className="text-sm">
-            <span className="font-semibold">Result:</span> {row?.betResults?.betStatus === "win" ? row?.betResults?.winAmount : row?.betResults?.lossAmount}
+            <span className="font-semibold">Result:</span>{" "}
+            {row?.betResults?.betStatus === "win"
+              ? row?.betResults?.winAmount
+              : row?.betResults?.lossAmount}
           </p>
         </div>
       ),
@@ -160,13 +172,20 @@ const AffiliateCommissionListPage = () => {
       render: (_, row) => (
         <div>
           <p className="text-sm">
-            <span className="font-semibold">Amount:</span> 
-            <span className={`ml-1 ${parseFloat(row?.commissionAmount) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <span className="font-semibold">Amount:</span>
+            <span
+              className={`ml-1 ${
+                parseFloat(row?.commissionAmount) >= 0
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
               {row?.commissionAmount}
             </span>
           </p>
           <p className="text-sm">
-            <span className="font-semibold">Percentage:</span> {row?.percentage}%
+            <span className="font-semibold">Percentage:</span> {row?.percentage}
+            %
           </p>
         </div>
       ),
@@ -179,9 +198,13 @@ const AffiliateCommissionListPage = () => {
       render: (_, row) => (
         <span
           className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
-            row.status === "approved" ? "bg-green-100 text-green-800" : 
-            row.status === "pending" ? "bg-yellow-100 text-yellow-800" : 
-            "bg-red-100 text-red-800"
+            row.status === "approved"
+              ? "bg-green-100 text-green-800"
+              : row.status === "pending"
+              ? "bg-yellow-100 text-yellow-800"
+              : row.status === "settled"
+              ? "bg-gray-300 text-gray-700"
+              : "bg-red-100 text-red-800"
           }`}
         >
           {row.status}
@@ -199,7 +222,7 @@ const AffiliateCommissionListPage = () => {
       headerName: "Created At",
       width: 160,
       render: (_, row) => formatDateTime(row.createdAt),
-    }
+    },
   ];
 
   const handleEdit = (row) => {
@@ -244,7 +267,7 @@ const AffiliateCommissionListPage = () => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Affiliate Commission List</h2>
       </div>
-      
+
       {/* Filter Bar */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
@@ -254,7 +277,9 @@ const AffiliateCommissionListPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Search
+            </label>
             <input
               type="text"
               name="search"
@@ -264,27 +289,39 @@ const AffiliateCommissionListPage = () => {
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          {!affiliateId && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Affiliate
+              </label>
 
-                     <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">Affiliate</label>
-             <select
-               name="adminUserId"
-               value={filters.adminUserId}
-               onChange={handleFilterChange}
-               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-               disabled={!!affiliateId}
-             >
-               <option value="">All Affiliates</option>
-               {affiliates.map((affiliate) => (
-                 <option key={affiliate.id} value={affiliate.id}>
-                   {affiliate.fullname || affiliate.username} ({affiliate.role === "affiliate" ? "Sub Affiliate" : affiliate.role === "superAffiliate" ? "Super Affiliate" : affiliate.role})
-                 </option>
-               ))}
-             </select>
-           </div>
+              <select
+                name="adminUserId"
+                value={filters.adminUserId}
+                onChange={handleFilterChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={!!affiliateId}
+              >
+                <option value="">All Affiliates</option>
+                {affiliates.map((affiliate) => (
+                  <option key={affiliate.id} value={affiliate.id}>
+                    {affiliate.fullname || affiliate.username} (
+                    {affiliate.role === "affiliate"
+                      ? "Sub Affiliate"
+                      : affiliate.role === "superAffiliate"
+                      ? "Super Affiliate"
+                      : affiliate.role}
+                    )
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Player</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Player
+            </label>
             <select
               name="playerId"
               value={filters.playerId}
@@ -299,8 +336,6 @@ const AffiliateCommissionListPage = () => {
               ))}
             </select>
           </div>
-
-         
         </div>
 
         <div className="flex gap-2 mt-4">
@@ -312,7 +347,7 @@ const AffiliateCommissionListPage = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">
         {isLoading ? (
           <div className="text-center text-gray-500 py-8">
@@ -320,7 +355,8 @@ const AffiliateCommissionListPage = () => {
           </div>
         ) : isError ? (
           <div className="text-center text-red-500 py-8">
-            Failed to load commission records: {error?.message || "Unknown error"}
+            Failed to load commission records:{" "}
+            {error?.message || "Unknown error"}
           </div>
         ) : commissions.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
@@ -340,7 +376,7 @@ const AffiliateCommissionListPage = () => {
           </>
         )}
       </div>
-      
+
       {/* Edit Modal */}
       <ReusableModal
         open={editModalOpen}
@@ -349,10 +385,12 @@ const AffiliateCommissionListPage = () => {
         title="Edit Commission Record"
       >
         <div className="p-4">
-          <p>Edit functionality for commission records will be implemented here.</p>
+          <p>
+            Edit functionality for commission records will be implemented here.
+          </p>
         </div>
       </ReusableModal>
-      
+
       {/* Delete Modal */}
       <ReusableModal
         open={deleteModalOpen}

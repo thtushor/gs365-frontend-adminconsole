@@ -18,11 +18,23 @@ export const useTransactions = ({
   sortBy = "createdAt",
   sortOrder = "desc",
   userId,
+  affiliateId,
 } = {}) => {
   return useQuery({
     queryKey: [
       QUERY_KEYS.TRANSACTIONS,
-      { page, pageSize, limit, type, status, search, sortBy, sortOrder, userId },
+      {
+        page,
+        pageSize,
+        limit,
+        type,
+        status,
+        search,
+        sortBy,
+        sortOrder,
+        userId,
+        affiliateId,
+      },
     ],
     queryFn: async () => {
       const params = {
@@ -37,6 +49,7 @@ export const useTransactions = ({
       if (status) params.status = status;
       if (search) params.search = search;
       if (userId) params.userId = userId;
+      if (affiliateId) params.affiliateId = affiliateId;
 
       const { data } = await Axios.get(API_LIST.PAYMENT_TRANSACTION, {
         params,
@@ -52,13 +65,14 @@ export const useTransactions = ({
 export const useUpdateTransactionStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status, notes }) => {
+    mutationFn: async ({ id, status, notes, dynamicUrl }) => {
+      const staticUrl = `${API_LIST.PAYMENT_TRANSACTION}/${id}/status`;
       if (!id) throw new Error("Transaction id is required");
       if (!status) throw new Error("Status is required");
-      const { data } = await Axios.post(
-        `${API_LIST.PAYMENT_TRANSACTION}/${id}/status`,
-        { status, notes }
-      );
+      const { data } = await Axios.post(dynamicUrl || staticUrl, {
+        status,
+        notes,
+      });
       return data;
     },
     onSuccess: () => {
@@ -72,5 +86,3 @@ export const useUpdateTransactionStatus = () => {
     },
   });
 };
-
-

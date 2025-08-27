@@ -1,15 +1,33 @@
 import React, { useState } from "react";
-import axios from "axios";
-import Select from "react-select";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API_LIST, BASE_URL, SINGLE_IMAGE_UPLOAD_URL } from "../../api/ApiList";
+import { API_LIST, BASE_URL } from "../../api/ApiList";
 import { useCurrencies } from "../shared/useCurrencies";
 import { usePostRequest } from "../../Utils/apiClient";
 import { useAuth } from "../../hooks/useAuth";
+import Select from "react-select";
+import { toast } from "react-toastify";
+import { useTransactions } from "../../hooks/useTransactions";
+
+const defaultFilters = {
+  page: 1,
+  pageSize: 10,
+  type: "withdraw",
+  status: "pending",
+  search: "",
+  sortBy: "createdAt",
+  sortOrder: "desc",
+  userId: "",
+  userType: "affiliate",
+  affiliateId: "",
+};
 
 const WithdrawBalance = () => {
   const { affiliateInfo, affiliateCommission } = useAuth();
-  console.log(affiliateInfo);
+  const [filters, setFilters] = useState({
+    ...defaultFilters,
+    affiliateId: affiliateInfo?.id || "",
+  });
+  const { data: affiliatePreviousWithdraws } = useTransactions(filters);
   const withdrawAbleBalance = () => {
     if (!affiliateCommission) {
       return 0;
@@ -24,6 +42,7 @@ const WithdrawBalance = () => {
 
     return (totalLoss - totalWin).toFixed(2);
   };
+
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
   const queryClient = useQueryClient();
   const postRequest = usePostRequest();
@@ -32,7 +51,6 @@ const WithdrawBalance = () => {
     amount: withdrawAbleBalance() || 0,
     currencyId: affiliateInfo?.currency || "",
     withdrawMethod: "bank",
-    attachment: null,
     notes: "",
     accountNumber: "",
     accountHolderName: "",
@@ -43,10 +61,9 @@ const WithdrawBalance = () => {
     iban: "",
     walletAddress: "",
     network: "",
-    givenTransactionId: "", // <-- new field
+    givenTransactionId: "",
   });
 
-  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
 
@@ -57,17 +74,8 @@ const WithdrawBalance = () => {
     })) || [];
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files) {
-      const file = files[0];
-      setForm({ ...form, attachment: file });
-
-      const reader = new FileReader();
-      reader.onloadend = () => setPreview(reader.result);
-      reader.readAsDataURL(file);
-    } else {
-      setForm({ ...form, [name]: value });
-    }
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
   const mutation = useMutation({
@@ -77,31 +85,33 @@ const WithdrawBalance = () => {
         body: payload,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["withdraw"] });
+      queryClient.invalidateQueries({
+        queryKey: ["affiliateCommission", "affiliateProfile"],
+      });
     },
   });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setResponse(null);
     setLoading(true);
 
+    if (
+      Number(form.amount) < affiliateInfo?.minTrx ||
+      Number(form.amount) > affiliateInfo?.maxTrx
+    ) {
+      setResponse({
+        status: false,
+        message: `Your withdraw amount must be between ${affiliateInfo?.minTrx} and ${affiliateInfo?.maxTrx}`,
+      });
+      toast.error(
+        `Your withdraw amount must be between ${affiliateInfo?.minTrx} and ${affiliateInfo?.maxTrx}`
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
-      let uploadedImage = null;
-
-      if (form.attachment) {
-        const imgData = new FormData();
-        imgData.append("file", form.attachment);
-
-        const imgRes = await axios.post(SINGLE_IMAGE_UPLOAD_URL, imgData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        if (!imgRes.data.status || !imgRes.data.data)
-          throw new Error("Image upload failed");
-
-        uploadedImage = imgRes.data.data.original;
-      }
-
       const payload = {
         affiliateId: affiliateInfo?.id,
         amount: Number(form.amount),
@@ -109,9 +119,7 @@ const WithdrawBalance = () => {
         type: "withdraw",
         status: "pending",
         notes: form.notes,
-        attachment: uploadedImage,
         withdrawMethod: form.withdrawMethod,
-        givenTransactionId: form.givenTransactionId,
         remainingBalance: withdrawAbleBalance() - Number(form.amount),
         ...(form.withdrawMethod === "bank"
           ? {
@@ -129,18 +137,15 @@ const WithdrawBalance = () => {
             }),
       };
 
-      console.log("Payload:", payload);
-
       mutation.mutate(payload, {
         onSuccess: () => {
           setResponse({ status: true, message: "Withdraw request submitted!" });
 
-          // Reset form **only on success**
+          // Reset form
           setForm({
             amount: "",
             currencyId: "",
             withdrawMethod: "bank",
-            attachment: null,
             notes: "",
             accountNumber: "",
             accountHolderName: "",
@@ -152,7 +157,7 @@ const WithdrawBalance = () => {
             walletAddress: "",
             network: "",
           });
-          setPreview(null);
+          window.location.reload();
         },
         onError: (err) => {
           setResponse({
@@ -187,7 +192,20 @@ const WithdrawBalance = () => {
         Withdraw Balance
       </h1>
 
-      {checkWithdrawValidity() ? (
+      {affiliatePreviousWithdraws?.data?.length > 0 ? (
+        <div className="border-blue-500 border bg-blue-100 rounded-lg py-3 max-w-[500px] px-5">
+          <p className="font-bold text-black uppercase text-[18px]">
+            <span className="font-bold text-blue-500">
+              Existing Request in Process
+            </span>
+          </p>
+          <p className="text-black/70 mt-1">
+            You are eligible to withdraw. However, you currently have a pending
+            withdrawal request. Please wait until the existing request is
+            processed before submitting a new one.
+          </p>
+        </div>
+      ) : checkWithdrawValidity() ? (
         <form onSubmit={handleSubmit} className="space-y-3">
           {/* Main Balance */}
           <div className="bg-green-300 border border-gray-300 shadow-md rounded-lg px-3 py-1 pb-[6px] w-fit">
@@ -197,174 +215,142 @@ const WithdrawBalance = () => {
             <p className="text-[20px] font-bold">{withdrawAbleBalance()}</p>
           </div>
 
-          {/* Withdraw Method */}
-          <select
-            name="withdrawMethod"
-            value={form.withdrawMethod}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="bank">Bank</option>
-            <option value="wallet">Wallet</option>
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3">
+            {/* Withdraw Method */}
+            <div>
+              <label className="font-semibold text-xs mb-1 block">
+                Withdraw Method
+              </label>
+              <select
+                name="withdrawMethod"
+                value={form.withdrawMethod}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
+                <option value="bank">Bank</option>
+                <option value="wallet">Wallet</option>
+              </select>
+            </div>
 
-          {/* Currency */}
-          <div className="flex flex-col relative">
-            <label className="font-semibold text-xs mb-1">CURRENCY</label>
-            {currencyLoading ? (
-              <p className="text-gray-500 text-sm">Loading currencies...</p>
+            {/* Currency */}
+            <div className="flex flex-col relative">
+              <label className="font-semibold text-xs mb-1">Currency</label>
+              {currencyLoading ? (
+                <p className="text-gray-500 text-sm">Loading currencies...</p>
+              ) : (
+                <Select
+                  options={currencyOptions}
+                  value={
+                    currencyOptions.find(
+                      (opt) => opt.value === form.currencyId
+                    ) || null
+                  }
+                  onChange={(selected) =>
+                    setForm({
+                      ...form,
+                      currencyId: selected ? selected.value : "",
+                    })
+                  }
+                  isSearchable
+                  placeholder="Select Currency"
+                  styles={{
+                    menuList: (base) => ({
+                      ...base,
+                      maxHeight: "300px",
+                      overflowY: "auto",
+                    }),
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="font-semibold text-xs mb-1">Amount</label>
+              <input
+                type="number"
+                name="amount"
+                placeholder="Amount"
+                value={form.amount}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+
+            {/* Conditional Fields */}
+            {form.withdrawMethod === "bank" ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 col-span-full">
+                {[
+                  "Account Number",
+                  "Account Holder Name",
+                  "Bank Name",
+                  "Branch Name",
+                  "Branch Address",
+                  "SWIFT Code",
+                  "IBAN",
+                ].map((label, idx) => (
+                  <div key={idx}>
+                    <label className="font-semibold text-xs mb-1 block">
+                      {label}
+                    </label>
+                    <input
+                      type="text"
+                      name={
+                        label.replace(/\s+/g, "").charAt(0).toLowerCase() +
+                        label.replace(/\s+/g, "").slice(1)
+                      }
+                      placeholder={label}
+                      value={
+                        form[
+                          label.replace(/\s+/g, "").charAt(0).toLowerCase() +
+                            label.replace(/\s+/g, "").slice(1)
+                        ]
+                      }
+                      onChange={handleChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                ))}
+              </div>
             ) : (
-              <Select
-                options={currencyOptions}
-                value={
-                  currencyOptions.find(
-                    (opt) => opt.value === form.currencyId
-                  ) || null
-                }
-                onChange={(selected) =>
-                  setForm({
-                    ...form,
-                    currencyId: selected ? selected.value : "",
-                  })
-                }
-                isSearchable
-                placeholder="Select Currency"
-                styles={{
-                  menuList: (base) => ({
-                    ...base,
-                    maxHeight: "300px",
-                    overflowY: "auto",
-                  }),
-                }}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 col-span-full">
+                {["Wallet Address / Phone Number", "Network"].map(
+                  (label, idx) => (
+                    <div key={idx}>
+                      <label className="font-semibold text-xs mb-1 block">
+                        {label}
+                      </label>
+                      <input
+                        type="text"
+                        name={label === "Network" ? "network" : "walletAddress"}
+                        placeholder={label}
+                        value={
+                          label === "Network"
+                            ? form.network
+                            : form.walletAddress
+                        }
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  )
+                )}
+              </div>
             )}
+
+            {/* Notes */}
+            <div className="col-span-full">
+              <label className="font-semibold text-xs mb-1">Notes</label>
+              <textarea
+                name="notes"
+                placeholder="Notes"
+                value={form.notes}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+            </div>
           </div>
-
-          {/* Amount */}
-          <input
-            type="number"
-            name="amount"
-            placeholder="Amount"
-            value={form.amount}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          />
-
-          {/* Conditional Fields */}
-          {form.withdrawMethod === "bank" ? (
-            <div className="space-y-2">
-              <input
-                type="text"
-                name="accountNumber"
-                placeholder="Account Number"
-                value={form.accountNumber}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                name="accountHolderName"
-                placeholder="Account Holder Name"
-                value={form.accountHolderName}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                name="bankName"
-                placeholder="Bank Name"
-                value={form.bankName}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                name="branchName"
-                placeholder="Branch Name"
-                value={form.branchName}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                name="branchAddress"
-                placeholder="Branch Address"
-                value={form.branchAddress}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                name="swiftCode"
-                placeholder="SWIFT Code"
-                value={form.swiftCode}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                name="iban"
-                placeholder="IBAN"
-                value={form.iban}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <input
-                type="text"
-                name="walletAddress"
-                placeholder="Wallet Address"
-                value={form.walletAddress}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="text"
-                name="network"
-                placeholder="Network"
-                value={form.network}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-          )}
-
-          {/* Transaction ID */}
-          <input
-            type="text"
-            name="givenTransactionId"
-            placeholder="Transaction ID"
-            value={form.givenTransactionId}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-
-          {/* Notes */}
-          <textarea
-            name="notes"
-            placeholder="Notes"
-            value={form.notes}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-
-          {/* Attachment */}
-          <input
-            type="file"
-            name="attachment"
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-          {preview && (
-            <img
-              src={preview}
-              alt="Preview"
-              className="mt-2 w-32 h-20 object-cover border rounded"
-            />
-          )}
 
           {/* Submit */}
           <button

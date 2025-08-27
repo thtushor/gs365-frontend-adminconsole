@@ -1,9 +1,11 @@
 import { Link, Outlet, useParams, useLocation } from "react-router-dom";
 import { useGetRequest } from "../Utils/apiClient";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
+import { Spin } from "antd";
+import { useTransactions } from "../hooks/useTransactions";
 
 export const affiliateRoutes = [
   {
@@ -22,13 +24,13 @@ export const affiliateRoutes = [
     label: "Withdraw History",
     path: "/affiliate-list/:affiliateId/withdraw-history",
   },
+  // {
+  //   label: "Sub Affiliate C. History",
+  //   path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
+  // },
   {
-    label: "Sub Affiliate C. History",
-    path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
-  },
-  {
-    label: "Player C. History",
-    path: "/affiliate-list/:affiliateId/player-commission-history",
+    label: "Commission History",
+    path: "/affiliate-list/:affiliateId/affiliate-commission-history",
   },
 ];
 
@@ -54,9 +56,6 @@ const AffiliateLayout = () => {
     keepPreviousData: true,
     enabled: !!affiliateId,
   });
-
-  console.log(affiliateDetails?.data?.minTrx);
-  console.log(affiliateDetails?.data?.maxTrx);
 
   const {
     data: affiliateCommissionDetails,
@@ -144,10 +143,13 @@ const AffiliateLayout = () => {
             onClick={() => handleShare("player")}
             className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
           >
-            Player <span>{role === "superAffiliate" ? "" : "Refer"}</span>
+            Player{" "}
+            <span>
+              {affiliateDetails?.data?.role === "superAffiliate" ? "" : "Refer"}
+            </span>
           </button>
 
-          {role === "superAffiliate" && (
+          {affiliateDetails?.data?.role === "superAffiliate" && (
             <button
               type="button"
               onClick={() => handleShare("affiliate")}
@@ -232,7 +234,9 @@ const AffiliateLayout = () => {
 
       <main className="p-4 bg-[#07122b] mt-5 rounded-lg">
         {isLoading || affiliateCommissionLoading ? (
-          "Loading...."
+          <div className="py-8 flex items-center justify-center">
+            <Spin />
+          </div>
         ) : (
           <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
             <div className="flex gap-4 flex-wrap whitespace-nowrap">

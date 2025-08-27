@@ -238,24 +238,24 @@ const AffiliateListPage = () => {
     //   width: 120,
     //   render: (_, row) => row.ip_address,
     // },
-    {
-      field: "total_sub_affiliates",
-      headerName: "Total Sub",
-      width: 120,
-      render: (_, row) => row.total_sub_affiliates || 0,
-    },
-    {
-      field: "total_balance",
-      headerName: "Total Balance",
-      width: 120,
-      render: (_, row) => row.total_balance || 0,
-    },
-    {
-      field: "total_withdraw",
-      headerName: "Total Withdraw",
-      width: 120,
-      render: (_, row) => row.total_withdraw || 0,
-    },
+    // {
+    //   field: "total_sub_affiliates",
+    //   headerName: "Total Sub",
+    //   width: 120,
+    //   render: (_, row) => row.total_sub_affiliates || 0,
+    // },
+    // {
+    //   field: "total_balance",
+    //   headerName: "Total Balance",
+    //   width: 120,
+    //   render: (_, row) => row.total_balance || 0,
+    // },
+    // {
+    //   field: "total_withdraw",
+    //   headerName: "Total Withdraw",
+    //   width: 120,
+    //   render: (_, row) => row.total_withdraw || 0,
+    // },
     {
       field: "action",
       headerName: "Action",

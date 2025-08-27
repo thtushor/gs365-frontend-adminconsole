@@ -142,6 +142,7 @@ export const API_LIST = {
     "/api/gateway-provider-accounts/provider",
   PAYMENT_TRANSACTION: "/api/transactions",
   DEPOSIT_TRANSACTION: "/api/transactions/deposit",
+  WITHDRAW_TRANSACTION: "/api/transactions/affiliate-withdraw",
 
   // Settings
   GET_SETTINGS: "/api/settings",
