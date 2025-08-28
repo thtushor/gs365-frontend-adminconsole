@@ -38,3 +38,33 @@
   height: 41px !important;
   border-color: black !important;
 }
+
+div.band_alert {
+  position: relative;
+  animation: alert_spin 1.3s infinite linear;
+  border: solid 4px red;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  border-right: solid 4px rgba(0, 0, 0, 1);
+  border-left: solid 4px rgba(0, 0, 0, 1);
+  box-shadow: 0 0 20px 5px red;
+}
+
+@keyframes alert_spin {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+body {
+  background-color: black;
+}

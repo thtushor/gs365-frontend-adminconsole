@@ -27,7 +27,7 @@ const defaultFilters = {
   role: "",
   status: "",
   page: 1,
-  pageSize: 10,
+  pageSize: 20,
 };
 
 const defaultForm = {
@@ -302,6 +302,7 @@ const AffiliateListPage = () => {
       currency: row.currency || 11,
       status: row.status || "Active",
       commission_percent: row.commission_percent || null,
+      referred_by: row.referred_by || null,
     });
     setEditModalOpen(true);
   };

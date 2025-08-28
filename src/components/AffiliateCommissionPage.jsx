@@ -18,7 +18,7 @@ const defaultFilters = {
   adminUserId: "",
   playerId: "",
   page: 1,
-  pageSize: 10,
+  pageSize: 20,
 };
 
 const AffiliateCommissionListPage = () => {
@@ -128,6 +128,12 @@ const AffiliateCommissionListPage = () => {
             {row?.user?.username}
           </Link>
           <p className="text-sm text-gray-600">{row?.user?.fullname}</p>
+          <Link
+            to={`/affiliate-list/${row?.referredUser?.id}`}
+            className="text-green-500 cursor-pointer font-semibold"
+          >
+            {row?.referredUser?.fullname}
+          </Link>
         </div>
       ),
     },

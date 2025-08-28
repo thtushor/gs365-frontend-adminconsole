@@ -19,14 +19,14 @@ const statusOptions = [
 
 const defaultFilters = {
   page: 1,
-  pageSize: 10,
+  pageSize: 20,
   type: "withdraw",
   status: "",
   search: "",
   sortBy: "createdAt",
   sortOrder: "desc",
   userId: "",
-  userType: "affiliate",
+  historyType: "affiliate",
 };
 
 const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {

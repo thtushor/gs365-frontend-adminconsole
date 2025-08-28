@@ -55,7 +55,7 @@ const defaultFilters = {
   status: "",
   keyword: "",
   page: 1,
-  pageSize: 10,
+  pageSize: 20,
   createdBy: "",
   referred_by: "",
   referred_by_admin_user: "",

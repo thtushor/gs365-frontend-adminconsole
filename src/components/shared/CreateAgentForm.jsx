@@ -4,6 +4,9 @@ import { useCurrencies } from "./useCurrencies";
 import Select from "react-select";
 import { useLocation } from "react-router-dom";
 import { API_LIST, BASE_URL } from "../../api/ApiList";
+import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import { useGetRequest } from "../../Utils/apiClient";
 
 // simple debounce hook
 function useDebounce(value, delay = 500) {
@@ -62,6 +65,7 @@ export function CreateAgentForm({
 
   // state for referral details
   const [refDetails, setRefDetails] = useState(null);
+  console.log(refDetails?.commission_percent);
 
   // debounce refer_code
   const debouncedRefCode = useDebounce(form.refer_code, 600);
@@ -70,14 +74,42 @@ export function CreateAgentForm({
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
+  const {
+    data: affiliateDetails,
+    isLoading: affiliateDetailsLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["affiliateProfile", initialValues?.referred_by],
+    queryFn: () =>
+      getRequest({
+        url: BASE_URL + API_LIST.AFFILIATE_PROFILE,
+        params: { id: initialValues?.referred_by || "-1" },
+        errorMessage: "Failed to fetch affiliate profile",
+      }),
+    keepPreviousData: true,
+    enabled: !!initialValues?.referred_by,
+  });
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isAffiliate) {
       if (!form.commission_percent) {
-        return alert("Commission percentage is required.");
+        return toast.error("Commission percentage is required.");
+      }
+      if (!(form.commission_percent < refDetails?.commission_percent)) {
+        return toast.error(
+          "Commission percentage must be less than the referrer commission."
+        );
       }
     }
+    if (
+      initialValues?.referred_by &&
+      form.commission_percent > affiliateDetails?.data?.commission_percent
+    ) {
+      return toast.error(
+        "Commission percentage must be less than the referrer commission."
+      );
+    }
+
     onSubmit(form);
   };
 
@@ -104,60 +136,62 @@ export function CreateAgentForm({
 
   // fetch referral details when debouncedRefCode changes
   const [refLoading, setRefLoading] = useState(false);
+  const fetchReferralDetails = async () => {
+    if (!debouncedRefCode) {
+      setRefDetails(null);
+      return;
+    }
 
+    setRefLoading(true); // ✅ Start loading
+    try {
+      const token = localStorage.getItem("token"); // ✅ Get token
+      const response = await fetch(
+        `${BASE_URL}${API_LIST.GET_DETAILS_BY_REFER_CODE}/${debouncedRefCode}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ Add token in header
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch referral details");
+      }
+
+      const data = await response.json();
+
+      if (data?.data?.id) {
+        const supAff = data?.data;
+        setRefDetails(supAff);
+        setForm((prev) => ({
+          ...prev,
+          commission_percent: supAff?.commission_percent
+            ? Number(supAff?.commission_percent) / 2
+            : null,
+          role: "affiliate",
+          minTrx: supAff?.minTrx || "",
+          maxTrx: supAff?.maxTrx || "",
+          currency: supAff?.currency || null,
+        }));
+      } else {
+        setRefDetails(null);
+      }
+    } catch (error) {
+      console.error("Error fetching referral details:", error);
+      setRefDetails(null);
+    } finally {
+      setRefLoading(false); // ✅ Stop loading
+    }
+  };
   useEffect(() => {
-    const fetchReferralDetails = async () => {
-      if (!debouncedRefCode) {
-        setRefDetails(null);
-        return;
-      }
-
-      setRefLoading(true); // ✅ Start loading
-      try {
-        const token = localStorage.getItem("token"); // ✅ Get token
-        const response = await fetch(
-          `${BASE_URL}${API_LIST.GET_DETAILS_BY_REFER_CODE}/${debouncedRefCode}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // ✅ Add token in header
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch referral details");
-        }
-
-        const data = await response.json();
-
-        if (data?.data?.id) {
-          const supAff = data?.data;
-          setRefDetails(supAff);
-          setForm((prev) => ({
-            ...prev,
-            commission_percent: supAff?.commission_percent
-              ? Number(supAff?.commission_percent) / 2
-              : null,
-            role: "affiliate",
-            minTrx: supAff?.minTrx || "",
-            maxTrx: supAff?.maxTrx || "",
-            currency: supAff?.currency || null,
-          }));
-        } else {
-          setRefDetails(null);
-        }
-      } catch (error) {
-        console.error("Error fetching referral details:", error);
-        setRefDetails(null);
-      } finally {
-        setRefLoading(false); // ✅ Stop loading
-      }
-    };
-
-    fetchReferralDetails();
+    if (debouncedRefCode) {
+      fetchReferralDetails();
+    }
   }, [debouncedRefCode]);
-  console.log(refDetails);
+
+  const getRequest = useGetRequest();
+
   return (
     <form
       className="grid grid-cols-1 md:grid-cols-3 gap-4"

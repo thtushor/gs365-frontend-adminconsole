@@ -124,6 +124,8 @@ import AffiliateCommissionListPage from "../components/AffiliateCommissionPage";
 import PlayerGamesPage from "../components/PlayerGamesPage";
 import MenuManagement from "../components/MenuManagement";
 import AffiliateWithdrawRequestListPage from "../components/AffiliateWithdrawRequestListPage";
+import KYCVerificationPage from "../components/KYCVerificationPage";
+import KYCRequestList from "../components/KYCRequestList";
 
 export const menu = [
   {
@@ -144,7 +146,7 @@ export const menu = [
         icon: <FaUserFriends />,
       },
       {
-        label: "Transactions",
+        label: "Player Transactions",
         path: "/transactions",
         component: TransactionsPage,
         icon: <FaMoneyCheckAlt />,
@@ -634,6 +636,11 @@ export const menu = [
         path: "/owner/permission",
         component: OwnerPermissionPage,
       },
+      {
+        label: "KYC Request History",
+        path: "/kyc-request-history",
+        component: KYCRequestList,
+      },
     ],
   },
   {
@@ -739,6 +746,7 @@ export const affiliateOutsideRoute = [
     path: "/affiliate-list/:affiliateId/withdraw-history",
     component: AffiliateWithdrawHistory,
   },
+
   // {
   //   label: "Sub Affiliate C. History",
   //   path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
@@ -753,6 +761,11 @@ export const affiliateOutsideRoute = [
     label: "Commission History",
     path: "/affiliate-list/:affiliateId/affiliate-commission-history",
     component: AffiliateCommissionListPage,
+  },
+  {
+    label: "KYC Verification",
+    path: "/affiliate-list/:affiliateId/kyc-verification",
+    component: KYCVerificationPage,
   },
 ];
 export const gameProviderOutsideRoute = [

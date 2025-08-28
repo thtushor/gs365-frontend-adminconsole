@@ -33,7 +33,7 @@ const PaymentGatewaysPage = () => {
     name: "",
     network: "",
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
   });
 
   // Form data
@@ -49,7 +49,7 @@ const PaymentGatewaysPage = () => {
     countryId: "",
     network: "",
     currencyConversionRate: "",
-    bonus: 0
+    bonus: 0,
   });
 
   // React Query hooks
@@ -60,7 +60,7 @@ const PaymentGatewaysPage = () => {
     error,
   } = usePaymentGateways(filters);
 
-  console.log({paymentGateways});
+  console.log({ paymentGateways });
 
   const { data: paymentMethodTypes } = usePaymentMethodTypes();
   const { useCountries } = useCountryData();
@@ -84,7 +84,7 @@ const PaymentGatewaysPage = () => {
       maxWithdraw: "",
       countryId: "",
       network: "",
-      bonus:0,
+      bonus: 0,
       currencyConversionRate: "",
     });
     setUploadedImage(null);
@@ -413,7 +413,9 @@ const PaymentGatewaysPage = () => {
         currentPage={filters.page || 1}
         pageSize={filters.pageSize || 10}
         onPageChange={(page) => handleFilterChange("page", page)}
-        onPageSizeChange={(pageSize) => handleFilterChange("pageSize", pageSize)}
+        onPageSizeChange={(pageSize) =>
+          handleFilterChange("pageSize", pageSize)
+        }
       />
 
       {/* Create/Edit Modal */}
