@@ -29,6 +29,14 @@ export const playerRoutes = [
     path: "/players/:playerId/profile/games",
   },
   {
+    label: "Turnover",
+    path: "/players/:playerId/profile/turnover",
+  },
+  {
+    label: "Promotions",
+    path: "/players/:playerId/profile/promotion",
+  },
+  {
     label: "Login History",
     path: "/players/:playerId/login-history",
   },

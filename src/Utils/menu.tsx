@@ -70,6 +70,7 @@ import LoginHistoryPage from "../components/LoginHistoryPage";
 import CreateAffiliate from "../components/CreateAffiliate";
 import AffiliateListPage from "../components/AffiliateListPage";
 import PlayerLoginHistoryPage from "../components/PlayerLoginHistoryPage";
+import PlayerTurnoverPage from "../components/PlayerTurnoverPage";
 import CountryManagementPage from "../components/CountryManagementPage";
 import CountryList from "../components/CountryList";
 import CurrencyList from "../components/CurrencyList";
@@ -594,6 +595,12 @@ export const menu = [
     label: "Player Games",
     path: "/players/:playerId/profile/games",
     component: PlayerGamesPage,
+    skipFromMenu: true,
+  },
+  {
+    label: "Player Turnover",
+    path: "/players/:playerId/profile/turnover",
+    component: PlayerTurnoverPage,
     skipFromMenu: true,
   },
   {
