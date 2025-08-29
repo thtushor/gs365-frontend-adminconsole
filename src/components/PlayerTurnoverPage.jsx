@@ -90,7 +90,7 @@ const PlayerTurnoverPage = () => {
   };
 
   const formatCurrency = (amount) => {
-    return parseFloat(amount).toFixed(2);
+    return `BDT ${parseFloat(amount).toFixed(2)}`;
   };
 
   const formatDate = (dateString) => {
@@ -242,19 +242,19 @@ const PlayerTurnoverPage = () => {
                     <div>
                       <div className="text-sm text-gray-500">Deposit Amount</div>
                       <div className="text-lg font-semibold text-green-600">
-                        ${formatCurrency(turnover.depositAmount)}
+                        {formatCurrency(turnover.depositAmount)}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-gray-500">Target Turnover</div>
                       <div className="text-lg font-semibold text-blue-600">
-                        ${formatCurrency(turnover.targetTurnover)}
+                        {formatCurrency(turnover.targetTurnover)}
                       </div>
                     </div>
                     <div>
                       <div className="text-sm text-gray-500">Remaining Turnover</div>
                       <div className="text-lg font-semibold text-orange-600">
-                        ${formatCurrency(turnover.remainingTurnover)}
+                        {formatCurrency(turnover.remainingTurnover)}
                       </div>
                     </div>
                   </div>

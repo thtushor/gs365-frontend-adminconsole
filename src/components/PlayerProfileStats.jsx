@@ -237,7 +237,7 @@ const PlayerProfileStats = ({ playerDetails }) => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">
-                      ${parseFloat(transaction.amount).toFixed(2)}
+                      BDT {parseFloat(transaction.amount).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
@@ -299,7 +299,7 @@ const PlayerProfileStats = ({ playerDetails }) => {
                     {bet.gameName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${parseFloat(bet.betAmount).toFixed(2)}
+                    BDT {parseFloat(bet.betAmount).toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -317,11 +317,11 @@ const PlayerProfileStats = ({ playerDetails }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     {bet.betStatus === "win" ? (
                       <span className="text-green-600 font-medium">
-                        +${parseFloat(bet.winAmount).toFixed(2)}
+                        +BDT {parseFloat(bet.winAmount).toFixed(2)}
                       </span>
                     ) : bet.betStatus === "loss" ? (
                       <span className="text-red-600 font-medium">
-                        -${parseFloat(bet.lossAmount).toFixed(2)}
+                        -BDT {parseFloat(bet.lossAmount).toFixed(2)}
                       </span>
                     ) : (
                       <span className="text-gray-500">-</span>

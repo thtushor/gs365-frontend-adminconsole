@@ -98,7 +98,7 @@ const PlayerProfile = () => {
       <div className="border-[#07122b] border text-black bg-white p-4 py-2 rounded shadow-md w-full sm:w-fit">
         <div className="text-xs font-medium text-gray-600">{label}</div>
         <div className={`text-[20px] font-semibold truncate ${colorClasses[color]}`}>
-          {typeof value === 'number' ? `$${value.toFixed(2)}` : value || 0}
+          {typeof value === 'number' ? `BDT ${value.toFixed(2)}` : value || 0}
         </div>
       </div>
     );
