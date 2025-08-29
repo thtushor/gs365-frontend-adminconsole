@@ -19,7 +19,7 @@ import {
   FaUniversity
 } from "react-icons/fa";
 import ReusableModal from "./ReusableModal";
-import { StatusChip } from "./shared/StatusChip";
+import StatusChip from "./shared/StatusChip";
 
 const PlayerPaymentsPage = () => {
   const { playerId } = useParams();
