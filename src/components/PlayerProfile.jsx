@@ -17,6 +17,10 @@ export const playerRoutes = [
     path: "/players/:playerId/profile",
   },
   {
+    label: "Payments",
+    path: "/players/:playerId/payments",
+  },
+  {
     label: "Transactions",
     path: "/players/:playerId/profile/transactions",
   },

@@ -1,5 +1,5 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -165,6 +165,19 @@ export const API_LIST = {
   GET_ALL_KYC: "/api/admin/kyc",
   UPDATE_KYC_STATUS: "/api/admin/update-kyc-status",
   SEND_KYC_REQUEST: "/api/admin/send-kyc-verification-request",
+  
+  // Withdrawal Payment Accounts
+  GET_WITHDRAWAL_PAYMENT_ACCOUNTS: "/api/withdrawal-payment-accounts",
+  CREATE_WITHDRAWAL_PAYMENT_ACCOUNT: "/api/withdrawal-payment-accounts",
+  GET_WITHDRAWAL_PAYMENT_ACCOUNT: "/api/withdrawal-payment-accounts",
+  UPDATE_WITHDRAWAL_PAYMENT_ACCOUNT: "/api/withdrawal-payment-accounts",
+  DELETE_WITHDRAWAL_PAYMENT_ACCOUNT: "/api/withdrawal-payment-accounts",
+  GET_USER_WITHDRAWAL_PAYMENT_ACCOUNTS: "/api/withdrawal-payment-accounts/user",
+  GET_USER_PRIMARY_ACCOUNT: "/api/withdrawal-payment-accounts/user",
+  DEACTIVATE_ACCOUNT: "/api/withdrawal-payment-accounts",
+  SET_PRIMARY_ACCOUNT: "/api/withdrawal-payment-accounts",
+  UPDATE_VERIFICATION_STATUS: "/api/withdrawal-payment-accounts",
+  GET_ACCOUNT_STATISTICS: "/api/withdrawal-payment-accounts/stats",
 };
 
 export const DROPDOWN_ID = {
