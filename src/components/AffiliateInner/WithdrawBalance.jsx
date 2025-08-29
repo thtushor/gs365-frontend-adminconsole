@@ -10,14 +10,14 @@ import { useTransactions } from "../../hooks/useTransactions";
 
 const defaultFilters = {
   page: 1,
-  pageSize: 10,
+  pageSize: 20,
   type: "withdraw",
   status: "pending",
   search: "",
   sortBy: "createdAt",
   sortOrder: "desc",
   userId: "",
-  userType: "affiliate",
+  historyType: "affiliate",
   affiliateId: "",
 };
 
@@ -48,7 +48,7 @@ const WithdrawBalance = () => {
   const postRequest = usePostRequest();
 
   const [form, setForm] = useState({
-    amount: withdrawAbleBalance() || 0,
+    amount: "",
     currencyId: affiliateInfo?.currency || "",
     withdrawMethod: "bank",
     notes: "",
@@ -271,7 +271,7 @@ const WithdrawBalance = () => {
                 type="number"
                 name="amount"
                 placeholder="Amount"
-                value={form.amount}
+                value={form.amount || withdrawAbleBalance()}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
@@ -324,7 +324,11 @@ const WithdrawBalance = () => {
                       <input
                         type="text"
                         name={label === "Network" ? "network" : "walletAddress"}
-                        placeholder={label}
+                        placeholder={
+                          label === "Network"
+                            ? "Ex: bKash / crypto / paypal etc."
+                            : label
+                        }
                         value={
                           label === "Network"
                             ? form.network

@@ -18,7 +18,7 @@ const ChildProviderList = () => {
 
   const [filters, setFilters] = useState({
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     name: "",
     status: "",
     parentId: gameProviderId,

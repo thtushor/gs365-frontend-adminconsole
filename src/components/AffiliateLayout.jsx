@@ -5,7 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
 import { Spin } from "antd";
-import { useTransactions } from "../hooks/useTransactions";
+import { HiMiniInformationCircle } from "react-icons/hi2";
+import { BiCheck, BiCheckSquare, BiCopy } from "react-icons/bi";
+import { toast } from "react-toastify";
 
 export const affiliateRoutes = [
   {
@@ -32,6 +34,10 @@ export const affiliateRoutes = [
     label: "Commission History",
     path: "/affiliate-list/:affiliateId/affiliate-commission-history",
   },
+  {
+    label: "KYC Verification",
+    path: "/affiliate-list/:affiliateId/kyc-verification",
+  },
 ];
 
 const AffiliateLayout = () => {
@@ -56,6 +62,13 @@ const AffiliateLayout = () => {
     keepPreviousData: true,
     enabled: !!affiliateId,
   });
+
+  useEffect(() => {
+    if (affiliateDetails?.data?.kyc_status === "required") {
+      // Handle the case when KYC is required
+      toast.error("Please complete KYC verification.");
+    }
+  }, [affiliateDetails?.data]);
 
   const {
     data: affiliateCommissionDetails,
@@ -132,10 +145,30 @@ const AffiliateLayout = () => {
         alert("Share not supported on this browser.");
       }
     };
+
+    const [copied, setCopied] = useState(false);
+    const handleCopy = async (code) => {
+      try {
+        await navigator.clipboard.writeText(code);
+        setCopied(true);
+        toast.success("Referral code copied to clipboard!");
+        setTimeout(() => setCopied(false), 1200);
+      } catch (e) {
+        setCopied(false);
+      }
+    };
+
+    const [showTooltip, setShowTooltip] = useState(false);
     return label === "Referral Code" ? (
-      <div className="border-[#07122b] border text-black bg-white p-4 py-2 rounded shadow-md w-full sm:w-fit">
-        <div className="text-sm font-semibold text-gray-600">
-          REF: <span className="text-green-500">{value || "N/A"}</span>
+      <div className="border-[#07122b] border text-black bg-white p-3 py-2 rounded shadow-md w-full sm:w-fit">
+        <div
+          onClick={() => handleCopy(value)}
+          className="text-sm flex cursor-pointer items-center gap-1 font-semibold text-gray-600 relative"
+        >
+          REF: <span className="text-green-500">{value || "N/A"}</span>{" "}
+          <span className="text-green-500 cursor-pointer text-[16px]">
+            {copied ? <BiCheckSquare color="orange" /> : <BiCopy />}
+          </span>
         </div>
         <div className="text-[14px] mt-[2px] font-semibold truncate flex gap-1">
           <button
@@ -164,13 +197,15 @@ const AffiliateLayout = () => {
       <div
         className={`relative z-[1] ${
           label === "Main Balance"
-            ? "bg-orange-400 text-white border-orange-400"
+            ? "bg-blue-400 text-white border-blue-400"
             : label === "Downline Balance"
-            ? "bg-red-500 text-white border-red-500"
+            ? "bg-purple-500 text-white border-purple-500"
             : label === "Withdrawable Balance"
-            ? "bg-green-400 text-white border-green-400"
-            : "bg-white text-black border-[#07122b]"
-        } border   p-4 py-2 rounded shadow-md w-full sm:w-fit`}
+            ? value > 0
+              ? "bg-green-400 text-white border-green-400"
+              : "bg-red-500 text-white border-red-500"
+            : "bg-white text-black"
+        } border   p-3 py-2 rounded shadow-md w-full sm:w-fit`}
       >
         <div
           className={`text-xs font-medium ${
@@ -185,18 +220,33 @@ const AffiliateLayout = () => {
         </div>
         <div className="text-[20px] font-bold truncate">{value || 0}</div>
         {label === "Withdrawable Balance" && (
-          <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
-            {Number(value) >= Number(affiliateDetails?.data?.minTrx) &&
-            Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
-              <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
-                Withdrawable
-              </div>
-            ) : (
-              <p className="bg-red-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-red-500 text-red-500">
-                Not Withdrawable
-              </p>
-            )}
-          </div>
+          <>
+            <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
+              {Number(value) >= Number(affiliateDetails?.data?.minTrx) &&
+              Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
+                <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
+                  Withdrawable
+                </div>
+              ) : (
+                <p className="bg-red-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-red-500 text-red-500">
+                  Not Withdrawable
+                </p>
+              )}
+            </div>
+
+            <div
+              className="absolute bottom-[2px] right-[2px] text-[18px] text-white/70 cursor-pointer"
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              <HiMiniInformationCircle />
+              {showTooltip && (
+                <div className="absolute top-full mb-1 right-0 bg-green-500 text-black font-semibold text-[12px] px-2 py-1 rounded shadow-md whitespace-nowrap">
+                  (Main Balance - Downline Balance) = Withdrawable Balance
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     );
@@ -204,8 +254,8 @@ const AffiliateLayout = () => {
 
   return (
     <div>
-      <nav className="bg-[#07122b] sticky top-[-24px] z-[5] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3">
-        <ul className="flex gap-4 flex-wrap">
+      <nav className="bg-[#07122b] sticky top-[-24px] z-[5] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3 flex items-center justify-between md:flex-row flex-col gap-3 text-[12px] md:text-base">
+        <ul className="flex gap-2 md:gap-4 flex-wrap">
           {filteredRoutes.map(({ label, path }) => {
             const to = path.replace(":affiliateId", affiliateId);
             const isActive =
@@ -215,7 +265,7 @@ const AffiliateLayout = () => {
                   location.pathname.startsWith(to + "/");
 
             return (
-              <li key={label}>
+              <li key={label} className="relative">
                 <Link
                   to={to}
                   className={`${
@@ -226,10 +276,26 @@ const AffiliateLayout = () => {
                 >
                   {label}
                 </Link>
+                {label === "KYC Verification" &&
+                  affiliateDetails?.data?.kyc_status === "required" && (
+                    <div className="absolute top-[-5px] right-[-10px] bg-orange-500 rounded-full">
+                      <div className="band_alert"></div>
+                    </div>
+                  )}
               </li>
             );
           })}
         </ul>
+
+        {affiliateDetails?.data?.referDetails && (
+          <Link
+            to={`/affiliate-list/${affiliateDetails?.data?.referDetails?.id}`}
+            className="block text-[12px] border px-2 py-1 rounded-full w-fit text-green-500 hover:bg-green-500 hover:text-black"
+          >
+            Back to Super Affiliate - (
+            {affiliateDetails?.data?.referDetails?.fullname})
+          </Link>
+        )}
       </nav>
 
       <main className="p-4 bg-[#07122b] mt-5 rounded-lg">

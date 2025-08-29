@@ -13,7 +13,7 @@ const SubAffiliatesList = () => {
   const getRequest = useGetRequest();
   const [filters, setFilters] = useState({
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     title: "",
     status: "",
   });
@@ -139,12 +139,12 @@ const SubAffiliatesList = () => {
       width: 120,
       render: (_, row) => row.device_name,
     },
-    {
-      field: "os_version",
-      headerName: "OS Version",
-      width: 120,
-      render: (_, row) => row.os_version,
-    },
+    // {
+    //   field: "os_version",
+    //   headerName: "OS Version",
+    //   width: 120,
+    //   render: (_, row) => row.os_version,
+    // },
     {
       field: "browser",
       headerName: "Browser",
@@ -157,36 +157,40 @@ const SubAffiliatesList = () => {
       width: 120,
       render: (_, row) => row.browser_version,
     },
-    {
-      field: "ip_address",
-      headerName: "IP Address",
-      width: 120,
-      render: (_, row) => row.ip_address,
-    },
-    {
-      field: "total_sub_affiliates",
-      headerName: "Total Sub",
-      width: 120,
-      render: (_, row) => row.total_sub_affiliates || 0,
-    },
-    {
-      field: "total_balance",
-      headerName: "Total Balance",
-      width: 120,
-      render: (_, row) => row.total_balance || 0,
-    },
-    {
-      field: "total_withdraw",
-      headerName: "Total Withdraw",
-      width: 120,
-      render: (_, row) => row.total_withdraw || 0,
-    },
+    // {
+    //   field: "ip_address",
+    //   headerName: "IP Address",
+    //   width: 120,
+    //   render: (_, row) => row.ip_address,
+    // },
+    // {
+    //   field: "total_sub_affiliates",
+    //   headerName: "Total Sub",
+    //   width: 120,
+    //   render: (_, row) => row.total_sub_affiliates || 0,
+    // },
+    // {
+    //   field: "total_balance",
+    //   headerName: "Total Balance",
+    //   width: 120,
+    //   render: (_, row) => row.total_balance || 0,
+    // },
+    // {
+    //   field: "total_withdraw",
+    //   headerName: "Total Withdraw",
+    //   width: 120,
+    //   render: (_, row) => row.total_withdraw || 0,
+    // },
     {
       field: "commission_percentage",
       headerName: "Total Com. %",
       width: 120,
-
-      render: (_, row) => row.commission_percent || 0,
+      align: "center",
+      render: (_, row) => (
+        <span className="font-medium">{`${
+          row.commission_percentage || 0
+        }%`}</span>
+      ),
     },
   ];
 

@@ -158,6 +158,12 @@ export const API_LIST = {
 
   // Users
   GET_ALL_USERS: "/api/users",
+
+  // KYC
+  SUBMIT_KYC: "/api/admin/create-update-kyc",
+  GET_ALL_KYC: "/api/admin/kyc",
+  UPDATE_KYC_STATUS: "/api/admin/update-kyc-status",
+  SEND_KYC_REQUEST: "/api/admin/send-kyc-verification-request",
 };
 
 export const DROPDOWN_ID = {

@@ -19,6 +19,7 @@ export const useTransactions = ({
   sortOrder = "desc",
   userId,
   affiliateId,
+  historyType = "user",
 } = {}) => {
   return useQuery({
     queryKey: [
@@ -34,6 +35,7 @@ export const useTransactions = ({
         sortOrder,
         userId,
         affiliateId,
+        historyType,
       },
     ],
     queryFn: async () => {
@@ -50,6 +52,7 @@ export const useTransactions = ({
       if (search) params.search = search;
       if (userId) params.userId = userId;
       if (affiliateId) params.affiliateId = affiliateId;
+      if (historyType) params.historyType = historyType;
 
       const { data } = await Axios.get(API_LIST.PAYMENT_TRANSACTION, {
         params,
