@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import Axios from "../api/axios";
-import { FaSpinner, FaFilter } from "react-icons/fa";
+import { FaSpinner, FaFilter, FaArrowLeft } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { BiRefresh } from "react-icons/bi";
 
 const PlayerTurnoverPage = () => {
   const { playerId } = useParams();
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -56,6 +57,10 @@ const PlayerTurnoverPage = () => {
   const handleRefresh = () => {
     refetch();
     toast.info("Data refreshed");
+  };
+
+  const handleBackToProfile = () => {
+    navigate(`/players/${playerId}/profile`);
   };
 
   const getStatusBadgeClass = (status) => {
@@ -135,24 +140,33 @@ const PlayerTurnoverPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">Player Turnover</h2>
-          <p className="text-gray-600">
-            Track player turnover requirements and progress
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefresh}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2"
-          >
-            <BiRefresh className="text-sm" />
-            Refresh
-          </button>
-        </div>
-      </div>
+             {/* Header */}
+       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+         <div className="flex items-center gap-4">
+           <button
+             onClick={handleBackToProfile}
+             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition flex items-center gap-2"
+           >
+             <FaArrowLeft className="text-sm" />
+             Back to Profile
+           </button>
+           <div>
+             <h2 className="text-2xl font-bold text-gray-800">Player Turnover</h2>
+             <p className="text-gray-600">
+               Track player turnover requirements and progress
+             </p>
+           </div>
+         </div>
+         <div className="flex items-center gap-3">
+           <button
+             onClick={handleRefresh}
+             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2"
+           >
+             <BiRefresh className="text-sm" />
+             Refresh
+           </button>
+         </div>
+       </div>
 
       {/* Filters */}
       <div className="bg-white rounded-lg p-4 border border-gray-200">
