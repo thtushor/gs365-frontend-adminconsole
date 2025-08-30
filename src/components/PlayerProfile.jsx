@@ -2,7 +2,13 @@ import { Link, Outlet, useParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import Axios from "../api/axios";
-import { FaUser, FaExchangeAlt, FaDice, FaGamepad, FaEdit } from "react-icons/fa";
+import {
+  FaUser,
+  FaExchangeAlt,
+  FaDice,
+  FaGamepad,
+  FaEdit,
+} from "react-icons/fa";
 import PlayerProfileStats from "./PlayerProfileStats";
 import ReusableModal from "./ReusableModal";
 import PlayerForm from "./PlayerForm";
@@ -10,6 +16,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
+import KycRequestButton from "../Utils/KycRequestButton";
 
 export const playerRoutes = [
   {
@@ -60,7 +67,12 @@ const PlayerProfile = () => {
   } = useQuery({
     queryKey: ["playerProfile", playerId],
     queryFn: async () => {
-      const res = await Axios.get(`${BASE_URL}${API_LIST.GET_PLAYER_PROFILE.replace(':playerID', playerId)}`);
+      const res = await Axios.get(
+        `${BASE_URL}${API_LIST.GET_PLAYER_PROFILE.replace(
+          ":playerID",
+          playerId
+        )}`
+      );
       if (!res.data.status) throw new Error("Failed to fetch player profile");
       return res.data.data;
     },
@@ -101,8 +113,10 @@ const PlayerProfile = () => {
     return (
       <div className="border-[#07122b] border text-black bg-white p-4 py-2 rounded shadow-md w-full sm:w-fit">
         <div className="text-xs font-medium text-gray-600">{label}</div>
-        <div className={`text-[20px] font-semibold truncate ${colorClasses[color]}`}>
-          {typeof value === 'number' ? `BDT ${value.toFixed(2)}` : value || 0}
+        <div
+          className={`text-[20px] font-semibold truncate ${colorClasses[color]}`}
+        >
+          {typeof value === "number" ? `BDT ${value.toFixed(2)}` : value || 0}
         </div>
       </div>
     );
@@ -123,7 +137,9 @@ const PlayerProfile = () => {
   if (isLoading) {
     return (
       <div className="bg-[#f5f5f5] w-full min-h-full p-4">
-        <div className="text-center text-gray-500 py-8">Loading player profile...</div>
+        <div className="text-center text-gray-500 py-8">
+          Loading player profile...
+        </div>
       </div>
     );
   }
@@ -131,7 +147,9 @@ const PlayerProfile = () => {
   if (isError || !playerDetails) {
     return (
       <div className="bg-[#f5f5f5] w-full min-h-full p-4">
-        <div className="text-center text-red-500 py-8">Failed to load player profile.</div>
+        <div className="text-center text-red-500 py-8">
+          Failed to load player profile.
+        </div>
       </div>
     );
   }
@@ -181,18 +199,41 @@ const PlayerProfile = () => {
               <FaUser className="text-white text-2xl" />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-800">{playerDetails.fullname}</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {playerDetails.fullname}
+              </h1>
               <p className="text-gray-600">@{playerDetails.username}</p>
               <p className="text-sm text-gray-500">{playerDetails.email}</p>
             </div>
             <div className="flex items-center gap-3">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                playerDetails.status === 'active' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {playerDetails.status}
-              </span>
+              <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
+                ACC:
+                <span
+                  className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
+                    playerDetails.status === "active"
+                      ? "bg-green-100 text-green-500 border-green-500"
+                      : "bg-red-100 text-red-500 border-red-500"
+                  }`}
+                >
+                  {playerDetails.status || "Unverified"}
+                </span>
+              </div>
+              <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
+                KYC:
+                <span
+                  className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
+                    playerDetails.kyc_status === "verified"
+                      ? "bg-green-100 text-green-500 border-green-500"
+                      : "bg-red-100 text-red-500 border-red-500"
+                  }`}
+                >
+                  {playerDetails.kyc_status || "Unverified"}
+                </span>
+              </div>
+              <KycRequestButton
+                holderId={playerDetails?.id}
+                holderType={"player"}
+              />
               <button
                 onClick={handleEditProfile}
                 className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
@@ -202,7 +243,7 @@ const PlayerProfile = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div>
               <span className="text-gray-500">Phone:</span>
@@ -210,7 +251,9 @@ const PlayerProfile = () => {
             </div>
             <div>
               <span className="text-gray-500">Currency:</span>
-              <span className="ml-2 font-medium">{playerDetails.currency?.code} ({playerDetails.currency?.name})</span>
+              <span className="ml-2 font-medium">
+                {playerDetails.currency?.code} ({playerDetails.currency?.name})
+              </span>
             </div>
             <div>
               <span className="text-gray-500">User Type:</span>
@@ -218,7 +261,9 @@ const PlayerProfile = () => {
             </div>
             <div>
               <span className="text-gray-500">Created:</span>
-              <span className="ml-2 font-medium">{new Date(playerDetails.created_at).toLocaleDateString()}</span>
+              <span className="ml-2 font-medium">
+                {new Date(playerDetails.created_at).toLocaleDateString()}
+              </span>
             </div>
           </div>
         </div>
@@ -293,7 +338,11 @@ const PlayerProfile = () => {
             />
             <HighlightBox
               label="Last Login"
-              value={playerDetails.lastLogin ? new Date(playerDetails.lastLogin).toLocaleDateString() : 'Never'}
+              value={
+                playerDetails.lastLogin
+                  ? new Date(playerDetails.lastLogin).toLocaleDateString()
+                  : "Never"
+              }
               color="gray"
             />
           </div>

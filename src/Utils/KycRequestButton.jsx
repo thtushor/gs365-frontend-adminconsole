@@ -4,8 +4,10 @@ import { toast } from "react-toastify";
 import { LuSend } from "react-icons/lu";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { usePostRequest } from "../Utils/apiClient";
+import { useAuth } from "../hooks/useAuth";
 
 const KycRequestButton = ({ holderType, holderId }) => {
+  const { user } = useAuth();
   const postRequest = usePostRequest();
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +23,7 @@ const KycRequestButton = ({ holderType, holderId }) => {
     },
     onSuccess: () => {
       //   toast.success("KYC request sent successfully!");
+      window.location.reload();
     },
     onError: (err) => {
       console.error(err);
@@ -29,21 +32,23 @@ const KycRequestButton = ({ holderType, holderId }) => {
   });
 
   return (
-    <button
-      disabled={loading}
-      onClick={() => mutation.mutate()}
-      className={`text-base font-semibold cursor-pointer w-[180px] px-3 py-1 rounded-full flex items-center gap-1
+    user?.role === "admin" && (
+      <button
+        disabled={loading}
+        onClick={() => mutation.mutate()}
+        className={`text-base font-semibold cursor-pointer w-[180px] px-3 py-1 rounded-full flex items-center gap-1
         ${
           loading
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-green-500 hover:bg-green-700 text-white"
         }`}
-    >
-      <LuSend />
-      <span className="mt-[-2px]">
-        {loading ? "Sending..." : "Send KYC Request"}
-      </span>
-    </button>
+      >
+        <LuSend />
+        <span className="mt-[-2px]">
+          {loading ? "Sending..." : "Send KYC Request"}
+        </span>
+      </button>
+    )
   );
 };
 

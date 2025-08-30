@@ -26,6 +26,7 @@ const KYCVerificationPage = () => {
     documentType: "",
     documentNo: "",
     expiryDate: "",
+    dob: "",
   });
 
   const [uploads, setUploads] = useState({
@@ -45,6 +46,7 @@ const KYCVerificationPage = () => {
         documentType: d.documentType || "",
         documentNo: d.documentNo || "",
         expiryDate: d.expiryDate?.split("T")[0] || "", // keep yyyy-mm-dd format
+        dob: d.dob?.split("T")[0] || "",
       });
 
       setUploads({
@@ -178,6 +180,19 @@ const KYCVerificationPage = () => {
                 className="w-full mt-1 p-2 border rounded-md"
               />
             </div>
+            {/* Date of Birth */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                name="dob"
+                value={formData.dob}
+                onChange={handleInputChange}
+                className="w-full mt-1 p-2 border rounded-md"
+              />
+            </div>
 
             {/* Uploads */}
             {[
@@ -205,7 +220,7 @@ const KYCVerificationPage = () => {
             <div>
               <button
                 type="submit"
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
+                className="bg-green-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
                 disabled={
                   submitLoading ||
                   kycDetails?.data.holderKycStatus === "verified"
@@ -226,7 +241,6 @@ const KYCVerificationPage = () => {
           <h1 className="text-base font-semibold bg-[#07122b] text-white px-3 w-fit rounded-full py-1 pt-[2px] mb-2">
             Details Preview
           </h1>
-
           {kycDetails?.data && (
             <>
               <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 bg-white px-3 py-2 rounded-md">
@@ -236,6 +250,9 @@ const KYCVerificationPage = () => {
               <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 bg-white px-3 py-2 rounded-md">
                 <p>Holder Email:</p>{" "}
                 {kycDetails?.data.holderEmail || "Not selected"}
+              </p>
+              <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 bg-white px-3 py-2 rounded-md">
+                <p>Date of Birth:</p> {kycDetails?.data.dob || "Not selected"}
               </p>
               <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200  bg-white px-3 py-2 rounded-md">
                 <p>Holder Kyc Status:</p>{" "}
@@ -261,6 +278,9 @@ const KYCVerificationPage = () => {
           </p>
           <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 px-3  bg-white py-2 rounded-md">
             <p>Expiry Date:</p> {formData.expiryDate || "Not set"}
+          </p>{" "}
+          <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 bg-white px-3 py-2 rounded-md">
+            <p>Date of Birth:</p> {formData.dob || "Not selected"}
           </p>
           <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 px-3  bg-white py-2 rounded-md">
             <p>Status:</p>{" "}
@@ -274,7 +294,6 @@ const KYCVerificationPage = () => {
               {status}
             </span>
           </p>
-
           {/* Uploaded Images Preview */}
           <div className="grid grid-cols-3 gap-3 mt-4">
             {uploads.front && (

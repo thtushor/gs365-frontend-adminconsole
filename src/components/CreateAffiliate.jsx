@@ -4,6 +4,7 @@ import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
+import { Link } from "react-router-dom";
 
 const defaultForm = {
   username: "",
@@ -18,7 +19,7 @@ const defaultForm = {
   maxTrx: "",
   currency: null,
   commission_percent: null,
-  status: "active",
+  status: "inactive",
 };
 
 const CreateAffiliate = () => {
@@ -36,7 +37,7 @@ const CreateAffiliate = () => {
     try {
       const payload = {
         ...data,
-        role: data?.refer_code ? "affiliate" : "superAffiliate", // enforce fixed role
+        role: data?.refer_code ? "affiliate" : "superAffiliate",
         createdBy: user.id,
       };
 
@@ -72,16 +73,28 @@ const CreateAffiliate = () => {
     window.print();
   };
 
+  const isAdmin = user?.role === "admin";
+
   return (
     <div className="bg-[#f5f5f5] min-h-screen p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">CREATE AFFILIATE</h2>
-        <button
-          onClick={handlePrint}
-          className="border border-green-400 text-green-600 px-4 py-1 rounded hover:bg-green-50 print:hidden"
-        >
-          Print
-        </button>
+
+        {isAdmin ? (
+          <button
+            onClick={handlePrint}
+            className="border border-green-400 text-green-600 px-4 py-1 rounded hover:bg-green-50 print:hidden"
+          >
+            Print
+          </button>
+        ) : (
+          <Link
+            to={`/affiliate-list/${user?.id}`}
+            className="border border-green-400 text-green-600 px-4 py-1 rounded hover:bg-green-50 print:hidden"
+          >
+            Back To Profile
+          </Link>
+        )}
       </div>
 
       {error && (

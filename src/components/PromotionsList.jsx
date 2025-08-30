@@ -142,6 +142,21 @@ const PromotionsList = () => {
       ),
     },
     {
+      field: "isRecommended",
+      headerName: "Is Recommended",
+      width: 100,
+      align: "center",
+      render: (value) => (
+        <span
+          className={`px-2 py-1 text-center rounded-full pb-1 capitalize block text-xs font-medium ${
+            value ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {value ? "Yes" : "No"}
+        </span>
+      ),
+    },
+    {
       field: "action",
       headerName: "Action",
       width: 80,

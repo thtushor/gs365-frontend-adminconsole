@@ -7,6 +7,7 @@ import { API_LIST, BASE_URL } from "../../api/ApiList";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { useGetRequest } from "../../Utils/apiClient";
+import { useAuth } from "../../hooks/useAuth";
 
 // simple debounce hook
 function useDebounce(value, delay = 500) {
@@ -36,7 +37,7 @@ const defaultForm = {
   maxTrx: "",
   currency: null,
   commission_percent: null,
-  status: "active",
+  status: "inactive",
   refer_code: "",
 };
 
@@ -49,9 +50,13 @@ export function CreateAgentForm({
   roles,
   isAffiliate = false,
 }) {
+  const { user } = useAuth();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const refCodeFromUrl = queryParams.get("refCode") || "";
+  const refCodeFromUrl =
+    user?.role === "superAffiliate"
+      ? user?.refCode
+      : queryParams.get("refCode") || "";
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
 
   const currencyOptions =
@@ -423,34 +428,38 @@ export function CreateAgentForm({
         )}
       </div>
 
-      {/* status */}
-      <div className="flex flex-col">
-        <label className="font-semibold text-xs mb-1">
-          STATUS <span className="text-red-500">*</span>
-        </label>
-        <select
-          className="border rounded px-3 py-2"
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-          required
-        >
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </div>
+      {user?.role === "admin" && (
+        <div className="flex flex-col">
+          <label className="font-semibold text-xs mb-1">
+            STATUS <span className="text-red-500">*</span>
+          </label>
+          <select
+            className="border rounded px-3 py-2"
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            required
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      )}
 
       {/* referral code */}
       {isRefVisible && (
         <div className="flex flex-col relative">
           <label className="font-semibold text-xs mb-1">REFERRAL CODE</label>
           <input
-            className="border rounded px-3 py-2"
+            className={`border rounded px-3 py-2 ${
+              refLoading || user?.role !== "admin" ? "opacity-50" : ""
+            }`}
             name="refer_code"
             placeholder="Referral Code"
             value={form.refer_code}
             onChange={handleChange}
-            readOnly={refLoading}
+            readOnly={refLoading || user?.role !== "admin"}
+            disabled={refLoading || user?.role !== "admin"}
           />
           {refLoading ? (
             <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">

@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import TextEditor from "./shared/TextEditor";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Select } from "antd";
+import { MdToggleOff, MdToggleOn } from "react-icons/md";
 
 const { Option } = Select;
 
@@ -20,7 +21,8 @@ const defaultForm = {
   bannerImg: null,
   bonus: "",
   description: "",
-  status: "inactive",
+  status: "active",
+  isRecommended: false,
 };
 
 const CreatePromotion = () => {
@@ -74,6 +76,7 @@ const CreatePromotion = () => {
       bonus: data.bonus?.toString() || "",
       description: data.description || "",
       status: data.status || "inactive",
+      isRecommended: data.isRecommended || false,
     });
   };
 
@@ -397,6 +400,29 @@ const CreatePromotion = () => {
             </select>
           </div>
         )}
+
+        <div className="col-span-full sm:col-span-1">
+          <label className="block text-sm mb-1">Is Recommended?</label>
+          <button
+            type="button"
+            onClick={() =>
+              setForm((prev) => ({
+                ...prev,
+                isRecommended: !prev.isRecommended,
+              }))
+            }
+            className={`w-full border border-black flex items-center gap-1 px-3 py-[3px] rounded cursor-pointer ${
+              form.isRecommended ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            Is Recommended
+            {form.isRecommended ? (
+              <MdToggleOn className="text-green-500" size={33} />
+            ) : (
+              <MdToggleOff className="text-red-500" size={33} />
+            )}
+          </button>
+        </div>
 
         <div className="md:col-span-2">
           <TextEditor
