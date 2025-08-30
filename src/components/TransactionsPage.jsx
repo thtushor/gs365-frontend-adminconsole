@@ -164,6 +164,21 @@ const TransactionsPage = ({
         render: (value) => formatDateTime(value),
       },
       {
+        field: "processedBy",
+        headerName: "ProcessedBY",
+        width: 200,
+        render: (_,row) => {
+          return <div className="flex flex-col">
+          <span className="font-medium">
+            {row?.processedBy ? `${row?.processedBy}` : "-"}
+          </span>
+           <span className="font-medium text-gray-500 text-xs">
+            {row?.processedByRoleType ? `Role: ${row?.processedByRoleType}` : "-"}
+          </span>
+         </div>
+        },
+      },
+      {
         field: "action",
         headerName: "Action",
         width: 160,

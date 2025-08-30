@@ -6,6 +6,20 @@ import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
 import { formatAmount } from "./BettingWagerPage";
+import { useQuery } from "@tanstack/react-query";
+import Select from "react-select";
+
+// Custom hook to fetch promotions
+const usePromotions = () => {
+  return useQuery({
+    queryKey: ['promotions'],
+    queryFn: async () => {
+      const response = await Axios.get(API_LIST.GET_PUBLIC_PROMOTION);
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
 
 const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const [depositModalOpen, setDepositModalOpen] = useState(false);
@@ -17,6 +31,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     attachment: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch promotions using react-query
+  const { data: promotionsData, isLoading: promotionsLoading } = usePromotions();
 
   const handleOpenDepositModal = (player) => {
     setSelectedPlayer(player);
@@ -35,6 +52,26 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     if (!depositForm.amount || parseFloat(depositForm.amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
+    }
+
+    // Validate promotion requirements if a promotion is selected
+    if (depositForm.promotionId) {
+      const selectedPromotion = promotionsData?.data?.find(p => p.id === depositForm.promotionId);
+      if (selectedPromotion) {
+        const amount = parseFloat(depositForm.amount);
+        const minAmount = parseFloat(selectedPromotion.minimumDepositAmount);
+        const maxAmount = parseFloat(selectedPromotion.maximumDepositAmount);
+        
+        if (amount < minAmount) {
+          toast.error(`Minimum deposit amount for this promotion is ${formatAmount(minAmount)}`);
+          return;
+        }
+        
+        if (amount > maxAmount) {
+          toast.error(`Maximum deposit amount for this promotion is ${formatAmount(maxAmount)}`);
+          return;
+        }
+      }
     }
     
     setIsSubmitting(true);
@@ -58,6 +95,20 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Transform promotions data for react-select
+  const promotionOptions = promotionsData?.data?.map(promotion => ({
+    value: promotion.id,
+    label: `${promotion.promotionName} (${promotion.bonus}% bonus)`,
+    promotion: promotion
+  })) || [];
+
+  const handlePromotionChange = (selectedOption) => {
+    setDepositForm({
+      ...depositForm,
+      promotionId: selectedOption ? selectedOption.value : ""
+    });
   };
 
   const columns = [
@@ -330,6 +381,44 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               min="0"
               step="0.01"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Promotion (Optional)
+            </label>
+            <Select
+              isClearable
+              isSearchable
+              placeholder="Select a promotion..."
+              options={promotionOptions}
+              value={promotionOptions.find(option => option.value === depositForm.promotionId) || null}
+              onChange={handlePromotionChange}
+              isLoading={promotionsLoading}
+              className="w-full"
+              classNamePrefix="react-select"
+              noOptionsMessage={() => "No promotions available"}
+              loadingMessage={() => "Loading promotions..."}
+            />
+            {depositForm.promotionId && (
+              <div className="mt-2 p-2 bg-blue-50 rounded text-sm text-blue-700">
+                <div className="font-medium">Selected Promotion Details:</div>
+                {(() => {
+                  const selectedPromotion = promotionsData?.data?.find(p => p.id === depositForm.promotionId);
+                  if (selectedPromotion) {
+                    return (
+                      <div className="mt-1 space-y-1">
+                        <div>• Bonus: {selectedPromotion.bonus}%</div>
+                        <div>• Min Deposit: {formatAmount(selectedPromotion.minimumDepositAmount)}</div>
+                        <div>• Max Deposit: {formatAmount(selectedPromotion.maximumDepositAmount)}</div>
+                        <div>• Turnover: {selectedPromotion.turnoverMultiply}x</div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
+            )}
           </div>
        
           <div>
