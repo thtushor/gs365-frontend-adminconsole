@@ -437,7 +437,7 @@ const TransactionsPage = ({
                        <div>
                          <div className="flex justify-between mb-2">
                            <span className="text-gray-600 font-medium">Promotion:</span>
-                           <span className="font-bold text-purple-700">{selectedTx.promotionName}</span>
+                           <span className="font-bold text-purple-700">{selectedTx.promotionName} <br/> (Up to {selectedTx.promotionPercentage||10}% Bonus)</span>
                          </div>
                          <div className="flex justify-between">
                            <span className="text-gray-600 font-medium">Bonus Amount:</span>
