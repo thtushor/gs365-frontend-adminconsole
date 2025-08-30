@@ -384,77 +384,77 @@ const TransactionsPage = ({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left Column - Transaction Details */}
               <div className="lg:col-span-2">
-                {/* Transaction Summary */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
-                    Transaction Summary
-                  </h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Transaction Type:</span>
-                        <span className="font-bold text-gray-800 capitalize">{selectedTx.type}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Amount:</span>
-                        <span className="font-bold text-2xl text-green-600">
-                          {selectedTx.amount} {selectedTx.currencySymbol}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Currency:</span>
-                        <span className="font-semibold text-gray-800">
-                          {selectedTx.currencyName} ({selectedTx.currencyCode})
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Transaction ID:</span>
-                        <span className="font-mono text-sm text-gray-700">{selectedTx.id}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Reference ID:</span>
-                        <span className="font-mono text-sm text-gray-700">{selectedTx.givenTransactionId}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 font-medium">Created:</span>
-                        <span className="font-medium text-gray-800">{formatDateTime(selectedTx.createdAt)}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                                 {/* Transaction Summary */}
+                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
+                   <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                     <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
+                     Transaction Summary
+                   </h2>
+                   <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-3">
+                       <div className="flex justify-between">
+                         <span className="text-gray-600 font-medium">Transaction Type:</span>
+                         <span className="font-bold text-gray-800 capitalize">{selectedTx.type}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600 font-medium">Amount:</span>
+                         <span className="font-bold text-2xl text-green-600">
+                           {formatAmount(selectedTx.amount)}
+                         </span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600 font-medium">Currency:</span>
+                         <span className="font-semibold text-gray-800">
+                           BDT (Bangladeshi Taka)
+                         </span>
+                       </div>
+                     </div>
+                     <div className="space-y-3">
+                       <div className="flex justify-between">
+                         <span className="text-gray-600 font-medium">Transaction ID:</span>
+                         <span className="font-mono text-sm text-gray-700">{selectedTx.id}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600 font-medium">Reference ID:</span>
+                         <span className="font-mono text-sm text-gray-700">{selectedTx.givenTransactionId}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-600 font-medium">Created:</span>
+                         <span className="font-medium text-gray-800">{formatDateTime(selectedTx.createdAt)}</span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
 
-                {/* Promotion Details */}
-                {selectedTx.promotionId && (
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6 mb-6">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                      <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
-                      Promotion Applied
-                    </h2>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-gray-600 font-medium">Promotion:</span>
-                          <span className="font-bold text-purple-700">{selectedTx.promotionName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Bonus Amount:</span>
-                          <span className="font-bold text-xl text-purple-600">
-                            {selectedTx.bonusAmount} {selectedTx.currencySymbol}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold text-purple-600 mb-1">
-                          +{selectedTx.bonusAmount} {selectedTx.currencySymbol}
-                        </div>
-                        <div className="text-sm text-gray-600">Bonus Credit</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                                 {/* Promotion Details */}
+                 {selectedTx.promotionId && (
+                   <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6 mb-6">
+                     <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                       <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
+                       Promotion Applied
+                     </h2>
+                     <div className="grid grid-cols-2 gap-4">
+                       <div>
+                         <div className="flex justify-between mb-2">
+                           <span className="text-gray-600 font-medium">Promotion:</span>
+                           <span className="font-bold text-purple-700">{selectedTx.promotionName}</span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600 font-medium">Bonus Amount:</span>
+                           <span className="font-bold text-xl text-purple-600">
+                             {formatAmount(selectedTx.bonusAmount)}
+                           </span>
+                         </div>
+                       </div>
+                       <div className="text-right">
+                         <div className="text-3xl font-bold text-purple-600 mb-1">
+                           +{formatAmount(selectedTx.bonusAmount)}
+                         </div>
+                         <div className="text-sm text-gray-600">Bonus Credit</div>
+                       </div>
+                     </div>
+                   </div>
+                 )}
 
                 {/* Payment Method Details */}
                 {(selectedTx.accountNumber || selectedTx.bankName || selectedTx.walletAddress) && (
