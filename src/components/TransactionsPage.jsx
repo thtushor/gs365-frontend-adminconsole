@@ -108,6 +108,21 @@ const TransactionsPage = ({
         ),
       },
       {
+        field: "bonusAmount",
+        headerName: "Bonus Amount",
+        width: 160,
+        render: (value, row) => (
+         <div className="flex flex-col">
+          <span className="font-medium">
+            {value != null ? `${formatAmount(value)}` : "-"}
+          </span>
+           <span className="font-medium text-gray-500 text-xs">
+            {row?.promotionName != null ? `Promotion: ${row?.promotionName}` : "-"}
+          </span>
+         </div>
+        ),
+      },
+      {
         field: "givenTransactionId",
         headerName: "Given Trx. ID",
         width: 150,

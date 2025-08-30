@@ -5,6 +5,7 @@ import ReusableModal from "./ReusableModal";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
+import { formatAmount } from "./BettingWagerPage";
 
 const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const [depositModalOpen, setDepositModalOpen] = useState(false);
@@ -175,7 +176,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "BALANCE",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-green-600">${value || 0}</span>
+        <span className="font-medium text-green-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -183,7 +184,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "DEPOSITS",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-blue-600">${value || 0}</span>
+        <span className="font-medium text-blue-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -191,7 +192,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "WITHDRAWALS",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-orange-600">${value || 0}</span>
+        <span className="font-medium text-orange-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -199,7 +200,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "WINS",
       width: 100,
       render: (value) => (
-        <span className="font-medium text-green-600">${value || 0}</span>
+        <span className="font-medium text-green-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -207,7 +208,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "LOSSES",
       width: 100,
       render: (value) => (
-        <span className="font-medium text-red-600">${value || 0}</span>
+        <span className="font-medium text-red-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -215,7 +216,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "PENDING DEP",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-yellow-600">${value || 0}</span>
+        <span className="font-medium text-yellow-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -223,7 +224,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "PENDING WIT",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-yellow-600">${value || 0}</span>
+        <span className="font-medium text-yellow-600">{formatAmount(value||0)}</span>
       ),
     },
     {
