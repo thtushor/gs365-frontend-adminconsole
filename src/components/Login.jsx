@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const Login = () => {
+  const userType = import.meta.env.VITE_USER_TYPE;
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [isLoadingLogin, setIsLoadingLogin] = useState(false);
@@ -14,7 +15,9 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/", { replace: true });
+      navigate(user?.role !== "admin" ? `/affiliate-list/${user?.id}` : "/", {
+        replace: true,
+      });
     }
   }, [user, navigate]);
 
@@ -33,6 +36,7 @@ const Login = () => {
       await login({
         userNameOrEmailorPhone: form.username,
         password: form.password,
+        userType,
       });
       setIsLoadingLogin(false);
     } catch (err) {
@@ -42,7 +46,6 @@ const Login = () => {
       toast.error(err.response.data.message || "Login failed");
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-200 p-4">
       <form
@@ -50,7 +53,11 @@ const Login = () => {
         className="bg-white shadow-xl rounded-xl p-8 w-full max-w-md flex flex-col gap-6"
       >
         <h2 className="text-2xl font-bold text-center text-green-700 mb-2">
-          Sign In
+          {userType === "affiliate"
+            ? "Affiliate Sign In"
+            : userType === "agent"
+            ? "Agent Sign In"
+            : "Admin Sign In"}
         </h2>
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700">

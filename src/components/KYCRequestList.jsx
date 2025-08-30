@@ -56,7 +56,8 @@ const KYCRequestList = ({ title = "KYC List" }) => {
     },
     onSuccess: () => {
       setViewModalOpen(false);
-      queryClient.invalidateQueries(["kyc"]); // refetch list
+      queryClient.invalidateQueries(["kyc"]);
+      window.location.reload();
     },
     onError: (err) => {
       console.error("Update failed:", err);
@@ -267,6 +268,10 @@ const KYCRequestList = ({ title = "KYC List" }) => {
                   <span className="font-medium">
                     {selectedKyc.holderEmail || "-"}
                   </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Date of Birth:</span>
+                  <span className="font-medium">{selectedKyc.dob || "-"}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Holder KYC Status:</span>

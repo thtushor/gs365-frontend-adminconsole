@@ -46,7 +46,7 @@ const AffiliateLayout = () => {
   const getRequest = useGetRequest();
 
   const { user, setAffiliateInfo, setAffiliateCommission } = useAuth();
-
+  console.log(user);
   const {
     data: affiliateDetails,
     isLoading,
@@ -63,12 +63,19 @@ const AffiliateLayout = () => {
     enabled: !!affiliateId,
   });
 
+  const isSuperAffiliate =
+    user?.role !== affiliateDetails?.data?.role &&
+    user?.role === "superAffiliate";
+
   useEffect(() => {
-    if (affiliateDetails?.data?.kyc_status === "required") {
-      // Handle the case when KYC is required
-      toast.error("Please complete KYC verification.");
+    if (user?.kyc_status === "required") {
+      if (!toast.isActive("kyc-toast")) {
+        toast.error("Please complete KYC verification.", {
+          toastId: "kyc-toast",
+        });
+      }
     }
-  }, [affiliateDetails?.data]);
+  }, [user?.kyc_status]);
 
   const {
     data: affiliateCommissionDetails,
@@ -122,6 +129,9 @@ const AffiliateLayout = () => {
         route.path.includes("sub-affiliate-commission-history")) &&
       role === "affiliate"
     ) {
+      return false;
+    }
+    if (isSuperAffiliate && route.label !== "Profile") {
       return false;
     }
     return true;
@@ -287,7 +297,7 @@ const AffiliateLayout = () => {
           })}
         </ul>
 
-        {affiliateDetails?.data?.referDetails && (
+        {user?.role !== "affiliate" && affiliateDetails?.data?.referDetails && (
           <Link
             to={`/affiliate-list/${affiliateDetails?.data?.referDetails?.id}`}
             className="block text-[12px] border px-2 py-1 rounded-full w-fit text-green-500 hover:bg-green-500 hover:text-black"

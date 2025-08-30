@@ -35,6 +35,7 @@ export function AuthProvider({ children }) {
     queryKey: ["user-profile"],
     queryFn: async () => {
       const res = await Axios.get(API_LIST.GET_PROFILE);
+
       if (!res.data || !res.data.status) {
         window.location.href = "/login";
         throw new Error("Profile fetch failed");

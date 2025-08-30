@@ -5,17 +5,21 @@ import AffiliateSettingsForm from "./AffiliateInner/AffiliateSettingsForm";
 import WithdrawBalance from "./AffiliateInner/WithdrawBalance";
 
 const AffiliateProfile = () => {
-  const { affiliateInfo } = useAuth();
+  const { affiliateInfo, user } = useAuth();
 
   if (!affiliateInfo) return <div>Loading...</div>;
 
+  const isShow = user?.role === "admin" || user?.id === affiliateInfo?.id;
   return (
     <div className="p-0 space-y-6">
       <AffiliatePersonalInfo info={affiliateInfo} />
 
-      {/* TODO: Shufol bhaiya */}
-      <WithdrawBalance info={affiliateInfo} />
-      <AffiliateSettingsForm info={affiliateInfo} />
+      {isShow && (
+        <>
+          <WithdrawBalance info={affiliateInfo} />
+          <AffiliateSettingsForm info={affiliateInfo} />
+        </>
+      )}
     </div>
   );
 };

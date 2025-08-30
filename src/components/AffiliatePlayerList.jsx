@@ -5,8 +5,10 @@ import { API_LIST, BASE_URL } from "../api/ApiList";
 import { Link, useParams } from "react-router-dom";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
+import { useAuth } from "../hooks/useAuth";
 
 const AffiliatePlayerList = () => {
+  const { user, affiliateInfo } = useAuth();
   const { affiliateId } = useParams();
   const getRequest = useGetRequest();
   const [filters, setFilters] = useState({
@@ -26,6 +28,8 @@ const AffiliatePlayerList = () => {
     keepPreviousData: true,
   });
 
+  const isAdmin = user?.role === "admin";
+
   // console.log("sub affiliate", data);
 
   const columns = [
@@ -40,14 +44,17 @@ const AffiliatePlayerList = () => {
       field: "username",
       headerName: "Username",
       width: 140,
-      render: (_, row) => (
-        <Link
-          to={`/players/${row?.id}/profile`}
-          className="text-green-500 cursor-pointer font-semibold"
-        >
-          {row.username}
-        </Link>
-      ),
+      render: (_, row) =>
+        !isAdmin ? (
+          <div className="font-semibold cursor-default">{row.username}</div>
+        ) : (
+          <Link
+            to={`/players/${row?.id}/profile`}
+            className="text-green-500 cursor-pointer font-semibold"
+          >
+            {row.username}
+          </Link>
+        ),
     },
     {
       field: "fullname",

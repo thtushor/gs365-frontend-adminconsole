@@ -12,6 +12,7 @@ import { CreateAgentForm } from "./shared/CreateAgentForm";
 import { formatDateTime } from "../Utils/dateUtils";
 import { useUsers } from "../hooks/useBetResults";
 import { useAffiliates } from "../hooks/useAffiliates";
+import { useAuth } from "../hooks/useAuth";
 
 const defaultFilters = {
   search: "",
@@ -31,6 +32,7 @@ const AffiliateCommissionListPage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { affiliateId } = useParams();
+  const { user } = useAuth();
 
   // Fetch users and affiliates for filters
   const { data: usersData } = useUsers();
@@ -38,6 +40,8 @@ const AffiliateCommissionListPage = () => {
 
   const users = usersData?.users?.data || [];
   const affiliates = affiliatesData?.data || [];
+
+  const isAdmin = user?.role === "admin";
 
   // Set adminUserId from affiliateId parameter if available
   useEffect(() => {
@@ -95,47 +99,74 @@ const AffiliateCommissionListPage = () => {
       field: "affiliate",
       headerName: "Affiliate",
       width: 200,
-      render: (_, row) => (
-        <div>
-          <Link
-            to={`/affiliate-list/${row?.adminUser?.id}`}
-            className="text-green-500 cursor-pointer font-semibold"
-          >
-            {row?.adminUser?.username}
-          </Link>
-          <p className="text-sm text-gray-600">{row?.adminUser?.fullname}</p>
-          <p className="text-xs text-gray-500">
-            Role:{" "}
-            {row?.adminUser?.role === "affiliate"
-              ? "Sub Affiliate"
-              : row?.adminUser?.role === "superAffiliate"
-              ? "Super Affiliate"
-              : row?.adminUser?.role}
-          </p>
-        </div>
-      ),
+      render: (_, row) =>
+        isAdmin ? (
+          <div>
+            <Link
+              to={`/affiliate-list/${row?.adminUser?.id}`}
+              className="text-green-500 cursor-pointer font-semibold"
+            >
+              {row?.adminUser?.username}
+            </Link>
+            <p className="text-sm text-gray-600">{row?.adminUser?.fullname}</p>
+            <p className="text-xs text-gray-500">
+              Role:{" "}
+              {row?.adminUser?.role === "affiliate"
+                ? "Sub Affiliate"
+                : row?.adminUser?.role === "superAffiliate"
+                ? "Super Affiliate"
+                : row?.adminUser?.role}
+            </p>
+          </div>
+        ) : (
+          <div>
+            <span className="text-black cursor-default font-semibold">
+              {row?.adminUser?.username}
+            </span>
+            <p className="text-sm text-gray-600">{row?.adminUser?.fullname}</p>
+            <p className="text-xs text-gray-500">
+              Role:{" "}
+              {row?.adminUser?.role === "affiliate"
+                ? "Sub Affiliate"
+                : row?.adminUser?.role === "superAffiliate"
+                ? "Super Affiliate"
+                : row?.adminUser?.role}
+            </p>
+          </div>
+        ),
     },
     {
       field: "player",
       headerName: "Player",
       width: 180,
-      render: (_, row) => (
-        <div>
-          <Link
-            to={`/players/${row?.user?.id}/profile`}
-            className="text-green-500 cursor-pointer font-semibold"
-          >
-            {row?.user?.username}
-          </Link>
-          <p className="text-sm text-gray-600">{row?.user?.fullname}</p>
-          <Link
-            to={`/affiliate-list/${row?.referredUser?.id}`}
-            className="text-green-500 cursor-pointer font-semibold"
-          >
-            {row?.referredUser?.fullname}
-          </Link>
-        </div>
-      ),
+      render: (_, row) =>
+        isAdmin ? (
+          <div>
+            <Link
+              to={`/players/${row?.user?.id}/profile`}
+              className="text-green-500 cursor-pointer font-semibold"
+            >
+              {row?.user?.username}
+            </Link>
+            <p className="text-sm text-gray-600">{row?.user?.fullname}</p>
+            <Link
+              to={`/affiliate-list/${row?.referredUser?.id}`}
+              className="text-green-500 cursor-pointer font-semibold"
+            >
+              {row?.referredUser?.fullname}
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <span className="text-black cursor-default font-semibold">
+              {row?.user?.username}
+            </span>
+            <p className="text-sm text-gray-600">{row?.user?.fullname}</p>
+            <span className="text-black cursor-default font-semibold">
+              {row?.referredUser?.fullname}
+            </span>
+          </div>
+        ),
     },
     {
       field: "bet",
@@ -324,24 +355,26 @@ const AffiliateCommissionListPage = () => {
             </div>
           )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Player
-            </label>
-            <select
-              name="playerId"
-              value={filters.playerId}
-              onChange={handleFilterChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Players</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.fullname || user.username}
-                </option>
-              ))}
-            </select>
-          </div>
+          {isAdmin && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Player
+              </label>
+              <select
+                name="playerId"
+                value={filters.playerId}
+                onChange={handleFilterChange}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Players</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.fullname || user.username}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-2 mt-4">
