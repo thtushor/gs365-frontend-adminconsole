@@ -331,20 +331,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               step="0.01"
             />
           </div>
-          
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Promotion ID (Optional)
-            </label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Enter promotion ID"
-              value={depositForm.promotionId}
-              onChange={(e) => setDepositForm({...depositForm, promotionId: e.target.value})}
-            />
-          </div> */}
-          
+       
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes (Optional)
@@ -357,19 +344,6 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               onChange={(e) => setDepositForm({...depositForm, notes: e.target.value})}
             />
           </div>
-          
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Attachment URL (Optional)
-            </label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Enter attachment URL"
-              value={depositForm.attachment}
-              onChange={(e) => setDepositForm({...depositForm, attachment: e.target.value})}
-            />
-          </div> */}
         </div>
       </ReusableModal>
     </>
