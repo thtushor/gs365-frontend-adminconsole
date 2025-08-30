@@ -239,7 +239,7 @@ const TransactionsPage = ({
 
   return (
     <div className="bg-[#f5f5f5] min-h-full p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-start gap-2 mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         {playerId && (
           <button
@@ -392,17 +392,17 @@ const TransactionsPage = ({
                    </h2>
                    <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-3">
-                       <div className="flex justify-between">
+                       <div className="flex justify-start gap-2">
                          <span className="text-gray-600 font-medium">Transaction Type:</span>
                          <span className="font-bold text-gray-800 capitalize">{selectedTx.type}</span>
                        </div>
-                       <div className="flex justify-between">
+                       <div className="flex justify-start gap-2">
                          <span className="text-gray-600 font-medium">Amount:</span>
                          <span className="font-bold text-2xl text-green-600">
                            {formatAmount(selectedTx.amount)}
                          </span>
                        </div>
-                       <div className="flex justify-between">
+                       <div className="flex justify-start gap-2">
                          <span className="text-gray-600 font-medium">Currency:</span>
                          <span className="font-semibold text-gray-800">
                            BDT (Bangladeshi Taka)
@@ -410,15 +410,15 @@ const TransactionsPage = ({
                        </div>
                      </div>
                      <div className="space-y-3">
-                       <div className="flex justify-between">
+                       <div className="flex justify-start gap-2">
                          <span className="text-gray-600 font-medium">Transaction ID:</span>
-                         <span className="font-mono text-sm text-gray-700">{selectedTx.id}</span>
+                         <span className="font-bold text-sm text-gray-700">{selectedTx.id}</span>
                        </div>
-                       <div className="flex justify-between">
+                       <div className="flex justify-start gap-2">
                          <span className="text-gray-600 font-medium">Reference ID:</span>
-                         <span className="font-mono text-sm text-gray-700">{selectedTx.givenTransactionId}</span>
+                         <span className="font-bold text-sm text-gray-700">{selectedTx.givenTransactionId}</span>
                        </div>
-                       <div className="flex justify-between">
+                       <div className="flex justify-start gap-2">
                          <span className="text-gray-600 font-medium">Created:</span>
                          <span className="font-medium text-gray-800">{formatDateTime(selectedTx.createdAt)}</span>
                        </div>
@@ -435,11 +435,11 @@ const TransactionsPage = ({
                      </h2>
                      <div className="grid grid-cols-2 gap-4">
                        <div>
-                         <div className="flex justify-between mb-2">
+                         <div className="flex justify-start gap-2 mb-2">
                            <span className="text-gray-600 font-medium">Promotion:</span>
                            <span className="font-bold text-purple-700">{selectedTx.promotionName} <br/> (Up to {selectedTx.promotionPercentage||10}% Bonus)</span>
                          </div>
-                         <div className="flex justify-between">
+                         <div className="flex justify-start gap-2">
                            <span className="text-gray-600 font-medium">Bonus Amount:</span>
                            <span className="font-bold text-xl text-purple-600">
                              {formatAmount(selectedTx.bonusAmount)}
@@ -465,37 +465,37 @@ const TransactionsPage = ({
                     </h2>
                     <div className="space-y-3">
                       {selectedTx.accountNumber && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Account Number:</span>
-                          <span className="font-mono font-semibold text-gray-800">{selectedTx.accountNumber}</span>
+                          <span className="font-bold font-semibold text-gray-800">{selectedTx.accountNumber}</span>
                         </div>
                       )}
                       {selectedTx.accountHolderName && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Account Holder:</span>
                           <span className="font-semibold text-gray-800">{selectedTx.accountHolderName}</span>
                         </div>
                       )}
                       {selectedTx.bankName && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Bank Name:</span>
                           <span className="font-semibold text-gray-800">{selectedTx.bankName}</span>
                         </div>
                       )}
                       {selectedTx.branchName && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Branch:</span>
                           <span className="font-semibold text-gray-800">{selectedTx.branchName}</span>
                         </div>
                       )}
                       {selectedTx.walletAddress && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Wallet Address:</span>
-                          <span className="font-mono text-xs text-gray-700 break-all">{selectedTx.walletAddress}</span>
+                          <span className="font-bold text-xs text-gray-700 break-all">{selectedTx.walletAddress}</span>
                         </div>
                       )}
                       {selectedTx.network && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Network:</span>
                           <span className="font-semibold text-gray-800">{selectedTx.network}</span>
                         </div>
@@ -522,7 +522,7 @@ const TransactionsPage = ({
                       <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
                       Supporting Document
                     </h2>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-start gap-2">
                       <div>
                         <p className="text-gray-700 mb-2">Transaction proof or receipt image</p>
                         <p className="text-sm text-gray-500">Click below to view the attachment</p>
@@ -561,15 +561,15 @@ const TransactionsPage = ({
                       <p className="text-indigo-600 font-medium">@{selectedTx.userUsername}</p>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Email:</span>
                         <span className="font-semibold text-gray-800 text-sm">{selectedTx.userEmail}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Phone:</span>
                         <span className="font-semibold text-gray-800">{selectedTx.userPhone}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Status:</span>
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-bold ${
@@ -581,7 +581,7 @@ const TransactionsPage = ({
                           {selectedTx.userStatus}
                         </span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Verified:</span>
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-bold ${
@@ -615,24 +615,24 @@ const TransactionsPage = ({
                     Processing Details
                   </h2>
                   <div className="space-y-3">
-                    <div className="flex justify-between">
+                    <div className="flex justify-start gap-2">
                       <span className="text-gray-600 font-medium">Created:</span>
                       <span className="font-semibold text-gray-800 text-sm">{formatDateTime(selectedTx.createdAt)}</span>
                     </div>
                     {selectedTx.processedAt && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Processed:</span>
                         <span className="font-semibold text-gray-800 text-sm">{formatDateTime(selectedTx.processedAt)}</span>
                       </div>
                     )}
                     {selectedTx.processedBy && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Processed By:</span>
                         <span className="font-semibold text-gray-800 text-sm">{selectedTx.processedBy}</span>
                       </div>
                     )}
                     {selectedTx.processedByRoleType && (
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Role:</span>
                         <span className="font-semibold text-gray-800 text-sm">{selectedTx.processedByRoleType}</span>
                       </div>
@@ -648,12 +648,12 @@ const TransactionsPage = ({
                       Game Information
                     </h2>
                     <div className="space-y-3">
-                      <div className="flex justify-between">
+                      <div className="flex justify-start gap-2">
                         <span className="text-gray-600 font-medium">Game:</span>
                         <span className="font-semibold text-gray-800">{selectedTx.gameName}</span>
                       </div>
                       {selectedTx.gameStatus && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Status:</span>
                           <span className="font-semibold text-gray-800">{selectedTx.gameStatus}</span>
                         </div>
