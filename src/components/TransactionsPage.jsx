@@ -30,12 +30,14 @@ const defaultFilters = {
 const TransactionsPage = ({
   playerId: propPlayerId,
   title = "Player Transactions",
+  params= {}
 }) => {
   const { playerId: paramPlayerId } = useParams();
   const playerId = propPlayerId || paramPlayerId;
 
   const [filters, setFilters] = useState({
     ...defaultFilters,
+    ...(params||{}),
     userId: playerId || "",
   });
   const [selectedTx, setSelectedTx] = useState(null);
@@ -239,7 +241,7 @@ const TransactionsPage = ({
 
   return (
     <div className="bg-[#f5f5f5] min-h-full p-4">
-      <div className="flex items-center justify-start gap-2 mb-4">
+      <div className="flex items-center justify-between gap-2 mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         {playerId && (
           <button
@@ -358,7 +360,7 @@ const TransactionsPage = ({
               <div className="text-center mb-4">
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">TRANSACTION RECEIPT</h1>
                 <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
-                  <span>Receipt #: {selectedTx.customTransactionId}</span>
+                  <span>System Trx #: {selectedTx.customTransactionId}</span>
                   <span>•</span>
                   <span>Date: {formatDateTime(selectedTx.createdAt)}</span>
                 </div>
@@ -410,14 +412,11 @@ const TransactionsPage = ({
                        </div>
                      </div>
                      <div className="space-y-3">
-                       <div className="flex justify-start gap-2">
-                         <span className="text-gray-600 font-medium">Transaction ID:</span>
-                         <span className="font-bold text-sm text-gray-700">{selectedTx.id}</span>
-                       </div>
-                       <div className="flex justify-start gap-2">
-                         <span className="text-gray-600 font-medium">Reference ID:</span>
+                       
+                       {selectedTx.givenTransactionId && <div className="flex justify-start gap-2">
+                         <span className="text-gray-600 font-medium">Given Trx:</span>
                          <span className="font-bold text-sm text-gray-700">{selectedTx.givenTransactionId}</span>
-                       </div>
+                       </div>}
                        <div className="flex justify-start gap-2">
                          <span className="text-gray-600 font-medium">Created:</span>
                          <span className="font-medium text-gray-800">{formatDateTime(selectedTx.createdAt)}</span>
@@ -425,8 +424,7 @@ const TransactionsPage = ({
                      </div>
                    </div>
                  </div>
-
-                                 {/* Promotion Details */}
+                 {/* Promotion Details */}
                  {selectedTx.promotionId && (
                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6 mb-6">
                      <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -464,6 +462,15 @@ const TransactionsPage = ({
                       Payment Method Details
                     </h2>
                     <div className="space-y-3">
+
+                      
+                    {selectedTx.paymentGateway?.id && (
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Gateway:</span>
+                          <span className="font-bold font-semibold text-gray-800">{selectedTx?.paymentGateway?.name}</span>
+                        </div>
+                      )}
+                      
                       {selectedTx.accountNumber && (
                         <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Account Number:</span>
@@ -488,6 +495,26 @@ const TransactionsPage = ({
                           <span className="font-semibold text-gray-800">{selectedTx.branchName}</span>
                         </div>
                       )}
+                      {selectedTx.branchAddress && (
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Branch Address:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.branchAddress}</span>
+                        </div>
+                      )}
+                      {selectedTx.swiftCode && (
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Swift Code:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.swiftCode}</span>
+                        </div>
+                      )}
+
+                      {selectedTx.iban && (
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">IBAN Code:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.swiftCode}</span>
+                        </div>
+                      )}
+
                       {selectedTx.walletAddress && (
                         <div className="flex justify-start gap-2">
                           <span className="text-gray-600 font-medium">Wallet Address:</span>
@@ -669,7 +696,7 @@ const TransactionsPage = ({
               <div className="text-center text-gray-500 text-sm">
                 <p>This is an official transaction receipt from GS365</p>
                 <p className="mt-1">Generated on {formatDateTime(new Date())}</p>
-                <p className="mt-1">Receipt ID: {selectedTx.customTransactionId}</p>
+                <p className="mt-1">System Trx: {selectedTx.customTransactionId}</p>
               </div>
             </div>
           </div>

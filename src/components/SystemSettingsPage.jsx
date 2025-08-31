@@ -8,7 +8,8 @@ const SystemSettingsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState({
     defaultTurnover: 0,
-    adminBalance: 0
+    adminBalance: 0,
+    minWithdrawableBalance: 0
   });
   
   const { data: settingsData, isLoading, isError } = useSettings();
@@ -20,7 +21,8 @@ const SystemSettingsPage = () => {
     setEditingId(setting.id);
     setEditValue({
       defaultTurnover: setting.defaultTurnover,
-      adminBalance: setting.adminBalance
+      adminBalance: setting.adminBalance,
+      minWithdrawableBalance: setting.minWithdrawableBalance
     });
   };
 
@@ -38,7 +40,7 @@ const SystemSettingsPage = () => {
     try {
       await updateSettingsMutation.mutateAsync({
         id: settingId,
-        data: { defaultTurnover: Number(editValue.defaultTurnover),adminBalance: Number(editValue.adminBalance) }
+        data: { defaultTurnover: Number(editValue.defaultTurnover),adminBalance: Number(editValue.adminBalance),minWithdrawableBalance: Number(editValue?.minWithdrawableBalance) }
       });
       setEditingId(null);
       setEditValue({
@@ -189,6 +191,63 @@ const SystemSettingsPage = () => {
                           onChange={(e) => setEditValue((prev)=>({
                             ...prev,
                             adminBalance: e.target.value
+                          }))}
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter value"
+                        />
+                        <button
+                          onClick={() => handleSave(setting.id)}
+                          disabled={updateSettingsMutation.isLoading}
+                          className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                        >
+                          <FaSave className="mr-2" />
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancel}
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                          <FaTimes className="mr-2" />
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => handleEdit(setting)}
+                        className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                      >
+                        <FaEdit className="mr-2" />
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                 {/* minimum withdrawable balance */}
+
+                 <div
+                  key={setting.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+                >
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">
+                    Minimum Withdrawable Balance
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Current value: {formatAmount(setting.minWithdrawableBalance || 0)}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    {editingId === setting.id ? (
+                      <>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editValue.minWithdrawableBalance}
+                          onChange={(e) => setEditValue((prev)=>({
+                            ...prev,
+                            minWithdrawableBalance: e.target.value
                           }))}
                           className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="Enter value"
