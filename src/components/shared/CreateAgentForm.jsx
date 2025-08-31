@@ -100,7 +100,10 @@ export function CreateAgentForm({
       if (!form.commission_percent) {
         return toast.error("Commission percentage is required.");
       }
-      if (!(form.commission_percent < refDetails?.commission_percent)) {
+      if (
+        refDetails?.commission_percent &&
+        !(form.commission_percent < refDetails?.commission_percent)
+      ) {
         return toast.error(
           "Commission percentage must be less than the referrer commission."
         );

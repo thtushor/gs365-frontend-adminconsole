@@ -128,6 +128,7 @@ import MenuManagement from "../components/MenuManagement";
 import AffiliateWithdrawRequestListPage from "../components/AffiliateWithdrawRequestListPage";
 import KYCVerificationPage from "../components/KYCVerificationPage";
 import KYCRequestList from "../components/KYCRequestList";
+import FeaturedGames from "../components/FeaturedGames";
 
 export const menu = [
   {
@@ -712,6 +713,11 @@ export const menu = [
         label: "Events",
         path: "/event",
         component: EventList,
+      },
+      {
+        label: "Featured Game",
+        path: "/featured-game",
+        component: FeaturedGames,
       },
     ],
   },

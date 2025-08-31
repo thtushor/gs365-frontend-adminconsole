@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { useGetRequest, usePostRequest } from "../Utils/apiClient";
 import { useAuth } from "../hooks/useAuth";
-import { LuSend } from "react-icons/lu";
 import KycRequestButton from "../Utils/KycRequestButton";
 
 const KYCVerificationPage = () => {
@@ -23,6 +22,7 @@ const KYCVerificationPage = () => {
 
   const postRequest = usePostRequest();
   const [formData, setFormData] = useState({
+    fullName: "",
     documentType: "",
     documentNo: "",
     expiryDate: "",
@@ -43,9 +43,10 @@ const KYCVerificationPage = () => {
     if (kycDetails?.data) {
       const d = kycDetails.data;
       setFormData({
+        fullName: d.fullName || "",
         documentType: d.documentType || "",
         documentNo: d.documentNo || "",
-        expiryDate: d.expiryDate?.split("T")[0] || "", // keep yyyy-mm-dd format
+        expiryDate: d.expiryDate?.split("T")[0] || "",
         dob: d.dob?.split("T")[0] || "",
       });
 
@@ -93,6 +94,7 @@ const KYCVerificationPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!formData.fullName) return toast.error("Please enter your full name.");
     if (!formData.documentType)
       return toast.error("Please select a document type.");
     if (!formData.documentNo)
@@ -133,7 +135,22 @@ const KYCVerificationPage = () => {
       </div>
       <div className="flex md:flex-row flex-col-reverse  gap-8 items-start">
         {kycDetails?.data.holderKycStatus !== "verified" && (
-          <form onSubmit={handleSubmit} className="space-y-3 w-full">
+          <form onSubmit={handleSubmit} className="space-y-3 w-1/2">
+            {/* Full Name */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Full Name (As Per Documents)
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleInputChange}
+                className="w-full mt-1 p-2 border rounded-md"
+                placeholder="Enter your full name (as per documents)"
+              />
+            </div>
+
             {/* Document Type */}
             <div>
               <label className="text-sm font-medium text-gray-700">
@@ -235,8 +252,10 @@ const KYCVerificationPage = () => {
         {/* Right Column: Preview */}
         <div
           className={`border border-green-500 bg-green-50 ${
-            kycDetails?.data.holderKycStatus !== "verified" && "md:mt-[28px]"
-          } p-4 rounded-lg w-full space-y-2`}
+            kycDetails?.data.holderKycStatus !== "verified"
+              ? "md:mt-[28px] w-1/2"
+              : "w-full"
+          } p-4 rounded-lg  space-y-2`}
         >
           <h1 className="text-base font-semibold bg-[#07122b] text-white px-3 w-fit rounded-full py-1 pt-[2px] mb-2">
             Details Preview
@@ -270,6 +289,9 @@ const KYCVerificationPage = () => {
               </p>
             </>
           )}
+          <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 px-3  bg-white py-2 rounded-md">
+            <p>Full Name:</p> {formData.fullName || "Not entered"}
+          </p>
           <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 px-3  bg-white py-2 rounded-md capitalize">
             <p>Document Type:</p> {formData.documentType || "Not selected"}
           </p>

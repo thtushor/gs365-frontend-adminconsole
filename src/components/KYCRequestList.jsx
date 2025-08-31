@@ -7,6 +7,7 @@ import { API_LIST, BASE_URL } from "../api/ApiList";
 import { formatDate } from "../Utils/dateUtils";
 import { useGetRequest, usePostRequest } from "../Utils/apiClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -74,8 +75,25 @@ const KYCRequestList = ({ title = "KYC List" }) => {
           (filters.page - 1) * filters.pageSize + index + 1,
       },
       { field: "holderType", headerName: "Holder Type", width: 120 },
-      { field: "holderUsername", headerName: "Username", width: 150 },
-      { field: "holderEmail", headerName: "Email", width: 200 },
+      {
+        field: "holderUsername",
+        headerName: "Username",
+        width: 180,
+        render: (_, row) => (
+          <Link
+            to={
+              row?.holderType === "player"
+                ? `/players/${row?.holderId}/profile`
+                : `/affiliate-list/${row?.holderId}`
+            }
+            className="text-green-500 cursor-pointer font-semibold"
+          >
+            {row?.holderUsername}
+          </Link>
+        ),
+      },
+      { field: "fullName", headerName: "Full Name", width: 150 },
+      { field: "holderEmail", headerName: "Email Address", width: 200 },
       { field: "documentType", headerName: "Document Type", width: 150 },
       { field: "documentNo", headerName: "Document Number", width: 150 },
       {
