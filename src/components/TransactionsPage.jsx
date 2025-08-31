@@ -358,7 +358,7 @@ const TransactionsPage = ({
             {/* Receipt Header */}
             <div className="border-b-2 border-gray-200 pb-4 mb-6">
               <div className="text-center mb-4">
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">TRANSACTION RECEIPT</h1>
+                <h1 className="text-2xl font-bold text-gray-800 mb-2">SYSTEM TRANSACTION RECEIPT</h1>
                 <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
                   <span>Receipt #: {selectedTx.customTransactionId}</span>
                   <span>•</span>
@@ -412,12 +412,9 @@ const TransactionsPage = ({
                        </div>
                      </div>
                      <div className="space-y-3">
+                       
                        <div className="flex justify-start gap-2">
-                         <span className="text-gray-600 font-medium">Transaction ID:</span>
-                         <span className="font-bold text-sm text-gray-700">{selectedTx.id}</span>
-                       </div>
-                       <div className="flex justify-start gap-2">
-                         <span className="text-gray-600 font-medium">Reference ID:</span>
+                         <span className="text-gray-600 font-medium">Given Trx:</span>
                          <span className="font-bold text-sm text-gray-700">{selectedTx.givenTransactionId}</span>
                        </div>
                        <div className="flex justify-start gap-2">
