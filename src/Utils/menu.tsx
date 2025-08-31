@@ -161,6 +161,19 @@ export const menu = [
         skipFromMenu: true,
       },
       {
+        label: "Login History",
+        path: "/players/:playerId/promotion",
+        component: TransactionsPage,
+        props: {
+          title: "Promotion History",
+          params: {
+            historyType:"promotion"
+          }
+        },
+        icon: <FaHistory />,
+        skipFromMenu: true,
+      },
+      {
         label: "Win/Loss",
         path: "/win-loss",
         component: WinLossPage,

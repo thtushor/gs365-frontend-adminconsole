@@ -45,7 +45,7 @@ export const playerRoutes = [
   },
   {
     label: "Promotions",
-    path: "/players/:playerId/profile/promotion",
+    path: "/players/:playerId/promotion",
   },
   {
     label: "Login History",

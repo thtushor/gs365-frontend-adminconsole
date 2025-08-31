@@ -30,12 +30,14 @@ const defaultFilters = {
 const TransactionsPage = ({
   playerId: propPlayerId,
   title = "Player Transactions",
+  params= {}
 }) => {
   const { playerId: paramPlayerId } = useParams();
   const playerId = propPlayerId || paramPlayerId;
 
   const [filters, setFilters] = useState({
     ...defaultFilters,
+    ...(params||{}),
     userId: playerId || "",
   });
   const [selectedTx, setSelectedTx] = useState(null);
@@ -239,7 +241,7 @@ const TransactionsPage = ({
 
   return (
     <div className="bg-[#f5f5f5] min-h-full p-4">
-      <div className="flex items-center justify-start gap-2 mb-4">
+      <div className="flex items-center justify-between gap-2 mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         {playerId && (
           <button
