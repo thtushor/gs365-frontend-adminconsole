@@ -284,7 +284,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       width: 120,
     },
     {
-      field: "ip_address",
+      field: "lastIp",
       headerName: "IP ADDRESS",
       width: 150,
     },
