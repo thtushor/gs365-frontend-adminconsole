@@ -5,6 +5,21 @@ import ReusableModal from "./ReusableModal";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
+import { formatAmount } from "./BettingWagerPage";
+import { useQuery } from "@tanstack/react-query";
+import Select from "react-select";
+
+// Custom hook to fetch promotions
+const usePromotions = () => {
+  return useQuery({
+    queryKey: ['promotions'],
+    queryFn: async () => {
+      const response = await Axios.get(API_LIST.GET_PUBLIC_PROMOTION);
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
 
 const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const [depositModalOpen, setDepositModalOpen] = useState(false);
@@ -16,6 +31,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     attachment: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch promotions using react-query
+  const { data: promotionsData, isLoading: promotionsLoading } = usePromotions();
 
   const handleOpenDepositModal = (player) => {
     setSelectedPlayer(player);
@@ -34,6 +52,26 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     if (!depositForm.amount || parseFloat(depositForm.amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
+    }
+
+    // Validate promotion requirements if a promotion is selected
+    if (depositForm.promotionId) {
+      const selectedPromotion = promotionsData?.data?.find(p => p.id === depositForm.promotionId);
+      if (selectedPromotion) {
+        const amount = parseFloat(depositForm.amount);
+        const minAmount = parseFloat(selectedPromotion.minimumDepositAmount);
+        const maxAmount = parseFloat(selectedPromotion.maximumDepositAmount);
+        
+        if (amount < minAmount) {
+          toast.error(`Minimum deposit amount for this promotion is ${formatAmount(minAmount)}`);
+          return;
+        }
+        
+        if (amount > maxAmount) {
+          toast.error(`Maximum deposit amount for this promotion is ${formatAmount(maxAmount)}`);
+          return;
+        }
+      }
     }
     
     setIsSubmitting(true);
@@ -57,6 +95,20 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Transform promotions data for react-select
+  const promotionOptions = promotionsData?.data?.map(promotion => ({
+    value: promotion.id,
+    label: `${promotion.promotionName} (${promotion.bonus}% bonus)`,
+    promotion: promotion
+  })) || [];
+
+  const handlePromotionChange = (selectedOption) => {
+    setDepositForm({
+      ...depositForm,
+      promotionId: selectedOption ? selectedOption.value : ""
+    });
   };
 
   const columns = [
@@ -175,7 +227,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "BALANCE",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-green-600">${value || 0}</span>
+        <span className="font-medium text-green-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -183,7 +235,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "DEPOSITS",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-blue-600">${value || 0}</span>
+        <span className="font-medium text-blue-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -191,7 +243,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "WITHDRAWALS",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-orange-600">${value || 0}</span>
+        <span className="font-medium text-orange-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -199,7 +251,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "WINS",
       width: 100,
       render: (value) => (
-        <span className="font-medium text-green-600">${value || 0}</span>
+        <span className="font-medium text-green-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -207,7 +259,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "LOSSES",
       width: 100,
       render: (value) => (
-        <span className="font-medium text-red-600">${value || 0}</span>
+        <span className="font-medium text-red-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -215,7 +267,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "PENDING DEP",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-yellow-600">${value || 0}</span>
+        <span className="font-medium text-yellow-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -223,7 +275,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "PENDING WIT",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-yellow-600">${value || 0}</span>
+        <span className="font-medium text-yellow-600">{formatAmount(value||0)}</span>
       ),
     },
     {
@@ -330,20 +382,45 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               step="0.01"
             />
           </div>
-          
-          {/* <div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Promotion ID (Optional)
+              Promotion (Optional)
             </label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Enter promotion ID"
-              value={depositForm.promotionId}
-              onChange={(e) => setDepositForm({...depositForm, promotionId: e.target.value})}
+            <Select
+              isClearable
+              isSearchable
+              placeholder="Select a promotion..."
+              options={promotionOptions}
+              value={promotionOptions.find(option => option.value === depositForm.promotionId) || null}
+              onChange={handlePromotionChange}
+              isLoading={promotionsLoading}
+              className="w-full"
+              classNamePrefix="react-select"
+              noOptionsMessage={() => "No promotions available"}
+              loadingMessage={() => "Loading promotions..."}
             />
-          </div> */}
-          
+            {depositForm.promotionId && (
+              <div className="mt-2 p-2 bg-blue-50 rounded text-sm text-blue-700">
+                <div className="font-medium">Selected Promotion Details:</div>
+                {(() => {
+                  const selectedPromotion = promotionsData?.data?.find(p => p.id === depositForm.promotionId);
+                  if (selectedPromotion) {
+                    return (
+                      <div className="mt-1 space-y-1">
+                        <div>• Bonus: {selectedPromotion.bonus}%</div>
+                        <div>• Min Deposit: {formatAmount(selectedPromotion.minimumDepositAmount)}</div>
+                        <div>• Max Deposit: {formatAmount(selectedPromotion.maximumDepositAmount)}</div>
+                        <div>• Turnover: {selectedPromotion.turnoverMultiply}x</div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
+            )}
+          </div>
+       
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes (Optional)
@@ -356,19 +433,6 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               onChange={(e) => setDepositForm({...depositForm, notes: e.target.value})}
             />
           </div>
-          
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Attachment URL (Optional)
-            </label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Enter attachment URL"
-              value={depositForm.attachment}
-              onChange={(e) => setDepositForm({...depositForm, attachment: e.target.value})}
-            />
-          </div> */}
         </div>
       </ReusableModal>
     </>

@@ -108,6 +108,21 @@ const TransactionsPage = ({
         ),
       },
       {
+        field: "bonusAmount",
+        headerName: "Bonus Amount",
+        width: 160,
+        render: (value, row) => (
+         <div className="flex flex-col">
+          <span className="font-medium">
+            {value != null ? `${formatAmount(value)}` : "-"}
+          </span>
+           <span className="font-medium text-gray-500 text-xs">
+            {row?.promotionName != null ? `Promotion: ${row?.promotionName}` : "-"}
+          </span>
+         </div>
+        ),
+      },
+      {
         field: "givenTransactionId",
         headerName: "Given Trx. ID",
         width: 150,
@@ -147,6 +162,21 @@ const TransactionsPage = ({
         headerName: "Processed At",
         width: 200,
         render: (value) => formatDateTime(value),
+      },
+      {
+        field: "processedBy",
+        headerName: "ProcessedBY",
+        width: 200,
+        render: (_,row) => {
+          return <div className="flex flex-col">
+          <span className="font-medium">
+            {row?.processedBy ? `${row?.processedBy}` : "-"}
+          </span>
+           <span className="font-medium text-gray-500 text-xs">
+            {row?.processedByRoleType ? `Role: ${row?.processedByRoleType}` : "-"}
+          </span>
+         </div>
+        },
       },
       {
         field: "action",
@@ -209,7 +239,7 @@ const TransactionsPage = ({
 
   return (
     <div className="bg-[#f5f5f5] min-h-full p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-start gap-2 mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         {playerId && (
           <button
@@ -311,262 +341,337 @@ const TransactionsPage = ({
         />
       </div>
 
-      {/* Transaction Details Modal */}
+      {/* Transaction Receipt Modal */}
       <ReusableModal
         open={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
-        title={`Transaction Details #${selectedTx?.id}`}
+        title=""
         onSave={null}
         size="lg"
-        className="max-h-[80vh] !max-w-[80vw] overflow-y-auto"
+        className="max-h-[90vh] !max-w-[90vw] overflow-y-auto"
+        hideCloseButton={false}
       >
         {selectedTx && (
-          <div className="space-y-6">
-            {/* Header Section */}
-            <div className="bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {selectedTx.givenTransactionId}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Transaction ID: {selectedTx.id}
-                  </p>
+          <div className="bg-white">
+            {/* Receipt Header */}
+            <div className="border-b-2 border-gray-200 pb-4 mb-6">
+              <div className="text-center mb-4">
+                <h1 className="text-2xl font-bold text-gray-800 mb-2">TRANSACTION RECEIPT</h1>
+                <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+                  <span>Receipt #: {selectedTx.customTransactionId}</span>
+                  <span>•</span>
+                  <span>Date: {formatDateTime(selectedTx.createdAt)}</span>
                 </div>
-                <div className="text-right">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedTx.status === "approved"
-                        ? "bg-green-100 text-green-800"
-                        : selectedTx.status === "pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {selectedTx.status.toUpperCase()}
-                  </span>
-                </div>
+              </div>
+              
+              {/* Status Badge */}
+              <div className="flex justify-center">
+                <span
+                  className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${
+                    selectedTx.status === "approved"
+                      ? "bg-green-100 text-green-800 border-2 border-green-300"
+                      : selectedTx.status === "pending"
+                      ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-300"
+                      : "bg-red-100 text-red-800 border-2 border-red-300"
+                  }`}
+                >
+                  {selectedTx.status}
+                </span>
               </div>
             </div>
 
-            {/* Transaction Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left Column */}
-              <div className="space-y-4">
-                <div className="bg-white border rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    Transaction Details
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Type:</span>
-                      <span className="font-medium capitalize">
-                        {selectedTx.type}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Amount:</span>
-                      <span className="font-semibold text-lg text-green-600">
-                        {selectedTx.amount} {selectedTx.currencySymbol}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Currency:</span>
-                      <span className="font-medium">
-                        {selectedTx.currencyName} ({selectedTx.currencyCode})
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Created:</span>
-                      <span className="font-medium">
-                        {formatDateTime(selectedTx.createdAt)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Processed:</span>
-                      <span className="font-medium">
-                        {formatDateTime(selectedTx.processedAt)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+            {/* Main Receipt Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column - Transaction Details */}
+              <div className="lg:col-span-2">
+                                 {/* Transaction Summary */}
+                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
+                   <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                     <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
+                     Transaction Summary
+                   </h2>
+                   <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-3">
+                       <div className="flex justify-start gap-2">
+                         <span className="text-gray-600 font-medium">Transaction Type:</span>
+                         <span className="font-bold text-gray-800 capitalize">{selectedTx.type}</span>
+                       </div>
+                       <div className="flex justify-start gap-2">
+                         <span className="text-gray-600 font-medium">Amount:</span>
+                         <span className="font-bold text-2xl text-green-600">
+                           {formatAmount(selectedTx.amount)}
+                         </span>
+                       </div>
+                       <div className="flex justify-start gap-2">
+                         <span className="text-gray-600 font-medium">Currency:</span>
+                         <span className="font-semibold text-gray-800">
+                           BDT (Bangladeshi Taka)
+                         </span>
+                       </div>
+                     </div>
+                     <div className="space-y-3">
+                       <div className="flex justify-start gap-2">
+                         <span className="text-gray-600 font-medium">Transaction ID:</span>
+                         <span className="font-bold text-sm text-gray-700">{selectedTx.id}</span>
+                       </div>
+                       <div className="flex justify-start gap-2">
+                         <span className="text-gray-600 font-medium">Reference ID:</span>
+                         <span className="font-bold text-sm text-gray-700">{selectedTx.givenTransactionId}</span>
+                       </div>
+                       <div className="flex justify-start gap-2">
+                         <span className="text-gray-600 font-medium">Created:</span>
+                         <span className="font-medium text-gray-800">{formatDateTime(selectedTx.createdAt)}</span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
 
-                {/* Payment Information */}
-                {(selectedTx.accountNumber ||
-                  selectedTx.bankName ||
-                  selectedTx.walletAddress) && (
-                  <div className="bg-white border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                      Payment Information
-                    </h4>
+                                 {/* Promotion Details */}
+                 {selectedTx.promotionId && (
+                   <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-lg p-6 mb-6">
+                     <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                       <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
+                       Promotion Applied
+                     </h2>
+                     <div className="grid grid-cols-2 gap-4">
+                       <div>
+                         <div className="flex justify-start gap-2 mb-2">
+                           <span className="text-gray-600 font-medium">Promotion:</span>
+                           <span className="font-bold text-purple-700">{selectedTx.promotionName} <br/> (Up to {selectedTx.promotionPercentage||10}% Bonus)</span>
+                         </div>
+                         <div className="flex justify-start gap-2">
+                           <span className="text-gray-600 font-medium">Bonus Amount:</span>
+                           <span className="font-bold text-xl text-purple-600">
+                             {formatAmount(selectedTx.bonusAmount)}
+                           </span>
+                         </div>
+                       </div>
+                       <div className="text-right">
+                         <div className="text-3xl font-bold text-purple-600 mb-1">
+                           +{formatAmount(selectedTx.bonusAmount)}
+                         </div>
+                         <div className="text-sm text-gray-600">Bonus Credit</div>
+                       </div>
+                     </div>
+                   </div>
+                 )}
+
+                {/* Payment Method Details */}
+                {(selectedTx.accountNumber || selectedTx.bankName || selectedTx.walletAddress) && (
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg p-6 mb-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                      <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                      Payment Method Details
+                    </h2>
                     <div className="space-y-3">
                       {selectedTx.accountNumber && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Account Number:</span>
-                          <span className="font-medium">
-                            {selectedTx.accountNumber}
-                          </span>
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Account Number:</span>
+                          <span className="font-bold font-semibold text-gray-800">{selectedTx.accountNumber}</span>
                         </div>
                       )}
                       {selectedTx.accountHolderName && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Account Holder:</span>
-                          <span className="font-medium">
-                            {selectedTx.accountHolderName}
-                          </span>
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Account Holder:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.accountHolderName}</span>
                         </div>
                       )}
                       {selectedTx.bankName && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Bank:</span>
-                          <span className="font-medium">
-                            {selectedTx.bankName}
-                          </span>
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Bank Name:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.bankName}</span>
+                        </div>
+                      )}
+                      {selectedTx.branchName && (
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Branch:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.branchName}</span>
                         </div>
                       )}
                       {selectedTx.walletAddress && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Wallet Address:</span>
-                          <span className="font-medium text-xs break-all">
-                            {selectedTx.walletAddress}
-                          </span>
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Wallet Address:</span>
+                          <span className="font-bold text-xs text-gray-700 break-all">{selectedTx.walletAddress}</span>
                         </div>
                       )}
                       {selectedTx.network && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Network:</span>
-                          <span className="font-medium">
-                            {selectedTx.network}
-                          </span>
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Network:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.network}</span>
                         </div>
                       )}
                     </div>
                   </div>
                 )}
+
+                {/* Notes */}
+                {selectedTx.notes && (
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 mb-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                      <span className="w-3 h-3 bg-gray-500 rounded-full"></span>
+                      Additional Notes
+                    </h2>
+                    <p className="text-gray-700 text-lg leading-relaxed">{selectedTx.notes}</p>
+                  </div>
+                )}
+
+                {/* Attachment */}
+                {selectedTx.attachment && (
+                  <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                      <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
+                      Supporting Document
+                    </h2>
+                    <div className="flex items-center justify-start gap-2">
+                      <div>
+                        <p className="text-gray-700 mb-2">Transaction proof or receipt image</p>
+                        <p className="text-sm text-gray-500">Click below to view the attachment</p>
+                      </div>
+                      <button
+                        onClick={() => window.open(selectedTx.attachment, "_blank")}
+                        className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-semibold flex items-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View Document
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Right Column */}
-              <div className="space-y-4">
+              {/* Right Column - User & Processing Info */}
+              <div className="space-y-6">
                 {/* User Information */}
-                <div className="bg-white border rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    User Information
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Name:</span>
+                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-lg p-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span className="w-3 h-3 bg-indigo-500 rounded-full"></span>
+                    Customer Information
+                  </h2>
+                  <div className="space-y-4">
+                    <div className="text-center pb-4 border-b border-indigo-200">
+                      <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-2xl font-bold text-indigo-600">
+                          {selectedTx.userFullname?.charAt(0)?.toUpperCase()}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-800 mb-1">{selectedTx.userFullname}</h3>
+                      <p className="text-indigo-600 font-medium">@{selectedTx.userUsername}</p>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Email:</span>
+                        <span className="font-semibold text-gray-800 text-sm">{selectedTx.userEmail}</span>
+                      </div>
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Phone:</span>
+                        <span className="font-semibold text-gray-800">{selectedTx.userPhone}</span>
+                      </div>
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Status:</span>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-bold ${
+                            selectedTx.userStatus === "active"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {selectedTx.userStatus}
+                        </span>
+                      </div>
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Verified:</span>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-bold ${
+                            selectedTx.userIsVerified
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {selectedTx.userIsVerified ? "✓ Verified" : "✗ Not Verified"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-indigo-200">
                       <button
                         onClick={() => {
                           setViewModalOpen(false);
                           navigate(`/players/${selectedTx.userId}/profile`);
                         }}
-                        className="font-medium text-green-600 hover:text-green-800 hover:underline"
+                        className="w-full px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors font-semibold text-sm"
                       >
-                        {selectedTx.userFullname}
+                        View Full Profile
                       </button>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Username:</span>
-                      <span className="font-medium">
-                        @{selectedTx.userUsername}
-                      </span>
+                  </div>
+                </div>
+
+                {/* Processing Information */}
+                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-lg p-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span className="w-3 h-3 bg-emerald-500 rounded-full"></span>
+                    Processing Details
+                  </h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-start gap-2">
+                      <span className="text-gray-600 font-medium">Created:</span>
+                      <span className="font-semibold text-gray-800 text-sm">{formatDateTime(selectedTx.createdAt)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Email:</span>
-                      <span className="font-medium">
-                        {selectedTx.userEmail}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Phone:</span>
-                      <span className="font-medium">
-                        {selectedTx.userPhone}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Status:</span>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          selectedTx.userStatus === "active"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {selectedTx.userStatus}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Verified:</span>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          selectedTx.userIsVerified
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {selectedTx.userIsVerified ? "Yes" : "No"}
-                      </span>
-                    </div>
+                    {selectedTx.processedAt && (
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Processed:</span>
+                        <span className="font-semibold text-gray-800 text-sm">{formatDateTime(selectedTx.processedAt)}</span>
+                      </div>
+                    )}
+                    {selectedTx.processedBy && (
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Processed By:</span>
+                        <span className="font-semibold text-gray-800 text-sm">{selectedTx.processedBy}</span>
+                      </div>
+                    )}
+                    {selectedTx.processedByRoleType && (
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Role:</span>
+                        <span className="font-semibold text-gray-800 text-sm">{selectedTx.processedByRoleType}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Game Information */}
                 {selectedTx.gameName && (
-                  <div className="bg-white border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                  <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-lg p-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                      <span className="w-3 h-3 bg-amber-500 rounded-full"></span>
                       Game Information
-                    </h4>
+                    </h2>
                     <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Game:</span>
-                        <span className="font-medium">
-                          {selectedTx.gameName}
-                        </span>
+                      <div className="flex justify-start gap-2">
+                        <span className="text-gray-600 font-medium">Game:</span>
+                        <span className="font-semibold text-gray-800">{selectedTx.gameName}</span>
                       </div>
                       {selectedTx.gameStatus && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Game Status:</span>
-                          <span className="font-medium">
-                            {selectedTx.gameStatus}
-                          </span>
+                        <div className="flex justify-start gap-2">
+                          <span className="text-gray-600 font-medium">Status:</span>
+                          <span className="font-semibold text-gray-800">{selectedTx.gameStatus}</span>
                         </div>
                       )}
                     </div>
                   </div>
                 )}
-
-                {/* Notes Section */}
-                {selectedTx.notes && (
-                  <div className="bg-white border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                      Notes
-                    </h4>
-                    <p className="text-gray-700 text-sm">{selectedTx.notes}</p>
-                  </div>
-                )}
               </div>
             </div>
 
-            {/* Attachment Section */}
-            {selectedTx.attachment && (
-              <div className="bg-white border rounded-lg p-4">
-                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                  Attachment
-                </h4>
-                <button
-                  onClick={() => window.open(selectedTx.attachment, "_blank")}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                >
-                  View Attachment
-                </button>
+            {/* Receipt Footer */}
+            <div className="border-t-2 border-gray-200 pt-6 mt-8">
+              <div className="text-center text-gray-500 text-sm">
+                <p>This is an official transaction receipt from GS365</p>
+                <p className="mt-1">Generated on {formatDateTime(new Date())}</p>
+                <p className="mt-1">Receipt ID: {selectedTx.customTransactionId}</p>
               </div>
-            )}
+            </div>
           </div>
         )}
       </ReusableModal>

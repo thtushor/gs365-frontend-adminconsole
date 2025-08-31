@@ -1,5 +1,5 @@
-// export const BASE_URL = "https://glorypos.com/gs-server";
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = "https://glorypos.com/gs-server";
+// export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -40,6 +40,7 @@ export const API_LIST = {
   GET_SUB_AFFILIATES: "/sub-affiliates-list",
   GET_DETAILS_BY_REFER_CODE: "/api/admin/details-by-referer",
   GET_PLAYERS_LIST: "/players-list",
+  
   UPDATE_AGENT: "/api/admin/agent/update",
   DELETE_AGENT: "/api/admin/agent/delete",
 
@@ -64,6 +65,7 @@ export const API_LIST = {
   CREATE_PROMOTION: "/api/admin/promotion",
   UPDATE_PROMOTION: "/api/admin/promotion",
   GET_PROMOTION: "/api/admin/promotions",
+  GET_PUBLIC_PROMOTION: "/api/public/promotions",
 
   // CMS
   CREATE_UPDATE_BANNER: "/api/admin/banner",
