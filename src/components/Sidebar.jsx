@@ -32,6 +32,7 @@ function getCurrentPathName(pathname) {
 const Sidebar = ({ open = false, onClose = () => {} }) => {
   const location = useLocation();
   const currentPathName = getCurrentPathName(location.pathname);
+  const userType = import.meta.env.VITE_USER_TYPE;
   return (
     <>
       {/* Mobile Drawer Sidebar */}
@@ -44,11 +45,13 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col gap-1 px-4 mb-8">
-          <span className="text-2xl font-bold">
-            GS <span className="text-[#3ecf8e]">365</span>
+          <span className="text-[20px] uppercase font-bold">
+            <span className="text-[#3ecf8e]"> GS 365</span>{" "}
+            {userType === "affiliate" ? " Affiliate" : " Admin"}
           </span>
-          <span className="text-xs text-gray-400 mt-1 tracking-wide">
-            {currentPathName}
+
+          <span className="text-xs text-gray-400 mt-[-4px] tracking-wide">
+            Current: {currentPathName}
           </span>
         </div>
         <nav className="flex-1">
@@ -97,11 +100,12 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
       {/* Desktop Static Sidebar */}
       <aside className="bg-[#07122b] text-white w-64 min-w-[220px] h-full flex flex-col py-4 px-2 z-10 hidden md:flex overflow-y-auto fixed md:static">
         <div className="flex flex-col gap-1 px-4 mb-8">
-          <span className="text-2xl font-bold">
-            GS <span className="text-[#3ecf8e]">365</span>
+          <span className="text-[20px] font-bold uppercase">
+            <span className="text-[#3ecf8e]"> GS 365</span>{" "}
+            {userType === "affiliate" ? " Affiliate" : " Admin"}
           </span>
-          <span className="text-xs text-gray-400 mt-1 tracking-wide">
-            {currentPathName}
+          <span className="text-xs text-gray-400 mt-[-4px] tracking-wide">
+            Current: {currentPathName}
           </span>
         </div>
         <nav className="flex-1">

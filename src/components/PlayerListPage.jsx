@@ -47,6 +47,7 @@ const mapPlayer = (p) => ({
   totalLosses: p.totalLosses,
   pendingDeposits: p.pendingDeposits,
   pendingWithdrawals: p.pendingWithdrawals,
+  referred_by_admin_user: p.referred_by_admin_user,
 });
 
 const defaultFilters = {

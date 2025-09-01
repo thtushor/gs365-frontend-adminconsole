@@ -23,7 +23,7 @@ const mapAgent = (agent) => ({
 });
 
 const defaultFilters = {
-  search: "",
+  keyword: "",
   role: "",
   status: "",
   page: 1,
@@ -353,9 +353,9 @@ const AffiliateListPage = () => {
       <form className="flex flex-wrap gap-2 items-center mb-4">
         <input
           type="text"
-          name="search"
+          name="keyword"
           placeholder="Name/Email"
-          value={filters.search}
+          value={filters.keyword}
           onChange={handleFilterChange}
           className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
         />

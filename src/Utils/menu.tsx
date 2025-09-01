@@ -18,6 +18,10 @@ import {
   FaHistory,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { FaListCheck, FaMoneyBills, FaPeopleRobbery } from "react-icons/fa6";
+import { PiContactlessPayment } from "react-icons/pi";
+import { CgDisplayFlex, CgDisplayFullwidth, CgMediaLive } from "react-icons/cg";
+
 import Dashboard from "../components/Dashboard";
 import ComingSoon from "../components/ComingSoon";
 import PlayerListPage from "../components/PlayerListPage";
@@ -52,13 +56,32 @@ import TurnoverSettingsPage from "../components/TurnoverSettingsPage";
 import SystemSettingsPage from "../components/SystemSettingsPage";
 import BackupRestorePage from "../components/BackupRestorePage";
 import OwnerAccountControlPage from "../components/OwnerAccountControlPage";
-import { BiLoader, BiMessage, BiTrophy } from "react-icons/bi";
+import {
+  BiAddToQueue,
+  BiHistory,
+  BiLoader,
+  BiMessage,
+  BiTrophy,
+} from "react-icons/bi";
 import OwnerPermissionPage from "../components/OwnerPermissionPage";
 import SportsListPage from "../components/SportsListPage";
 import { GiAmericanFootballBall } from "react-icons/gi";
-import { FiStar } from "react-icons/fi";
-import { TbFileStar } from "react-icons/tb";
-import { BsStarFill, BsTrophy } from "react-icons/bs";
+import { FiPercent, FiStar } from "react-icons/fi";
+import {
+  TbEaseInOutControlPoints,
+  TbFileStar,
+  TbGoGame,
+  TbLicense,
+  TbMapDiscount,
+  TbMenuOrder,
+  TbShoppingBag,
+} from "react-icons/tb";
+import {
+  BsCalendar2Event,
+  BsShieldCheck,
+  BsStarFill,
+  BsTrophy,
+} from "react-icons/bs";
 import AddPopularSports from "../components/AddPopularSports";
 import PopularSportsList from "../components/PopularSportsList";
 import AddSlider from "../components/AddSlider";
@@ -78,7 +101,17 @@ import CurrencyList from "../components/CurrencyList";
 import CountryManagementDemo from "../components/CountryManagementDemo";
 import DropdownConfiguration from "../components/DropdownConfiguration";
 import { VscGitPullRequestCreate } from "react-icons/vsc";
-import { MdAddchart, MdDisplaySettings, MdMessage } from "react-icons/md";
+import {
+  MdAddchart,
+  MdControlCamera,
+  MdCurrencyExchange,
+  MdDisplaySettings,
+  MdFormatListBulletedAdd,
+  MdMessage,
+  MdOutlineDisplaySettings,
+  MdOutlinePayment,
+  MdOutlineSpaceDashboard,
+} from "react-icons/md";
 import CreatePromotion from "../components/CreatePromotion";
 import PromotionsList from "../components/PromotionsList";
 import Banner from "../components/Banner";
@@ -129,12 +162,24 @@ import AffiliateWithdrawRequestListPage from "../components/AffiliateWithdrawReq
 import KYCVerificationPage from "../components/KYCVerificationPage";
 import KYCRequestList from "../components/KYCRequestList";
 import FeaturedGames from "../components/FeaturedGames";
+import { IoWalletOutline } from "react-icons/io5";
+import { GrAnnounce, GrGamepad, GrGlobe } from "react-icons/gr";
+import { SlGameController } from "react-icons/sl";
+import { LuMapPin } from "react-icons/lu";
+import {
+  LiaAdSolid,
+  LiaHistorySolid,
+  LiaLanguageSolid,
+  LiaPeopleCarrySolid,
+} from "react-icons/lia";
+import { SiLegacygames } from "react-icons/si";
+import { RiDropdownList } from "react-icons/ri";
 
 export const menu = [
   {
     label: "Dashboard",
     path: "/",
-    icon: <FaListUl />,
+    icon: <MdOutlineSpaceDashboard />,
     component: Dashboard,
     props: {},
   },
@@ -158,7 +203,7 @@ export const menu = [
         label: "Login History",
         path: "/players/:playerId/login-history",
         component: PlayerLoginHistoryPage,
-        icon: <FaHistory />,
+        icon: <LiaHistorySolid />,
         skipFromMenu: true,
       },
       {
@@ -168,8 +213,8 @@ export const menu = [
         props: {
           title: "Promotion History",
           params: {
-            historyType:"promotion"
-          }
+            historyType: "promotion",
+          },
         },
         icon: <FaHistory />,
         skipFromMenu: true,
@@ -196,30 +241,10 @@ export const menu = [
     // Full DB list, max winning filter, etc.
   },
   {
-    label: "Finance",
-    icon: <FaChartPie />,
-    children: [
-      {
-        label: "Net Profit/Loss",
-        path: "/finance/net",
-        component: NetProfitLossPage,
-      },
-      {
-        label: "Product Analytics",
-        path: "/finance/products",
-        component: ProductAnalyticsPage,
-      },
-      {
-        label: "Coin Analytics",
-        path: "/finance/coins",
-        component: CoinAnalyticsPage,
-      },
-      {
-        label: "Provider Payments",
-        path: "/finance/providers",
-        component: ProviderPaymentsPage,
-      },
-    ],
+    label: "KYC Request History",
+    path: "/kyc-request-history",
+    icon: <BsShieldCheck />,
+    component: KYCRequestList,
   },
   // {
   //   label: "Affiliate",
@@ -249,49 +274,50 @@ export const menu = [
         label: "Affiliate Commissions",
         path: "/affiliate-commissions",
         component: AffiliateCommissionListPage,
-        icon: <FaListUl />,
+        icon: <FiPercent />,
         props: {},
       },
       {
         label: "Withdraw Request",
         path: "/affiliate-withdraw-requests",
         component: AffiliateWithdrawRequestListPage,
-        icon: <FaListUl />,
+        icon: <IoWalletOutline />,
         props: {},
       },
     ],
   },
-  {
-    label: "Agent",
-    children: [
-      {
-        label: "Create Agent",
-        path: "/create-agent",
-        component: CreateAgentPage,
-        icon: <FaUserPlus />,
-      },
-      {
-        label: "Agent List",
-        path: "/agent-list",
-        component: AgentListPage,
-        icon: <FaUsers />,
-      },
-      {
-        label: "Prepayment",
-        path: "/prepayment",
-        component: PrepaymentPage,
-        icon: <FaCoins />,
-      },
-      {
-        label: "Commission",
-        path: "/commission",
-        component: CommissionPage,
-        icon: <FaCoins />,
-      },
-    ],
-  },
+  // {
+  //   label: "Agent",
+  //   children: [
+  //     {
+  //       label: "Create Agent",
+  //       path: "/create-agent",
+  //       component: CreateAgentPage,
+  //       icon: <FaUserPlus />,
+  //     },
+  //     {
+  //       label: "Agent List",
+  //       path: "/agent-list",
+  //       component: AgentListPage,
+  //       icon: <FaUsers />,
+  //     },
+  //     {
+  //       label: "Prepayment",
+  //       path: "/prepayment",
+  //       component: PrepaymentPage,
+  //       icon: <FaCoins />,
+  //     },
+  //     {
+  //       label: "Commission",
+  //       path: "/commission",
+  //       component: CommissionPage,
+  //       icon: <FaCoins />,
+  //     },
+  //   ],
+  // },
   {
     label: "Promotions",
+    icon: <TbMapDiscount />,
     children: [
       {
         label: "Create Promotion",
@@ -309,32 +335,32 @@ export const menu = [
       },
     ],
   },
-  {
-    label: "Bets",
-    children: [
-      {
-        label: "Bet List",
-        path: "/bet-list",
-        component: BetListPage,
-        icon: <FaListUl />,
-        props: {},
-      },
-      {
-        label: "Pending Bet",
-        path: "/pending-bet",
-        component: PendingBetListPage,
-        icon: <FaListUl />,
-        props: {},
-      },
-      {
-        label: "Games",
-        path: "/games",
-        component: GamesPage,
-        icon: <FaGamepad />,
-        props: {},
-      },
-    ],
-  },
+  // {
+  //   label: "Bets",
+  //   children: [
+  //     {
+  //       label: "Bet List",
+  //       path: "/bet-list",
+  //       component: BetListPage,
+  //       icon: <FaListUl />,
+  //       props: {},
+  //     },
+  //     {
+  //       label: "Pending Bet",
+  //       path: "/pending-bet",
+  //       component: PendingBetListPage,
+  //       icon: <FaListUl />,
+  //       props: {},
+  //     },
+  //     {
+  //       label: "Games",
+  //       path: "/games",
+  //       component: GamesPage,
+  //       icon: <FaGamepad />,
+  //       props: {},
+  //     },
+  //   ],
+  // },
   {
     label: "Provider Profile",
     path: "/payment-providers/:providerId",
@@ -343,6 +369,7 @@ export const menu = [
   },
   {
     label: "Payment Method",
+    icon: <MdOutlinePayment />,
     children: [
       // {
       //   label: "Create Method",
@@ -360,7 +387,7 @@ export const menu = [
         label: "Payment Method Types",
         path: "/payment-method-types",
         component: PaymentMethodTypesPage,
-        icon: <FaCreditCard />,
+        icon: <FaMoneyBills />,
       },
       // {
       //   label: "Payment List",
@@ -372,7 +399,7 @@ export const menu = [
         label: "Payment Gateway",
         path: "/payment-gateways",
         component: PaymentGatewaysPage,
-        icon: <FaCreditCard />,
+        icon: <PiContactlessPayment />,
       },
       {
         label: "Payment Providers",
@@ -397,37 +424,8 @@ export const menu = [
     ],
   },
   {
-    label: "Sports",
-    children: [
-      // {
-      //   label: "Add Sport",
-      //   path: "/add-sport",
-      //   component: AddSportPage,
-      //   icon: <FaFutbol />,
-      // },
-      // {
-      //   label: "Sports List",
-      //   path: "/sports",
-      //   component: SportsListPage,
-      //   icon: <GiAmericanFootballBall />,
-      // },
-      {
-        label: "Add Popular",
-        path: "/add-popular-sports",
-        component: AddPopularSports,
-        icon: <FiStar />,
-      },
-      {
-        label: "Popular List",
-        path: "/popular-sports",
-        component: PopularSportsList,
-        icon: <BsStarFill />,
-      },
-    ],
-  },
-  {
     label: "Game Provider",
-    icon: <FaShieldAlt />,
+    icon: <TbGoGame />,
     children: [
       {
         label: "Add Parent Provider",
@@ -451,26 +449,26 @@ export const menu = [
   },
   {
     label: "Games",
-    icon: <FaShieldAlt />,
+    icon: <SlGameController />,
     children: [
       {
         label: "Add Game",
         path: "/add-game",
         component: AddOrUpdateGame,
-        icon: <FaUserPlus />,
+        icon: <BiAddToQueue />,
       },
       {
         label: "Game List",
         path: "/game-list",
         component: GameList,
-        icon: <FaUserPlus />,
+        icon: <MdFormatListBulletedAdd />,
       },
     ],
   },
 
   {
     label: "Sport Provider",
-    icon: <FaShieldAlt />,
+    icon: <TbGoGame />,
     children: [
       {
         label: "Add Parent Provider",
@@ -494,64 +492,64 @@ export const menu = [
   },
   {
     label: "Live Sports",
-    icon: <FaShieldAlt />,
+    icon: <SlGameController />,
     children: [
       {
         label: "Add Sport",
         path: "/add-sport",
         component: AddOrUpdateSport,
-        icon: <FaUserPlus />,
+        icon: <BiAddToQueue />,
       },
       {
         label: "Sport List",
         path: "/sport-list",
         component: SportList,
-        icon: <FaUserPlus />,
+        icon: <MdFormatListBulletedAdd />,
       },
     ],
   },
-  {
-    label: "Slider",
-    icon: <TbFileStar />,
-    children: [
-      {
-        label: "Add Slider",
-        path: "/add-slider",
-        component: AddSlider,
-        icon: <FiStar />,
-      },
-      {
-        label: "Slider List",
-        path: "/slider-list",
-        component: SliderList,
-        icon: <TbFileStar />,
-      },
-    ],
-  },
-  {
-    label: "Language",
-    icon: <FaGlobe />,
-    children: [
-      {
-        label: "Add Language",
-        path: "/add-language",
-        component: AddLanguage,
-        icon: <FaGlobe />,
-      },
-      {
-        label: "Language List",
-        path: "/language-list",
-        component: LanguageList,
-        icon: <FaGlobe />,
-      },
-      {
-        label: "Country List",
-        path: "/country-list",
-        component: CountryList,
-        icon: <FaGlobe />,
-      },
-    ],
-  },
+  // {
+  //   label: "Slider",
+  //   icon: <TbFileStar />,
+  //   children: [
+  //     {
+  //       label: "Add Slider",
+  //       path: "/add-slider",
+  //       component: AddSlider,
+  //       icon: <FiStar />,
+  //     },
+  //     {
+  //       label: "Slider List",
+  //       path: "/slider-list",
+  //       component: SliderList,
+  //       icon: <TbFileStar />,
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Language",
+  //   icon: <FaGlobe />,
+  //   children: [
+  //     {
+  //       label: "Add Language",
+  //       path: "/add-language",
+  //       component: AddLanguage,
+  //       icon: <FaGlobe />,
+  //     },
+  //     {
+  //       label: "Language List",
+  //       path: "/language-list",
+  //       component: LanguageList,
+  //       icon: <FaGlobe />,
+  //     },
+  //     {
+  //       label: "Country List",
+  //       path: "/country-list",
+  //       component: CountryList,
+  //       icon: <FaGlobe />,
+  //     },
+  //   ],
+  // },
   {
     label: "Country Management",
     icon: <FaGlobe />,
@@ -560,31 +558,31 @@ export const menu = [
         label: "Overview",
         path: "/country-management",
         component: CountryManagementPage,
-        icon: <FaGlobe />,
+        icon: <GrGlobe />,
       },
-      {
-        label: "Demo",
-        path: "/country-demo",
-        component: CountryManagementDemo,
-        icon: <FaGlobe />,
-      },
+      // {
+      //   label: "Demo",
+      //   path: "/country-demo",
+      //   component: CountryManagementDemo,
+      //   icon: <FaGlobe />,
+      // },
       {
         label: "Countries",
         path: "/countries",
         component: CountryList,
-        icon: <FaGlobe />,
+        icon: <LuMapPin />,
       },
       {
         label: "Currencies",
         path: "/currencies",
         component: CurrencyList,
-        icon: <FaCoins />,
+        icon: <MdCurrencyExchange />,
       },
       {
         label: "Languages",
         path: "/languages",
         component: LanguageList,
-        icon: <FaGlobe />,
+        icon: <LiaLanguageSolid />,
       },
     ],
   },
@@ -625,6 +623,122 @@ export const menu = [
     skipFromMenu: true,
   },
   {
+    label: "Owner Controls",
+    icon: <FaShieldAlt />,
+    onlyOwner: true, // Only visible to owner
+    children: [
+      {
+        label: "Account Control",
+        path: "/owner/account-control",
+        component: OwnerAccountControlPage,
+        icon: <MdControlCamera />,
+      },
+      {
+        label: "Permission",
+        path: "/owner/permission",
+        icon: <TbEaseInOutControlPoints />,
+        component: OwnerPermissionPage,
+      },
+    ],
+  },
+  {
+    label: "CMS",
+    icon: <MdDisplaySettings />,
+    onlyOwner: true, // Only visible to owner
+    children: [
+      {
+        label: "Banners",
+        path: "/banners",
+        component: Banner,
+        icon: <CgDisplayFullwidth />,
+      },
+      {
+        label: "Popup",
+        path: "/popup",
+        component: Popup,
+        icon: <CgDisplayFlex />,
+      },
+      {
+        label: "Announcements",
+        path: "/announcements",
+        component: Announcement,
+        icon: <GrAnnounce />,
+      },
+      {
+        label: "Advertisement",
+        path: "/advertisement",
+        component: Advertisement,
+        icon: <LiaAdSolid />,
+      },
+      {
+        label: "Sponsor",
+        path: "/sponsor",
+        component: Sponsor,
+        icon: <LiaPeopleCarrySolid />,
+      },
+      {
+        label: "Ambassador",
+        path: "/ambassador",
+        component: Ambassador,
+        icon: <FaPeopleRobbery />,
+      },
+      {
+        label: "Gaming License",
+        path: "/gaming-license",
+        component: GamingLicense,
+        icon: <TbLicense />,
+      },
+      {
+        label: "Responsible Gaming",
+        path: "/responsible-gaming",
+        component: ResponsibleGaming,
+        icon: <SiLegacygames />,
+      },
+      {
+        label: "Events",
+        path: "/event",
+        component: EventList,
+        icon: <BsCalendar2Event />,
+      },
+      {
+        label: "Featured Game",
+        path: "/featured-game",
+        component: FeaturedGames,
+        icon: <MdOutlineDisplaySettings />,
+      },
+    ],
+  },
+  {
+    label: "Login History",
+    path: "/login-history",
+    icon: <FaHistory />,
+    component: LoginHistoryPage,
+  },
+  {
+    label: "Configuration",
+    icon: <VscGitPullRequestCreate />,
+    onlyOwner: true, // Only visible to owner
+    children: [
+      {
+        label: "Dropdowns",
+        path: "/dropdowns",
+        component: DropdownConfiguration,
+        icon: <RiDropdownList />,
+      },
+      {
+        label: "Menu Management",
+        path: "/menu-management",
+        component: MenuManagement,
+        icon: <TbMenuOrder />,
+      },
+      // {
+      //   label: "StatusChip Demo",
+      //   path: "/status-chip-demo",
+      //   component: StatusChipDemo,
+      // },
+    ],
+  },
+  {
     label: "Settings",
     icon: <FaCogs />,
     children: [
@@ -646,113 +760,6 @@ export const menu = [
         component: BackupRestorePage,
         onlyOwner: true, // Only visible to owner
         icon: <FaDatabase />,
-      },
-    ],
-  },
-  {
-    label: "Owner Controls",
-    icon: <FaShieldAlt />,
-    onlyOwner: true, // Only visible to owner
-    children: [
-      {
-        label: "Account Control",
-        path: "/owner/account-control",
-        component: OwnerAccountControlPage,
-      },
-      {
-        label: "Permission",
-        path: "/owner/permission",
-        component: OwnerPermissionPage,
-      },
-      {
-        label: "KYC Request History",
-        path: "/kyc-request-history",
-        component: KYCRequestList,
-      },
-    ],
-  },
-  {
-    label: "Login History",
-    path: "/login-history",
-    icon: <FaHistory />,
-    component: LoginHistoryPage,
-  },
-  {
-    label: "CMS",
-    icon: <MdDisplaySettings />,
-    onlyOwner: true, // Only visible to owner
-    children: [
-      {
-        label: "Banners",
-        path: "/banners",
-        component: Banner,
-      },
-      {
-        label: "Popup",
-        path: "/popup",
-        component: Popup,
-      },
-      {
-        label: "Announcements",
-        path: "/announcements",
-        component: Announcement,
-      },
-      {
-        label: "Advertisement",
-        path: "/advertisement",
-        component: Advertisement,
-      },
-      {
-        label: "Sponsor",
-        path: "/sponsor",
-        component: Sponsor,
-      },
-      {
-        label: "Ambassador",
-        path: "/ambassador",
-        component: Ambassador,
-      },
-      {
-        label: "Gaming License",
-        path: "/gaming-license",
-        component: GamingLicense,
-      },
-      {
-        label: "Responsible Gaming",
-        path: "/responsible-gaming",
-        component: ResponsibleGaming,
-      },
-      {
-        label: "Events",
-        path: "/event",
-        component: EventList,
-      },
-      {
-        label: "Featured Game",
-        path: "/featured-game",
-        component: FeaturedGames,
-      },
-    ],
-  },
-  {
-    label: "Configuration",
-    icon: <VscGitPullRequestCreate />,
-    onlyOwner: true, // Only visible to owner
-    children: [
-      {
-        label: "Dropdowns",
-        path: "/dropdowns",
-        component: DropdownConfiguration,
-      },
-      {
-        label: "Menu Management",
-        path: "/menu-management",
-        component: MenuManagement,
-      },
-      {
-        label: "StatusChip Demo",
-        path: "/status-chip-demo",
-        component: StatusChipDemo,
       },
     ],
   },

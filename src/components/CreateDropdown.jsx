@@ -178,6 +178,9 @@ const CreateDropdown = ({ editedData, setEditedData }) => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Dropdown Selector */}
         <div>
+          <label htmlFor="" className="uppercase text-[14px] font-medium">
+            Select Dropdown
+          </label>
           <select
             className="w-full px-3 py-2 rounded capitalize bg-[#f5f5f5] border border-gray-300 text-base font-normal"
             value={dropdownId}
@@ -207,34 +210,51 @@ const CreateDropdown = ({ editedData, setEditedData }) => {
         {activeFields.map((field) => (
           <div key={field.name}>
             {field.type === "select" ? (
-              <select
-                className="w-full px-3 py-2 rounded capitalize bg-[#f5f5f5] border border-gray-300 text-base font-normal"
-                value={form[field.name] || ""}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-              >
-                <option value="">{`${
-                  field.label === "Is Menu?" ? "" : "Select "
-                }${field.label}`}</option>
-                {field.options.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+              <div>
+                <label htmlFor="" className="uppercase text-[14px] font-medium">
+                  {field?.label || ""}
+                </label>
+
+                <select
+                  className="w-full px-3 py-2 rounded capitalize bg-[#f5f5f5] border border-gray-300 text-base font-normal"
+                  value={form[field.name] || ""}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                >
+                  <option value="">{`${
+                    field?.label === "Is Menu?" ? "" : "Select "
+                  }${field?.label || "Select"}`}</option>
+                  {field.options?.length > 0 &&
+                    field.options.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                </select>
+              </div>
             ) : field.type === "file" ? (
-              <ImageUploader
-                setUploadRes={setUploadRes}
-                previewImage={form.imgUrl} // ✅ show old image if available
-                showBg
-              />
+              <div>
+                <label htmlFor="" className="uppercase text-[14px] font-medium">
+                  {field?.label || ""}
+                </label>
+                <ImageUploader
+                  setUploadRes={setUploadRes}
+                  previewImage={form.imgUrl}
+                  showBg
+                />
+              </div>
             ) : (
-              <input
-                type={field.type}
-                placeholder={field.label}
-                className="w-full px-3 py-2 rounded bg-[#f5f5f5] border border-gray-300 text-base font-normal"
-                value={form[field.name] || ""}
-                onChange={(e) => handleChange(field.name, e.target.value)}
-              />
+              <div>
+                <label htmlFor="" className="uppercase text-[14px] font-medium">
+                  {field?.label || ""}
+                </label>
+                <input
+                  type={field.type}
+                  placeholder={field.label}
+                  className="w-full px-3 py-2 rounded bg-[#f5f5f5] border border-gray-300 text-base font-normal"
+                  value={form[field.name] || ""}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                />
+              </div>
             )}
             {errors[field.name] && (
               <p className="text-red-500 text-sm font-medium">
