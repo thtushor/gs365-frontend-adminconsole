@@ -8,11 +8,12 @@ import { toast } from "react-toastify";
 import { formatAmount } from "./BettingWagerPage";
 import { useQuery } from "@tanstack/react-query";
 import Select from "react-select";
+import { Link } from "react-router-dom";
 
 // Custom hook to fetch promotions
 const usePromotions = () => {
   return useQuery({
-    queryKey: ['promotions'],
+    queryKey: ["promotions"],
     queryFn: async () => {
       const response = await Axios.get(API_LIST.GET_PUBLIC_PROMOTION);
       return response.data;
@@ -33,7 +34,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch promotions using react-query
-  const { data: promotionsData, isLoading: promotionsLoading } = usePromotions();
+  const { data: promotionsData, isLoading: promotionsLoading } =
+    usePromotions();
 
   const handleOpenDepositModal = (player) => {
     setSelectedPlayer(player);
@@ -48,7 +50,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
 
   const handleDepositSubmit = async () => {
     if (!selectedPlayer) return;
-    
+
     if (!depositForm.amount || parseFloat(depositForm.amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
@@ -56,35 +58,45 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
 
     // Validate promotion requirements if a promotion is selected
     if (depositForm.promotionId) {
-      const selectedPromotion = promotionsData?.data?.find(p => p.id === depositForm.promotionId);
+      const selectedPromotion = promotionsData?.data?.find(
+        (p) => p.id === depositForm.promotionId
+      );
       if (selectedPromotion) {
         const amount = parseFloat(depositForm.amount);
         const minAmount = parseFloat(selectedPromotion.minimumDepositAmount);
         const maxAmount = parseFloat(selectedPromotion.maximumDepositAmount);
-        
+
         if (amount < minAmount) {
-          toast.error(`Minimum deposit amount for this promotion is ${formatAmount(minAmount)}`);
+          toast.error(
+            `Minimum deposit amount for this promotion is ${formatAmount(
+              minAmount
+            )}`
+          );
           return;
         }
-        
+
         if (amount > maxAmount) {
-          toast.error(`Maximum deposit amount for this promotion is ${formatAmount(maxAmount)}`);
+          toast.error(
+            `Maximum deposit amount for this promotion is ${formatAmount(
+              maxAmount
+            )}`
+          );
           return;
         }
       }
     }
-    
+
     setIsSubmitting(true);
     try {
       const payload = {
         userId: selectedPlayer.id,
         amount: parseFloat(depositForm.amount),
-        currencyId: selectedPlayer.currencyId||10,
+        currencyId: selectedPlayer.currencyId || 10,
         promotionId: depositForm.promotionId || null,
         notes: depositForm.notes || null,
         attachment: depositForm.attachment || null,
       };
-      
+
       await Axios.post(API_LIST.DEPOSIT_TRANSACTION, payload);
       toast.success("Deposit added successfully");
       setDepositModalOpen(false);
@@ -98,16 +110,17 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   };
 
   // Transform promotions data for react-select
-  const promotionOptions = promotionsData?.data?.map(promotion => ({
-    value: promotion.id,
-    label: `${promotion.promotionName} (${promotion.bonus}% bonus)`,
-    promotion: promotion
-  })) || [];
+  const promotionOptions =
+    promotionsData?.data?.map((promotion) => ({
+      value: promotion.id,
+      label: `${promotion.promotionName} (${promotion.bonus}% bonus)`,
+      promotion: promotion,
+    })) || [];
 
   const handlePromotionChange = (selectedOption) => {
     setDepositForm({
       ...depositForm,
-      promotionId: selectedOption ? selectedOption.value : ""
+      promotionId: selectedOption ? selectedOption.value : "",
     });
   };
 
@@ -149,14 +162,27 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       field: "status",
       headerName: "STATUS",
       width: 100,
+      render: (value) => (
+        <span
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "active" ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {value}
+        </span>
+      ),
     },
     {
       field: "isVerified",
       headerName: "VERIFIED",
       width: 100,
       render: (value) => (
-        <span className={`px-2 py-1 rounded text-xs ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {value ? 'Yes' : 'No'}
+        <span
+          className={`px-2 py-1 rounded text-xs ${
+            value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          }`}
+        >
+          {value ? "Yes" : "No"}
         </span>
       ),
     },
@@ -180,7 +206,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
           {value ? (
             <>
               <div className="font-medium">{value}</div>
-              <div className="text-xs text-gray-500">@{row.userReferrerUsername}</div>
+              <div className="text-xs text-gray-500">
+                @{row.userReferrerUsername}
+              </div>
             </>
           ) : (
             <span className="text-gray-400">-</span>
@@ -196,7 +224,16 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         <div>
           {value ? (
             <>
-              <div className="font-medium">{value}</div>
+              {row.affiliateRole && row.affiliateName ? (
+                <Link
+                  to={`/affiliate-list/${row?.referred_by_admin_user}`}
+                  className="font-medium text-green-500"
+                >
+                  {value}
+                </Link>
+              ) : (
+                <div className="font-medium">{value}</div>
+              )}
               <div className="text-xs text-gray-500">{row.affiliateRole}</div>
             </>
           ) : (
@@ -227,7 +264,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "BALANCE",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-green-600">{formatAmount(value||0)}</span>
+        <span className="font-medium text-green-600">
+          {formatAmount(value || 0)}
+        </span>
       ),
     },
     {
@@ -235,7 +274,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "DEPOSITS",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-blue-600">{formatAmount(value||0)}</span>
+        <span className="font-medium text-blue-600">
+          {formatAmount(value || 0)}
+        </span>
       ),
     },
     {
@@ -243,7 +284,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "WITHDRAWALS",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-orange-600">{formatAmount(value||0)}</span>
+        <span className="font-medium text-orange-600">
+          {formatAmount(value || 0)}
+        </span>
       ),
     },
     {
@@ -251,7 +294,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "WINS",
       width: 100,
       render: (value) => (
-        <span className="font-medium text-green-600">{formatAmount(value||0)}</span>
+        <span className="font-medium text-green-600">
+          {formatAmount(value || 0)}
+        </span>
       ),
     },
     {
@@ -259,7 +304,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "LOSSES",
       width: 100,
       render: (value) => (
-        <span className="font-medium text-red-600">{formatAmount(value||0)}</span>
+        <span className="font-medium text-red-600">
+          {formatAmount(value || 0)}
+        </span>
       ),
     },
     {
@@ -267,7 +314,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "PENDING DEP",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-yellow-600">{formatAmount(value||0)}</span>
+        <span className="font-medium text-yellow-600">
+          {formatAmount(value || 0)}
+        </span>
       ),
     },
     {
@@ -275,7 +324,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "PENDING WIT",
       width: 120,
       render: (value) => (
-        <span className="font-medium text-yellow-600">{formatAmount(value||0)}</span>
+        <span className="font-medium text-yellow-600">
+          {formatAmount(value || 0)}
+        </span>
       ),
     },
     {
@@ -326,6 +377,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     },
   ];
 
+  console.log("players players", players);
   return (
     <>
       <DataTable
@@ -367,7 +419,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               />
             </div> */}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Amount *
@@ -377,7 +429,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               className="w-full border rounded px-3 py-2"
               placeholder="Enter amount"
               value={depositForm.amount}
-              onChange={(e) => setDepositForm({...depositForm, amount: e.target.value})}
+              onChange={(e) =>
+                setDepositForm({ ...depositForm, amount: e.target.value })
+              }
               min="0"
               step="0.01"
             />
@@ -392,7 +446,11 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               isSearchable
               placeholder="Select a promotion..."
               options={promotionOptions}
-              value={promotionOptions.find(option => option.value === depositForm.promotionId) || null}
+              value={
+                promotionOptions.find(
+                  (option) => option.value === depositForm.promotionId
+                ) || null
+              }
               onChange={handlePromotionChange}
               isLoading={promotionsLoading}
               className="w-full"
@@ -404,14 +462,24 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               <div className="mt-2 p-2 bg-blue-50 rounded text-sm text-blue-700">
                 <div className="font-medium">Selected Promotion Details:</div>
                 {(() => {
-                  const selectedPromotion = promotionsData?.data?.find(p => p.id === depositForm.promotionId);
+                  const selectedPromotion = promotionsData?.data?.find(
+                    (p) => p.id === depositForm.promotionId
+                  );
                   if (selectedPromotion) {
                     return (
                       <div className="mt-1 space-y-1">
                         <div>• Bonus: {selectedPromotion.bonus}%</div>
-                        <div>• Min Deposit: {formatAmount(selectedPromotion.minimumDepositAmount)}</div>
-                        <div>• Max Deposit: {formatAmount(selectedPromotion.maximumDepositAmount)}</div>
-                        <div>• Turnover: {selectedPromotion.turnoverMultiply}x</div>
+                        <div>
+                          • Min Deposit:{" "}
+                          {formatAmount(selectedPromotion.minimumDepositAmount)}
+                        </div>
+                        <div>
+                          • Max Deposit:{" "}
+                          {formatAmount(selectedPromotion.maximumDepositAmount)}
+                        </div>
+                        <div>
+                          • Turnover: {selectedPromotion.turnoverMultiply}x
+                        </div>
                       </div>
                     );
                   }
@@ -420,7 +488,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               </div>
             )}
           </div>
-       
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes (Optional)
@@ -430,7 +498,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               placeholder="Enter notes"
               rows={3}
               value={depositForm.notes}
-              onChange={(e) => setDepositForm({...depositForm, notes: e.target.value})}
+              onChange={(e) =>
+                setDepositForm({ ...depositForm, notes: e.target.value })
+              }
             />
           </div>
         </div>

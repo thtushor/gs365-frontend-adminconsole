@@ -36,7 +36,7 @@ const Login = () => {
       await login({
         userNameOrEmailorPhone: form.username,
         password: form.password,
-        userType,
+        userType: userType === "affiliate" ? "affiliate" : "admin",
       });
       setIsLoadingLogin(false);
     } catch (err) {
