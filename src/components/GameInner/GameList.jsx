@@ -115,21 +115,21 @@ const GameList = ({ providerId }) => {
       width: 150,
       render: (_, row) => row?.categoryInfo?.title || "N/A",
     },
-    {
-      field: "apiKey",
-      headerName: "Game Api Key",
-      width: 120,
-    },
-    {
-      field: "licenseKey",
-      headerName: "Game License Key",
-      width: 110,
-    },
-    {
-      field: "secretPin",
-      headerName: "Game Secret Pin",
-      width: 80,
-    },
+    // {
+    //   field: "apiKey",
+    //   headerName: "Game Api Key",
+    //   width: 120,
+    // },
+    // {
+    //   field: "licenseKey",
+    //   headerName: "Game License Key",
+    //   width: 110,
+    // },
+    // {
+    //   field: "secretPin",
+    //   headerName: "Game Secret Pin",
+    //   width: 80,
+    // },
     {
       field: "ggrPercent",
       headerName: "GGR%",

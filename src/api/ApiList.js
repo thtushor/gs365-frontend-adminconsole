@@ -1,5 +1,5 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -71,6 +71,8 @@ export const API_LIST = {
   CREATE_UPDATE_BANNER: "/api/admin/banner",
   CREATE_UPDATE_EVENT: "/api/admin/event",
   GET_EVENT: "/api/admin/events",
+  CREATE_UPDATE_SOCIAL: "/api/admin/social-media",
+  GET_SOCIAL: "/api/admin/social-media",
   CREATE_FEATURED_GAME: "/api/admin/featured-games",
   GET_FEATURED_GAME: "/api/admin/featured-games",
   GET_BANNER: "/api/admin/get-banner",

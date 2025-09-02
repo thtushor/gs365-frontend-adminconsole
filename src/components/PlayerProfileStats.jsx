@@ -6,6 +6,7 @@ import {
   FaGlobe,
   FaShieldAlt,
 } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const PlayerProfileStats = ({ playerDetails }) => {
   if (!playerDetails) return null;
@@ -18,10 +19,13 @@ const PlayerProfileStats = ({ playerDetails }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case "active":
+      case "verified":
         return "bg-green-100 text-green-800";
       case "inactive":
+      case "required":
         return "bg-red-100 text-red-800";
       case "suspended":
+      case "unverified":
         return "bg-yellow-100 text-yellow-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -48,7 +52,7 @@ const PlayerProfileStats = ({ playerDetails }) => {
             <FaUser className="text-gray-400" />
             <div>
               <p className="text-sm text-gray-500">Username</p>
-              <p className="font-medium">@{playerDetails.username}</p>
+              <p className="font-medium">{playerDetails.username}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -68,6 +72,13 @@ const PlayerProfileStats = ({ playerDetails }) => {
           <div className="flex items-center gap-3">
             <FaCalendar className="text-gray-400" />
             <div>
+              <p className="text-sm text-gray-500">Referrer Code</p>
+              <p className="font-medium">{playerDetails.refer_code || "N/A"}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <FaCalendar className="text-gray-400" />
+            <div>
               <p className="text-sm text-gray-500">Created Date</p>
               <p className="font-medium">
                 {formatDate(playerDetails.created_at)}
@@ -79,11 +90,24 @@ const PlayerProfileStats = ({ playerDetails }) => {
             <div>
               <p className="text-sm text-gray-500">Status</p>
               <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                className={`px-2 py-1 rounded-full capitalize text-xs font-medium ${getStatusColor(
                   playerDetails.status
                 )}`}
               >
                 {playerDetails.status}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <FaShieldAlt className="text-gray-400" />
+            <div>
+              <p className="text-sm text-gray-500">KYC Status</p>
+              <span
+                className={`px-2 py-1 rounded-full capitalize text-xs font-medium ${getStatusColor(
+                  playerDetails.kyc_status
+                )}`}
+              >
+                {playerDetails.kyc_status}
               </span>
             </div>
           </div>
@@ -154,20 +178,25 @@ const PlayerProfileStats = ({ playerDetails }) => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Referrer Name</p>
-              <p className="font-medium">
+              <Link
+                to={`/affiliate-list/${playerDetails.referrerDetails?.id}`}
+                className="font-medium text-green-500"
+              >
                 {playerDetails.referrerDetails.name}
-              </p>
+              </Link>
             </div>
             <div>
               <p className="text-sm text-gray-500">Referrer Username</p>
               <p className="font-medium">
-                @{playerDetails.referrerDetails.username}
+                {playerDetails.referrerDetails.username}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Referrer Role</p>
               <p className="font-medium capitalize">
-                {playerDetails.referrerDetails.role}
+                {playerDetails.referrerDetails.role === "affiliate"
+                  ? "Sub Affiliate"
+                  : "Super Affiliate"}
               </p>
             </div>
             <div>
@@ -185,7 +214,7 @@ const PlayerProfileStats = ({ playerDetails }) => {
             <div>
               <p className="text-sm text-gray-500">Commission %</p>
               <p className="font-medium">
-                {playerDetails.referrerDetails.commission || 0}
+                {playerDetails.referrerDetails.commission || 0}%
               </p>
             </div>
           </div>

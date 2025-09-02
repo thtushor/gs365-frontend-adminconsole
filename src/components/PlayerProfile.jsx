@@ -17,6 +17,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 import KycRequestButton from "../Utils/KycRequestButton";
+import PlayerPasswordChange from "./PlayerPasswordChange";
 
 export const playerRoutes = [
   {
@@ -194,41 +195,45 @@ const PlayerProfile = () => {
       <main className="p-4 bg-[#07122b] mt-5 rounded-lg">
         {/* Player Info Header */}
         <div className="bg-white rounded-lg p-6 mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
-              <FaUser className="text-white text-2xl" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-800">
-                {playerDetails.fullname}
-              </h1>
-              <p className="text-gray-600">@{playerDetails.username}</p>
-              <p className="text-sm text-gray-500">{playerDetails.email}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
-                ACC:
-                <span
-                  className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
-                    playerDetails.status === "active"
-                      ? "bg-green-100 text-green-500 border-green-500"
-                      : "bg-red-100 text-red-500 border-red-500"
-                  }`}
-                >
-                  {playerDetails.status || "Unverified"}
-                </span>
+          <div className="flex items-center gap-4 mb-4 md:flex-row flex-col md:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                <FaUser className="text-white text-2xl" />
               </div>
-              <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
-                KYC:
-                <span
-                  className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
-                    playerDetails.kyc_status === "verified"
-                      ? "bg-green-100 text-green-500 border-green-500"
-                      : "bg-red-100 text-red-500 border-red-500"
-                  }`}
-                >
-                  {playerDetails.kyc_status || "Unverified"}
-                </span>
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-gray-800">
+                  {playerDetails.fullname}
+                </h1>
+                <p className="text-gray-600">User: {playerDetails.username}</p>
+                <p className="text-sm text-gray-500">{playerDetails.email}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-x-5 gap-y-3 md:gap-3 flex-wrap justify-center">
+              <div className="flex items-start md:items-center gap-1 md:gap-3 flex-row">
+                <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
+                  ACC:
+                  <span
+                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
+                      playerDetails.status === "active"
+                        ? "bg-green-100 text-green-500 border-green-500"
+                        : "bg-red-100 text-red-500 border-red-500"
+                    }`}
+                  >
+                    {playerDetails.status || "Unverified"}
+                  </span>
+                </div>
+                <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
+                  KYC:
+                  <span
+                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
+                      playerDetails.kyc_status === "verified"
+                        ? "bg-green-100 text-green-500 border-green-500"
+                        : "bg-red-100 text-red-500 border-red-500"
+                    }`}
+                  >
+                    {playerDetails.kyc_status || "Unverified"}
+                  </span>
+                </div>
               </div>
               <KycRequestButton
                 holderId={playerDetails?.id}
@@ -236,10 +241,10 @@ const PlayerProfile = () => {
               />
               <button
                 onClick={handleEditProfile}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
+                className="bg-green-500 text-white px-2 md:px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
               >
                 <FaEdit />
-                Edit Profile
+                <span className="md:flex hidden">Edit Profile</span>
               </button>
             </div>
           </div>
@@ -350,7 +355,10 @@ const PlayerProfile = () => {
 
         {/* Content Area */}
         {isMainProfile ? (
-          <PlayerProfileStats playerDetails={playerDetails} />
+          <>
+            <PlayerProfileStats playerDetails={playerDetails} />
+            <PlayerPasswordChange info={playerDetails} />
+          </>
         ) : (
           <Outlet />
         )}

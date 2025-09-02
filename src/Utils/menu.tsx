@@ -174,6 +174,7 @@ import {
 } from "react-icons/lia";
 import { SiLegacygames } from "react-icons/si";
 import { RiDropdownList } from "react-icons/ri";
+import SocialList from "../components/SocialList";
 
 export const menu = [
   {
@@ -704,6 +705,12 @@ export const menu = [
         label: "Featured Game",
         path: "/featured-game",
         component: FeaturedGames,
+        icon: <MdOutlineDisplaySettings />,
+      },
+      {
+        label: "Social Media",
+        path: "/social-media",
+        component: SocialList,
         icon: <MdOutlineDisplaySettings />,
       },
     ],
