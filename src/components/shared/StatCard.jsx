@@ -1,7 +1,7 @@
 import React from "react";
 
 const StatCard = ({
-  label,
+  title,
   value,
   color = "blue",
   icon,
@@ -9,6 +9,12 @@ const StatCard = ({
   size = "md",
 }) => {
   const colorClasses = {
+    primary: "bg-blue-50 text-blue-700 border-blue-200",
+    success: "bg-green-50 text-green-700 border-green-200",
+    warning: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    danger: "bg-red-50 text-red-700 border-red-200",
+    info: "bg-cyan-50 text-cyan-700 border-cyan-200",
+    secondary: "bg-gray-50 text-gray-700 border-gray-200",
     blue: "bg-blue-50 text-blue-700 border-blue-200",
     green: "bg-green-50 text-green-700 border-green-200",
     yellow: "bg-yellow-50 text-yellow-700 border-yellow-200",
@@ -30,7 +36,7 @@ const StatCard = ({
       <div className="flex items-center justify-between">
         <div>
           <div className="text-gray-500 uppercase tracking-wide font-medium">
-            {label}
+            {title}
           </div>
           <div className="font-bold text-lg">{value}</div>
         </div>
