@@ -8,6 +8,7 @@ import LoadingState from './shared/LoadingState';
 import ErrorState from './shared/ErrorState';
 import EmptyState  from './shared/EmptyState';
 import StatusChip from './shared/StatusChip';
+import DataTable from './DataTable';
 import Pagination from './Pagination';
 
 const AdminBalancePage = () => {
@@ -40,6 +41,79 @@ const AdminBalancePage = () => {
     { value: 'player_deposit', label: 'Player Deposit' },
     { value: 'player_withdraw', label: 'Player Withdraw' },
     { value: 'promotion', label: 'Promotion' }
+  ];
+
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 80,
+      align: 'center',
+      render: (value) => `#${value}`
+    },
+    {
+      field: 'amount',
+      headerName: 'Amount',
+      width: 120,
+      align: 'right',
+      render: (value, row) => formatCurrency(value)
+    },
+    {
+      field: 'type',
+      headerName: 'Type',
+      width: 150,
+      align: 'center',
+      render: (value) => (
+        <StatusChip
+          status={value}
+          variant={getTypeColor(value)}
+        />
+      )
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 150,
+      align: 'center',
+      render: (value) => (
+        <StatusChip
+          status={value}
+          variant={getTypeColor(value)}
+        />
+      )
+    },
+    {
+      field: 'createdByAdminUser',
+      headerName: 'Created By',
+      width: 200,
+      render: (value) => {
+        if (value) {
+          return (
+            <div>
+              <div className="font-medium">{value.fullname}</div>
+              <div className="text-gray-500 text-xs">{value.username}</div>
+            </div>
+          );
+        }
+        return <span className="text-gray-400">-</span>;
+      }
+    },
+    {
+      field: 'notes',
+      headerName: 'Notes',
+      width: 300,
+      render: (value) => (
+        <div className="max-w-xs truncate" title={value}>
+          {value}
+        </div>
+      )
+    },
+    {
+      field: 'createdAt',
+      headerName: 'Created At',
+      width: 180,
+      render: (value) => formatDate(value)
+    }
   ];
 
   const validateForm = () => {
@@ -168,7 +242,7 @@ const AdminBalancePage = () => {
 
 
   const formatCurrency = (amount) => {
-    return `$${parseFloat(amount).toFixed(2)}`;
+    return `BDT ${parseFloat(amount).toFixed(2)}`;
   };
 
   const formatDate = (dateString) => {
@@ -231,43 +305,43 @@ const AdminBalancePage = () => {
           <StatCard
             title="Current Balance"
             value={formatCurrency(adminBalanceData.stats.currentMainBalance)}
-            icon="💰"
+            icon="💎"
             color="primary"
           />
           <StatCard
-            title="Total Admin Deposits"
+            title="Admin Deposits"
             value={formatCurrency(adminBalanceData.stats.totalAdminDeposit)}
-            icon="📈"
+            icon="⬆️"
             color="success"
           />
           <StatCard
-            title="Total Player Deposits"
+            title="Player Deposits"
             value={formatCurrency(adminBalanceData.stats.totalPlayerDeposit)}
-            icon="👥"
+            icon="👤"
             color="info"
           />
           <StatCard
-            title="Total Promotions"
+            title="Promotions"
             value={formatCurrency(adminBalanceData.stats.totalPromotion)}
-            icon="🎁"
+            icon="🎯"
             color="warning"
           />
           <StatCard
-            title="Total Player Withdrawals"
+            title="Player Withdrawals"
             value={formatCurrency(adminBalanceData.stats.totalPlayerWithdraw)}
-            icon="💸"
+            icon="⬇️"
             color="danger"
           />
           <StatCard
-            title="Total Admin Withdrawals"
+            title="Admin Withdrawals"
             value={formatCurrency(adminBalanceData.stats.totalAdminWithdraw)}
-            icon="📉"
+            icon="📤"
             color="danger"
           />
           <StatCard
             title="Total Records"
             value={adminBalanceData.stats.totalRecords}
-            icon="📊"
+            icon="📋"
             color="secondary"
           />
         </div>
@@ -349,76 +423,24 @@ const AdminBalancePage = () => {
 
       {/* Data Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
-                </th>
-
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created By
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Notes
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created At
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {adminBalanceData.data?.map((record) => (
-                <tr key={record.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    #{record.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {formatCurrency(record.amount)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <StatusChip
-                      status={record.type}
-                      variant={getTypeColor(record.type)}
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {record.createdByAdminUser ? (
-                      <div>
-                        <div className="font-medium">{record.createdByAdminUser.fullname}</div>
-                        <div className="text-gray-500 text-xs">{record.createdByAdminUser.username}</div>
-                      </div>
-                    ) : (
-                      <span className="text-gray-400">-</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                    {record.notes}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(record.createdAt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="p-6">
+          <DataTable
+            columns={columns}
+            data={adminBalanceData.data || []}
+            isLoading={loading}
+          />
         </div>
 
-        {adminBalanceData.data?.length === 0 && (
-          <EmptyState
-            title="No admin balance records found"
-            description="No records match your current filters. Try adjusting your search criteria."
-          />
+        {adminBalanceData.data?.length === 0 && !loading && (
+          <div className="p-6">
+            <EmptyState
+              title="No admin balance records found"
+              description="No records match your current filters. Try adjusting your search criteria."
+            />
+          </div>
         )}
 
-        {adminBalanceData.pagination && adminBalanceData.pagination.totalPages > 1 && (
+        {adminBalanceData.pagination && adminBalanceData.pagination.totalPages >= 1 && (
           <div className="px-6 py-4 border-t border-gray-200">
             <Pagination
               currentPage={adminBalanceData.pagination.page}
