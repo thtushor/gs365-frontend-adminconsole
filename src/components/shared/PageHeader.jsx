@@ -6,6 +6,7 @@ const PageHeader = ({
   subtitle,
   onBack,
   actionButton,
+  actions,
   icon,
   className = "",
 }) => {
@@ -36,7 +37,28 @@ const PageHeader = ({
             )}
           </div>
         </div>
-        {actionButton && <div className="flex-shrink-0">{actionButton}</div>}
+        {(actionButton || actions) && (
+          <div className="flex-shrink-0">
+            {actionButton}
+            {actions && (
+              <div className="flex space-x-2">
+                {actions.map((action, index) => (
+                  <button
+                    key={index}
+                    onClick={action.onClick}
+                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                      action.variant === 'primary'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

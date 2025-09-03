@@ -155,53 +155,6 @@ const Dashboard = () => {
     },
 
     {
-      title: "Total Company Profit",
-      value: formatAmount(
-        (dashboardData?.totalBetWin || 0) - (dashboardData?.totalBetLost || 0)
-      ),
-      icon: <FaChartLine className="text-3xl" />,
-      color:
-        formatAmount(
-          (dashboardData?.totalBetLost || 0) - (dashboardData?.totalBetWin || 0)
-        ) > 0
-          ? "border-green-400"
-          : "border-red-600",
-      textColor:
-        formatAmount(
-          (dashboardData?.totalBetLost || 0) - (dashboardData?.totalBetWin || 0)
-        ) > 0
-          ? "text-green-400"
-          : "text-red-600",
-      trend:
-        formatAmount(
-          (dashboardData?.totalBetLost || 0) - (dashboardData?.totalBetWin || 0)
-        ) > 0
-          ? "up"
-          : "down",
-      subtitle: "Net profit from betting",
-    },
-
-    // Row 2 (4 cards)
-    {
-      title: "Total Player Win",
-      value: formatAmount(dashboardData?.totalBetWin || "0"),
-      icon: <FaTrophy className="text-3xl" />,
-      color: "border-green-400",
-      textColor: "text-green-600",
-      trend: "up",
-      subtitle: "Total winnings",
-    },
-    {
-      title: "Total Player Loss",
-      value: `-${formatAmount(dashboardData?.totalBetLost || "0")}`,
-      icon: <FaRegSadTear className="text-3xl" />,
-      color: "border-red-400",
-      textColor: "text-red-600",
-      trend: "down",
-      subtitle: "Total losses",
-    },
-
-    {
       title: "Total Player Deposit",
       value: formatAmount(dashboardData?.totalDeposit || "0"),
       icon: <FaMoneyCheckAlt className="text-3xl" />,
@@ -229,6 +182,17 @@ const Dashboard = () => {
       subtitle: "All time withdrawals",
     },
 
+    {
+      title: "Total Bonus",
+      value: formatAmount(dashboardData?.totalBonusAmount || "0"),
+      icon: <FaMoneyCheckAlt className="text-3xl" />,
+      color: "border-green-400",
+      textColor: "text-green-600",
+      trend: "up",
+      subtitle: "All time deposits"
+    },
+
+       
     // Row 3 (4 cards)
     {
       title: "Player Pending Deposit",
@@ -257,7 +221,39 @@ const Dashboard = () => {
       trend: "neutral",
       subtitle: "Bonus distributed",
     },
-
+  
+    {
+      title: "Total Profit",
+      value: formatAmount((dashboardData?.totalBetWin || 0) - (dashboardData?.totalBetLost || 0)),
+      icon: <FaChartLine className="text-3xl" />,
+      color: "border-green-400",
+      textColor: "text-green-600",
+      trend: "up",
+      subtitle: "Net profit from betting"
+    },
+    
+    // Row 2 (4 cards)
+    {
+      title: "Total Win",
+      value: formatAmount(dashboardData?.totalBetWin || "0"),
+      icon: <FaTrophy className="text-3xl" />,
+      color: "border-green-400",
+      textColor: "text-green-600",
+      trend: "up",
+      subtitle: "Total winnings"
+    },
+    {
+      title: "Total Loss",
+      value: formatAmount(dashboardData?.totalBetLost || "0"),
+      icon: <FaRegSadTear className="text-3xl" />,
+      color: "border-red-400",
+      textColor: "text-red-600",
+      trend: "down",
+      subtitle: "Total losses"
+    },
+   
+ 
+    
     // Row 4 (4 cards)
     {
       title: "Total Affiliates",
@@ -278,6 +274,51 @@ const Dashboard = () => {
       subtitle: "All time withdrawal amount",
     },
     {
+      title: "Total Super Affiliates",
+      value: dashboardData?.totalSuperAffiliate?.toLocaleString() || "0",
+      icon: <FaUsers className="text-3xl" />,
+      color: "border-purple-400",
+      textColor: "text-purple-600",
+      trend: "up",
+      subtitle: "Affiliate partners"
+    },
+    {
+      title: "Total Sub Affiliates",
+      value: dashboardData?.totalSubAffiliate?.toLocaleString() || "0",
+      icon: <FaUsers className="text-3xl" />,
+      color: "border-purple-400",
+      textColor: "text-purple-600",
+      trend: "up",
+      subtitle: "Affiliate partners",
+    },
+    {
+      title: "Total Affiliate Withdraw",
+      value: formatAmount(dashboardData?.totalAffiliateWithdrawal || "0"),
+      icon: <FaCoins className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "neutral",
+      subtitle: "All time withdrawal amount",
+    },
+    {
+      title: "Total Super Affiliates",
+      value: dashboardData?.totalSuperAffiliate?.toLocaleString() || "0",
+      icon: <FaUsers className="text-3xl" />,
+      color: "border-purple-400",
+      textColor: "text-purple-600",
+      trend: "up",
+      subtitle: "Affiliate partners"
+    },
+    {
+      title: "Total Sub Affiliates",
+      value: dashboardData?.totalSubAffiliate?.toLocaleString() || "0",
+      icon: <FaUsers className="text-3xl" />,
+      color: "border-purple-400",
+      textColor: "text-purple-600",
+      trend: "up",
+      subtitle: "Affiliate partners"
+    },
+    {
       title: "Total Agent",
       value: dashboardData?.totalAgent?.toLocaleString() || "0",
       icon: <FaUserPlus className="text-3xl" />,
@@ -285,6 +326,42 @@ const Dashboard = () => {
       textColor: "text-blue-600",
       trend: "up",
       subtitle: "Active agents",
+    },
+    {
+      title: "Total Super Agent",
+      value: dashboardData?.totalSuperAgent?.toLocaleString() || "0",
+      icon: <FaUserPlus className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "up",
+      subtitle: "Active agents"
+    },
+    {
+      title: "Total Sub Agent",
+      value: dashboardData?.totalSubAgent?.toLocaleString() || "0",
+      icon: <FaUserPlus className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "up",
+      subtitle: "Active agents",
+    },
+    {
+      title: "Total Super Agent",
+      value: dashboardData?.totalSuperAgent?.toLocaleString() || "0",
+      icon: <FaUserPlus className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "up",
+      subtitle: "Active agents"
+    },
+    {
+      title: "Total Sub Agent",
+      value: dashboardData?.totalSubAgent?.toLocaleString() || "0",
+      icon: <FaUserPlus className="text-3xl" />,
+      color: "border-blue-400",
+      textColor: "text-blue-600",
+      trend: "up",
+      subtitle: "Active agents"
     },
     {
       title: "Total Players",

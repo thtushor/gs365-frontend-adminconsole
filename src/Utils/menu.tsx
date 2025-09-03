@@ -162,6 +162,7 @@ import AffiliateWithdrawRequestListPage from "../components/AffiliateWithdrawReq
 import KYCVerificationPage from "../components/KYCVerificationPage";
 import KYCRequestList from "../components/KYCRequestList";
 import FeaturedGames from "../components/FeaturedGames";
+import AdminBalancePage from "../components/AdminBalancePage";
 import { IoWalletOutline } from "react-icons/io5";
 import { GrAnnounce, GrGamepad, GrGlobe } from "react-icons/gr";
 import { SlGameController } from "react-icons/sl";
@@ -175,6 +176,7 @@ import {
 import { SiLegacygames } from "react-icons/si";
 import { RiDropdownList } from "react-icons/ri";
 import SocialList from "../components/SocialList";
+import { FaWallet } from "react-icons/fa";
 
 export const menu = [
   {
@@ -421,6 +423,18 @@ export const menu = [
         component: GatewayManagementPage,
         icon: <FaCogs />,
         skipFromMenu: true,
+      },
+    ],
+  },
+  {
+    label: "Finance",
+    icon: <FaWallet />,
+    children: [
+      {
+        label: "Admin Balance",
+        path: "/admin-balance",
+        component: AdminBalancePage,
+        icon: <FaWallet />,
       },
     ],
   },

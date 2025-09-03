@@ -129,6 +129,7 @@ export const API_LIST = {
   PAYMENT_GATEWAY: "/api/payment-gateways",
   UPDATE_PAYMENT_GATEWAY: "/api/payment-gateways/update",
   DELETE_PAYMENT_GATEWAY: "/api/payment-gateways/delete",
+  ADMIN_MAIN_BALANCE: "/api/admin-main-balance",
 
   // Payment Providers
   PAYMENT_PROVIDER: "/api/payment-providers",
@@ -150,6 +151,9 @@ export const API_LIST = {
   PAYMENT_TRANSACTION: "/api/transactions",
   DEPOSIT_TRANSACTION: "/api/transactions/deposit",
   WITHDRAW_TRANSACTION: "/api/transactions/affiliate-withdraw",
+
+  // Admin Main Balance
+  ADMIN_MAIN_BALANCE: "/api/admin-main-balance",
 
   // Settings
   GET_SETTINGS: "/api/settings",
