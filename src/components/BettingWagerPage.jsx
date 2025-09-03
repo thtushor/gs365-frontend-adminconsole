@@ -3,14 +3,17 @@ import { useBetResults, useGames, useUsers } from "../hooks/useBetResults";
 import { FaFilter, FaDownload, FaEye } from "react-icons/fa";
 import StatusChip from "./shared/StatusChip";
 import Pagination from "./Pagination";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export const formatAmount = (amount) => {
   if (!amount || amount === "0.00") return "-";
   return `${parseFloat(amount).toFixed(2)} BDT`;
 };
 
-const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) => {
+const BettingWagerPage = ({
+  playerId: propPlayerId,
+  title = "Betting Wager",
+}) => {
   const [filters, setFilters] = useState({
     userId: "",
     gameId: "",
@@ -37,7 +40,11 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
   const navigate = useNavigate();
 
   // Fetch bet results
-  const { data: betResults, isLoading: betResultsLoading, error: betResultsError } = useBetResults({
+  const {
+    data: betResults,
+    isLoading: betResultsLoading,
+    error: betResultsError,
+  } = useBetResults({
     ...filters,
     userId: playerId,
     page: currentPage,
@@ -56,21 +63,20 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
   const pagination = betResults?.pagination || {};
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    setFilters(prev => ({ ...prev, offset: (page - 1) * pageSize }));
+    setFilters((prev) => ({ ...prev, offset: (page - 1) * pageSize }));
   };
 
   const handlePageSizeChange = (size) => {
     setPageSize(size);
     setCurrentPage(1);
-    setFilters(prev => ({ ...prev, limit: size, offset: 0 }));
+    setFilters((prev) => ({ ...prev, limit: size, offset: 0 }));
   };
-  
 
   const handleResetFilters = () => {
     setFilters({
@@ -98,23 +104,29 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
     return new Date(dateString).toLocaleString();
   };
 
-  
-
   const getBetStatusColor = (status) => {
     switch (status) {
-      case "win": return "success";
-      case "loss": return "error";
-      case "pending": return "warning";
-      default: return "default";
+      case "win":
+        return "success";
+      case "loss":
+        return "error";
+      case "pending":
+        return "warning";
+      default:
+        return "default";
     }
   };
 
   const getPlayingStatusColor = (status) => {
     switch (status) {
-      case "completed": return "success";
-      case "playing": return "warning";
-      case "abandoned": return "error";
-      default: return "default";
+      case "completed":
+        return "success";
+      case "playing":
+        return "warning";
+      case "abandoned":
+        return "error";
+      default:
+        return "default";
     }
   };
 
@@ -138,7 +150,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
           <FaFilter className="text-blue-500" />
           <h3 className="text-lg font-semibold">Filters</h3>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {/* User Filter */}
           <div>
@@ -151,7 +163,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Users</option>
-              {users.map(user => (
+              {users.map((user) => (
                 <option key={user.id} value={user.id}>
                   {user.fullname || user.username}
                 </option>
@@ -170,7 +182,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Games</option>
-              {games.map(game => (
+              {games.map((game) => (
                 <option key={game.id} value={game.id}>
                   {game.name}
                 </option>
@@ -202,7 +214,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
             </label>
             <select
               value={filters.playingStatus}
-              onChange={(e) => handleFilterChange("playingStatus", e.target.value)}
+              onChange={(e) =>
+                handleFilterChange("playingStatus", e.target.value)
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Statuses</option>
@@ -248,7 +262,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
               step="0.01"
               placeholder="0.00"
               value={filters.minBetAmount}
-              onChange={(e) => handleFilterChange("minBetAmount", e.target.value)}
+              onChange={(e) =>
+                handleFilterChange("minBetAmount", e.target.value)
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -263,7 +279,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
               step="0.01"
               placeholder="0.00"
               value={filters.maxBetAmount}
-              onChange={(e) => handleFilterChange("maxBetAmount", e.target.value)}
+              onChange={(e) =>
+                handleFilterChange("maxBetAmount", e.target.value)
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -291,7 +309,9 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
               type="text"
               placeholder="Search provider"
               value={filters.providerName}
-              onChange={(e) => handleFilterChange("providerName", e.target.value)}
+              onChange={(e) =>
+                handleFilterChange("providerName", e.target.value)
+              }
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -343,6 +363,10 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Game
                 </th>
+
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Provider Name
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Bet Balance at bet tme
                 </th>
@@ -358,7 +382,7 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Multiplier
                 </th>
-               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Balance at bet end
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -381,13 +405,19 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
             <tbody className="bg-white divide-y divide-gray-200">
               {betResultsLoading ? (
                 <tr>
-                  <td colSpan="11" className="px-6 py-4 text-center text-gray-500">
+                  <td
+                    colSpan="11"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
                     Loading bet results...
                   </td>
                 </tr>
               ) : betResultsList.length === 0 ? (
                 <tr>
-                  <td colSpan="11" className="px-6 py-4 text-center text-gray-500">
+                  <td
+                    colSpan="11"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
                     No bet results found
                   </td>
                 </tr>
@@ -397,10 +427,17 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {bet.id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-green-500 font-medium cursor-pointer hover:underline" onClick={() => {
-                      navigate(`/players/${bet?.userId}/profile`, { state: { user: bet?.user } });
-                    }}>
-                      {bet?.user?.fullname || bet?.user?.username || bet?.userId}
+                    <td
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-green-500 font-medium cursor-pointer hover:underline"
+                      onClick={() => {
+                        navigate(`/players/${bet?.userId}/profile`, {
+                          state: { user: bet?.user },
+                        });
+                      }}
+                    >
+                      {bet?.user?.fullname ||
+                        bet?.user?.username ||
+                        bet?.userId}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -412,8 +449,28 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                           />
                         )}
                         <span className="text-sm text-gray-900">
-                          {bet.gameDetails?.name || bet.gameName || "Unknown Game"}
+                          {bet.gameDetails?.name ||
+                            bet.gameName ||
+                            "Unknown Game"}
                         </span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        {bet.providerDetails?.logo && (
+                          <img
+                            src={bet.providerDetails.logo}
+                            alt={bet.providerDetails.name}
+                            className="w-8 h-8 rounded mr-2"
+                          />
+                        )}
+                        <Link
+                          to={`/game-provider-list/${bet.providerDetails?.id}`}
+                          className="text-sm text-green-500 font-medium"
+                        >
+                          {bet.providerDetails?.name || "Unknown Provider"}
+                        </Link>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -433,10 +490,14 @@ const BettingWagerPage = ({ playerId: propPlayerId, title = "Betting Wager" }) =
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatAmount(Number(bet.betBalance)+Number(bet.winAmount)-Number(bet.lossAmount))}
+                      {formatAmount(
+                        Number(bet.betBalance) +
+                          Number(bet.winAmount) -
+                          Number(bet.lossAmount)
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatAmount(bet.userBalance?.currentBalance||0)}
+                      {formatAmount(bet.userBalance?.currentBalance || 0)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <StatusChip

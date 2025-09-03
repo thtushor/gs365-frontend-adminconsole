@@ -94,33 +94,63 @@ const PlayerListPage = () => {
   // Mutations
   const createMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await Axios.post(API_LIST.REGISTER_PLAYERS, {
-        ...data,
-        createdBy: user.id,
-      });
-      if (!res.data.status)
-        throw new Error(res.data.message || "Failed to create player");
-      return res.data;
+      try {
+        const res = await Axios.post(API_LIST.REGISTER_PLAYERS, {
+          ...data,
+          createdBy: user.id,
+        });
+
+        // Check your API's response
+        if (!res.data.status) {
+          throw new Error(res.data.message || "Failed to create player");
+        }
+
+        return res.data;
+      } catch (err) {
+        // Axios errors may be inside err.response.data
+        const message =
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to create player";
+        throw new Error(message);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["players"] });
       setModalOpen(false);
       toast.success("Player created successfully!");
     },
+    onError: (error) => {
+      toast.error(error.message); // Show proper error message
+    },
   });
 
   const editMutation = useMutation({
     mutationFn: async ({ id, ...data }) => {
-      const res = await Axios.post(`${API_LIST.EDIT_PLAYERS}/${id}`, data);
-      if (!res.data.status)
-        throw new Error(res.data.message || "Failed to update player");
-      return res.data;
+      try {
+        const res = await Axios.post(`${API_LIST.EDIT_PLAYERS}/${id}`, data);
+
+        if (!res.data.status) {
+          throw new Error(res.data.message || "Failed to update player");
+        }
+
+        return res.data;
+      } catch (err) {
+        const message =
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to update player";
+        throw new Error(message);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["players"] });
       setModalOpen(false);
       setEditPlayer(null);
       toast.success("Player updated successfully!");
+    },
+    onError: (error) => {
+      toast.error(error.message); // Show proper error message
     },
   });
 
