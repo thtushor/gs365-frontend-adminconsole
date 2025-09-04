@@ -129,12 +129,13 @@ const Dashboard = () => {
       { title: "Total Player Pending Deposit", value: formatAmount(dashboardData?.pendingDeposit || 0), icon: <FaRegCheckCircle />, color: "border-yellow-400" },
       { title: "Total Player Pending Withdraw", value: formatAmount(dashboardData?.pendingWithdraw || 0), icon: <FaRegTimesCircle />, color: "border-pink-400" },
     ],
-    // Row 4 (4 cards)
+    // Row 4 (5 cards)
     [
+      { title: "Total Player Bet Amount", value: formatAmount(dashboardData?.totalBetAmount || 0), icon: <FaTrophy />, color: "border-green-400" },
       { title: "Total Player Win", value: formatAmount(dashboardData?.totalBetWin || 0), icon: <FaTrophy />, color: "border-green-400" },
       { title: "Total Player Loss", value: formatAmount(dashboardData?.totalBetLost || 0), icon: <FaRegSadTear />, color: "border-red-400" },
       { title: "Total Admin Deposit", value: formatAmount(dashboardData?.totalAdminDeposit || 0), icon: <FaMoneyCheckAlt />, color: "border-blue-400" },
-      { title: "Total Admin Withdraw", value: formatAmount(dashboardData?.totalAdminWithdraw || 0), icon: <FaWallet />, color: "border-orange-400" },
+      // { title: "Total Admin Withdraw", value: formatAmount(dashboardData?.totalAdminWithdraw || 0), icon: <FaWallet />, color: "border-orange-400" },
     ],
     // Row 5 (4 cards)
     [
