@@ -281,7 +281,7 @@ export const menu = [
         props: {},
       },
       {
-        label: "Withdraw Request",
+        label: "Withdraw History",
         path: "/affiliate-withdraw-requests",
         component: AffiliateWithdrawRequestListPage,
         icon: <IoWalletOutline />,
