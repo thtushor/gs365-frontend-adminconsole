@@ -45,7 +45,6 @@ export const usePostRequest = () => {
           errorMessage || data.message || "Something went wrong."
         );
       }
-
       toast.success(successMessage || data.message || "Success");
       if (onSuccessFn) {
         onSuccessFn(data);
@@ -54,6 +53,7 @@ export const usePostRequest = () => {
     } catch (err) {
       console.log(err);
       toast.error(err.message || errorMessage || "Failed to send request.");
+      setLoading && setLoading(false)
       throw err;
     } finally {
       if (setLoading) {
