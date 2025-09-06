@@ -11,6 +11,7 @@ import {
 import AffiliateLayout from "./components/AffiliateLayout";
 import GameProviderLayout from "./components/GameProviderLayout.jsx";
 import SportsProviderLayout from "./components/SportProviderInner/SportsProviderLayout.jsx";
+import { useEffect } from "react";
 
 // Handle normal menu routes (inside Layout)
 function getRoutes(menu) {
@@ -81,28 +82,30 @@ function getOutsideRoutes(routes, LayoutWrapper = null) {
 function App() {
   const userType = import.meta.env.VITE_USER_TYPE;
 
-  // Dynamically set title
-  if (userType === "affiliate") {
-    document.title = "GS AFFILIATE";
+  useEffect(() => {
+    // Dynamically set title
+    if (userType === "affiliate") {
+      document.title = "GS AFFILIATE";
 
-    // Change favicon
-    const link =
-      document.querySelector("link[rel~='icon']") ||
-      document.createElement("link");
-    link.rel = "icon";
-    link.href = "/affiliate-favicon.png";
-    document.head.appendChild(link);
-  } else {
-    document.title = "GS ADMIN";
+      // Change favicon
+      const link =
+        document.querySelector("link[rel~='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
+      link.href = "/affiliate-favicon.png";
+      document.head.appendChild(link);
+    } else {
+      document.title = "GS ADMIN";
 
-    // Change favicon
-    const link =
-      document.querySelector("link[rel~='icon']") ||
-      document.createElement("link");
-    link.rel = "icon";
-    link.href = "/admin-favicon.png"; // your admin favicon path
-    document.head.appendChild(link);
-  }
+      // Change favicon
+      const link =
+        document.querySelector("link[rel~='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
+      link.href = "/admin-favicon.png"; // your admin favicon path
+      document.head.appendChild(link);
+    }
+  }, [userType]);
   return (
     <Routes>
       {/* Routes inside the layout */}

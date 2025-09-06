@@ -10,6 +10,7 @@ const SystemSettingsPage = () => {
     defaultTurnover: 0,
     adminBalance: 0,
     minWithdrawableBalance: 0,
+    conversionRate: 0,
   });
 
   const { data: settingsData, isLoading, isError } = useSettings();
@@ -23,6 +24,7 @@ const SystemSettingsPage = () => {
       defaultTurnover: setting.defaultTurnover,
       adminBalance: setting.adminBalance,
       minWithdrawableBalance: setting.minWithdrawableBalance,
+      conversionRate: setting.conversionRate,
     });
   };
 
@@ -37,19 +39,27 @@ const SystemSettingsPage = () => {
       return;
     }
 
+    if (!editValue.conversionRate || editValue.conversionRate < 0) {
+      toast.error("Please enter a valid conversion rate");
+      return;
+    }
+
     try {
       await updateSettingsMutation.mutateAsync({
         id: settingId,
         data: {
           defaultTurnover: Number(editValue.defaultTurnover),
           adminBalance: Number(editValue.adminBalance),
-          minWithdrawableBalance: Number(editValue?.minWithdrawableBalance),
+          minWithdrawableBalance: Number(editValue.minWithdrawableBalance),
+          conversionRate: Number(editValue.conversionRate),
         },
       });
       setEditingId(null);
       setEditValue({
         defaultTurnover: 0,
         adminBalance: 0,
+        minWithdrawableBalance: 0,
+        conversionRate: 0,
       });
     } catch (error) {
       console.error("Failed to update setting:", error);
@@ -58,7 +68,12 @@ const SystemSettingsPage = () => {
 
   const handleCancel = () => {
     setEditingId(null);
-    setEditValue("");
+    setEditValue({
+      defaultTurnover: 0,
+      adminBalance: 0,
+      minWithdrawableBalance: 0,
+      conversionRate: 0,
+    });
   };
 
   if (isLoading) {
@@ -95,14 +110,14 @@ const SystemSettingsPage = () => {
         </p>
       </div>
 
-      {/* Turnover Settings Section */}
+      {/* Settings Section */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
             Turnover Settings
           </h2>
           <p className="text-sm text-gray-600 mt-1">
-            Configure default turnover multipliers for different products
+            Configure default system settings below
           </p>
         </div>
 
@@ -120,14 +135,12 @@ const SystemSettingsPage = () => {
           ) : (
             <div className="space-y-4">
               {settings.map((setting) => (
-                <>
-                  <div
-                    key={setting.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                  >
+                <React.Fragment key={setting.id}>
+                  {/* Default Turnover */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900">
-                        Default turnover settings
+                        Default Turnover Settings
                       </h3>
                       <p className="text-sm text-gray-600">
                         Current value: {setting.defaultTurnover || 0} times
@@ -178,12 +191,8 @@ const SystemSettingsPage = () => {
                     </div>
                   </div>
 
-                  {/* admin balance */}
-
-                  <div
-                    key={setting.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                  >
+                  {/* Admin Balance */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900">
                         Admin Balance
@@ -237,15 +246,11 @@ const SystemSettingsPage = () => {
                     </div>
                   </div>
 
-                  {/* minimum withdrawable balance */}
-
-                  <div
-                    key={setting.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                  >
+                  {/* Minimum Withdrawable Balance */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900">
-                        Minimum Balance to Access in Withdraw Button
+                        Minimum Balance to Access Withdraw Button
                       </h3>
                       <p className="text-sm text-gray-600">
                         Current value:{" "}
@@ -296,14 +301,70 @@ const SystemSettingsPage = () => {
                       )}
                     </div>
                   </div>
-                </>
+
+                  {/* Conversion Rate */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">
+                        Conversion Rate
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Current value: 1 USD = {setting.conversionRate || 0} BDT
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {editingId === setting.id ? (
+                        <>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={editValue.conversionRate}
+                            onChange={(e) =>
+                              setEditValue((prev) => ({
+                                ...prev,
+                                conversionRate: e.target.value,
+                              }))
+                            }
+                            className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter value"
+                          />
+                          <button
+                            onClick={() => handleSave(setting.id)}
+                            disabled={updateSettingsMutation.isLoading}
+                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                          >
+                            <FaSave className="mr-2" />
+                            Save
+                          </button>
+                          <button
+                            onClick={handleCancel}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                          >
+                            <FaTimes className="mr-2" />
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleEdit(setting)}
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                          <FaEdit className="mr-2" />
+                          Edit
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </React.Fragment>
               ))}
             </div>
           )}
         </div>
       </div>
 
-      {/* Future Settings Sections - Placeholder */}
+      {/* Placeholder for Future Settings */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">

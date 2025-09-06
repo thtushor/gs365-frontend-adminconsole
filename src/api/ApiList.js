@@ -1,5 +1,5 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -52,6 +52,9 @@ export const API_LIST = {
   UPDATE_LANGUAGE_STATUS: "/api/countries/update-language-status",
   UPDATE_COUNTRY_LANGUAGE: "/api/countries/update-country-language",
   UPDATE_COUNTRY_STATUS: "/api/countries/update-country-status",
+  CREATE_OR_UPDATE_CONVERSION: "/api/admin/currency-rate",
+  CURRENCY_LIST: "/api/admin/currency-rate",
+  DELETE_CONVERSION: "/api/admin/delete-currency",
 
   // configuration
   CREATE_DROPDOWN: "/api/admin/create-dropdowns",
@@ -129,7 +132,6 @@ export const API_LIST = {
   PAYMENT_GATEWAY: "/api/payment-gateways",
   UPDATE_PAYMENT_GATEWAY: "/api/payment-gateways/update",
   DELETE_PAYMENT_GATEWAY: "/api/payment-gateways/delete",
-  ADMIN_MAIN_BALANCE: "/api/admin-main-balance",
 
   // Payment Providers
   PAYMENT_PROVIDER: "/api/payment-providers",
