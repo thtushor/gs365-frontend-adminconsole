@@ -1,7 +1,7 @@
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 
 const Layout = () => {
@@ -14,6 +14,38 @@ const Layout = () => {
 
   console.log(user);
   const isAdmin = user?.role === "admin";
+
+  const userType = import.meta.env.VITE_USER_TYPE;
+
+  const documentTitle = () => {
+    if (userType === "affiliate") {
+      document.title = "GS AFFILIATE";
+
+      // Change favicon
+      const link =
+        document.querySelector("link[rel~='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
+      link.href = "/affiliate-favicon.png";
+      document.head.appendChild(link);
+    } else {
+      document.title = "GS ADMIN";
+
+      // Change favicon
+      const link =
+        document.querySelector("link[rel~='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
+      link.href = "/admin-favicon.png";
+      document.head.appendChild(link);
+    }
+  };
+  useEffect(() => {
+    // Dynamically set title
+    documentTitle;
+  }, [userType]);
+
+  documentTitle();
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Sidebar for desktop, drawer for mobile */}

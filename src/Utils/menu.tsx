@@ -174,9 +174,10 @@ import {
   LiaPeopleCarrySolid,
 } from "react-icons/lia";
 import { SiLegacygames } from "react-icons/si";
-import { RiDropdownList } from "react-icons/ri";
+import { RiDropdownList, RiExchangeDollarFill } from "react-icons/ri";
 import SocialList from "../components/SocialList";
 import { FaWallet } from "react-icons/fa";
+import CurrencyConversion from "../components/CurrencyConversion";
 
 export const menu = [
   {
@@ -752,6 +753,12 @@ export const menu = [
         component: MenuManagement,
         icon: <TbMenuOrder />,
       },
+      // {
+      //   label: "Currency Conversion",
+      //   path: "/currency-conversion",
+      //   component: CurrencyConversion,
+      //   icon: <RiExchangeDollarFill />,
+      // },
       // {
       //   label: "StatusChip Demo",
       //   path: "/status-chip-demo",

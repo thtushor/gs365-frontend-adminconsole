@@ -63,9 +63,9 @@ const AddGameProviderForm = ({
   const queryParams = new URLSearchParams(location.search);
   const providerId = queryParams.get("providerId");
 
-  const postRequest = usePostRequest();
   const getRequest = useGetRequest();
 
+  const postRequest = usePostRequest();
   const handleUpdatedData = (fetchData) => {
     const data = fetchData?.data;
     if (!data && !refParentId) return;

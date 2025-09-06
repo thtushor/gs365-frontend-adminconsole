@@ -70,10 +70,14 @@ const AffiliatePersonalInfo = ({ info }) => {
           color="border-indigo-400 text-indigo-700"
         />
         <InfoBox
-          label="Country Currency"
+          label="Country"
+          value={info.countryDetails ? `${info.countryDetails?.name}` : "N/A"}
+        />
+        <InfoBox
+          label="Currency"
           value={
             info.currencyInfo
-              ? `${info.currencyInfo?.name} (${info.currencyInfo?.code})`
+              ? `${info.currencyInfo?.name} (${info.currencyInfo.code})`
               : "N/A"
           }
         />

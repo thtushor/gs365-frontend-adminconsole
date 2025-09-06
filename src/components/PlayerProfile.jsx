@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 import KycRequestButton from "../Utils/KycRequestButton";
 import PlayerPasswordChange from "./PlayerPasswordChange";
+import { useSettings } from "../hooks/useSettings";
 
 export const playerRoutes = [
   {
@@ -55,6 +56,10 @@ export const playerRoutes = [
 ];
 
 const PlayerProfile = () => {
+  const { data: settingsData } = useSettings();
+
+  const conversionRate =
+    settingsData?.data?.length > 0 ? settingsData?.data[0]?.conversionRate : 0;
   const { playerId } = useParams();
   const location = useLocation();
   const [modalOpen, setModalOpen] = useState(false);
@@ -101,7 +106,7 @@ const PlayerProfile = () => {
   });
 
   // Highlight Box component for displaying stats
-  const HighlightBox = ({ label, value, color = "green" }) => {
+  const HighlightBox = ({ label, value, color = "green", conversion }) => {
     const colorClasses = {
       green: "text-green-600",
       blue: "text-blue-600",
@@ -119,6 +124,11 @@ const PlayerProfile = () => {
         >
           {typeof value === "number" ? `BDT ${value.toFixed(2)}` : value || 0}
         </div>
+        {conversion && (
+          <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${
+            conversion ? (Number(value) / Number(conversion)).toFixed(2) : 0
+          } USD`}</span>
+        )}
       </div>
     );
   };
@@ -280,16 +290,19 @@ const PlayerProfile = () => {
               label="Current Balance"
               value={balance.currentBalance}
               color="green"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Total Deposits"
               value={balance.totalDeposits}
               color="blue"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Total Withdrawals"
               value={balance.totalWithdrawals}
               color="orange"
+              conversion={conversionRate}
             />
           </div>
           <div className="flex gap-4 flex-wrap whitespace-nowrap">
@@ -297,11 +310,13 @@ const PlayerProfile = () => {
               label="Total Wins"
               value={balance.totalWins}
               color="green"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Total Losses"
               value={balance.totalLosses}
               color="red"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Win Rate"
@@ -318,16 +333,19 @@ const PlayerProfile = () => {
               label="Pending Deposits"
               value={balance.pendingDeposits}
               color="yellow"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Pending Withdrawals"
               value={balance.pendingWithdrawals}
               color="yellow"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Total Transactions"
               value={transactionSummary.totalTransactions}
               color="blue"
+              conversion={conversionRate}
             />
           </div>
           <div className="flex gap-4 flex-wrap whitespace-nowrap">
@@ -340,6 +358,7 @@ const PlayerProfile = () => {
               label="Total Bet Amount"
               value={betResultsSummary.totalBetAmount}
               color="orange"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Last Login"

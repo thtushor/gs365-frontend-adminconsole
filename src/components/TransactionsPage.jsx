@@ -8,6 +8,7 @@ import Pagination from "./Pagination";
 import ReusableModal from "./ReusableModal";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatAmount } from "./BettingWagerPage";
+import { useSettings } from "../hooks/useSettings";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -32,6 +33,16 @@ const TransactionsPage = ({
   title = "Player Transactions",
   params = {},
 }) => {
+  const {
+    data: settingsData,
+    isLoading: settingsLoading,
+    isError,
+  } = useSettings();
+
+  const conversionRate =
+    settingsData?.data?.length > 0 ? settingsData?.data[0]?.conversionRate : 0;
+
+  console.log(conversionRate);
   const { playerId: paramPlayerId } = useParams();
   const playerId = propPlayerId || paramPlayerId;
 
@@ -102,11 +113,25 @@ const TransactionsPage = ({
       { field: "type", headerName: "Type", width: 120 },
       {
         field: "amount",
-        headerName: "Amount",
+        headerName: "BDT Amount",
         width: 140,
+        align: "center",
         render: (value, row) => (
-          <span className="font-medium">
+          <span className="font-medium text-center">
             {value != null ? `${formatAmount(value)}` : "-"}
+          </span>
+        ),
+      },
+      {
+        field: "conversionRate",
+        headerName: "USD Amount",
+        width: 140,
+        align: "center",
+        render: (value, row) => (
+          <span className="font-medium text-center">
+            {`${
+              (Number(row?.amount) / Number(conversionRate)).toFixed(2) || 0
+            } USD`}
           </span>
         ),
       },
