@@ -16,6 +16,11 @@ const PaymentGatewayForm = ({
   const { useCountries } = useCountryData();
   const { data: countries } = useCountries();
 
+  const isinternationalPayment = (paymentMethods.find((itme)=>itme.id === formData.methodId)?.name||"").toLowerCase().includes("international");
+  const isCrypto = (paymentMethods.find((itme)=>itme.id === formData.methodId)?.name||"").toLowerCase().includes("crypto");
+  
+  console.log("isinternationalPayment", {isinternationalPayment});
+
   return (
     <div className="space-y-6">
       {/* First Row - Name and Status */}
@@ -148,7 +153,7 @@ const PaymentGatewayForm = ({
       </div>
 
       {/* Fourth Row - Currency Conversion Rate */}
-      <div className="grid grid-cols-1 gap-4">
+      {/* <div className="grid grid-cols-1 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Currency Conversion Rate
@@ -167,13 +172,13 @@ const PaymentGatewayForm = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Fifth Row - Min/Max Deposit */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Min Deposit
+            Min Deposit {isinternationalPayment?"(in USD)":isCrypto?"(in USDT)":""}
           </label>
           <input
             type="number"
@@ -188,7 +193,7 @@ const PaymentGatewayForm = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Max Deposit
+            Max Deposit {isinternationalPayment?"(in USD)": isCrypto?"(in USDT)":""}
           </label>
           <input
             type="number"
@@ -206,7 +211,7 @@ const PaymentGatewayForm = ({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Min Withdraw
+            Min Withdraw {isinternationalPayment?"(in USD)":  isCrypto?"(in USDT)":""}
           </label>
           <input
             type="number"
@@ -221,7 +226,7 @@ const PaymentGatewayForm = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Max Withdraw
+            Max Withdraw {isinternationalPayment?"(in USD)":isCrypto?"(in USDT)":""}
           </label>
           <input
             type="number"

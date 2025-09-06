@@ -64,6 +64,16 @@ const STATUS_CONFIGS = {
     className: "bg-slate-100 text-slate-600 border-slate-200",
     icon: "✗",
   },
+  win: {
+    label: "Win",
+    className: "bg-teal-100 text-teal-800 border-teal-200",
+    icon: "✓",
+  },
+  loss: {
+    label: "loss",
+    className: "bg-slate-100 text-slate-600 border-slate-200",
+    icon: "✗",
+  },
 
   // Payment statuses
   paid: {
@@ -151,7 +161,7 @@ const StatusChip = ({
     config || {
       label: label || status || "Unknown",
       className: "bg-gray-100 text-gray-600 border-gray-200",
-      icon: "?",
+      icon: "",
     };
 
   const baseClasses = `

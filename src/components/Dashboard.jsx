@@ -122,6 +122,12 @@ const Dashboard = () => {
       { title: "Total Player Bonus Deposit", value: formatAmount(dashboardData?.totalBonusAmount || 0), icon: <FaCoins />, color: "border-indigo-400" },
       { title: "Total Player Withdraw", value: formatAmount(dashboardData?.totalWithdraw || 0), icon: <FaWallet />, color: "border-orange-400" },
     ],
+    // Row 3 (3 cards)
+    [
+      { title: "Total Player Deposit", value: formatAmount(dashboardData?.totalDeposit || 0), icon: <FaMoneyCheckAlt />, color: "border-green-400" },
+      { title: "Total Player Bonus Deposit", value: formatAmount(dashboardData?.totalBonusAmount || 0), icon: <FaCoins />, color: "border-indigo-400" },
+      { title: "Total Player Withdraw", value: formatAmount(dashboardData?.totalWithdraw || 0), icon: <FaWallet />, color: "border-orange-400" },
+    ],
     // Row 3 (4 cards)
     [
       { title: "Total Player", value: dashboardData?.totalPlayers?.toLocaleString() || "0", icon: <FaUserFriends />, color: "border-green-400" },
@@ -133,9 +139,10 @@ const Dashboard = () => {
     [
       { title: "Total Player Bet Amount", value: formatAmount(dashboardData?.totalBetAmount || 0), icon: <FaTrophy />, color: "border-green-400" },
       { title: "Total Player Win", value: formatAmount(dashboardData?.totalBetWin || 0), icon: <FaTrophy />, color: "border-green-400" },
-      { title: "Total Player Loss", value: formatAmount(dashboardData?.totalBetLost || 0), icon: <FaRegSadTear />, color: "border-red-400" },
-      { title: "Total Admin Deposit", value: formatAmount(dashboardData?.totalAdminDeposit || 0), icon: <FaMoneyCheckAlt />, color: "border-blue-400" },
-      // { title: "Total Admin Withdraw", value: formatAmount(dashboardData?.totalAdminWithdraw || 0), icon: <FaWallet />, color: "border-orange-400" },
+      {title: "Total BD Players", value: dashboardData?.totalBDUsers?.toLocaleString() || "0", icon: <FaUserFriends />, color: "border-blue-400" },
+      {title: "Total Foreign Players", value: dashboardData?.totalForeignUsers?.toLocaleString() || "0", icon: <FaUserFriends />, color: "border-blue-400" },
+      // { title: "Total Player Loss", value: formatAmount(dashboardData?.totalBetLost || 0), icon: <FaRegSadTear />, color: "border-red-400" },
+      
     ],
     // Row 5 (4 cards)
     [

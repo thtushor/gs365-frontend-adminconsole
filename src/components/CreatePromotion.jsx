@@ -115,6 +115,7 @@ const CreatePromotion = () => {
     },
     onSuccess: () => {
       if (!promotionId) setForm(defaultForm);
+      setSubmitLoading(false);
     },
   });
 
