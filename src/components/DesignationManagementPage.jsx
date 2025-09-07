@@ -34,8 +34,6 @@ const DesignationManagementPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
 
-  console.log({isModalOpen})
-
   // React Query hooks
   const {
     data: designationsData,
@@ -48,8 +46,6 @@ const DesignationManagementPage = () => {
   const deleteMutation = useDeleteDesignation();
 
   const designations = designationsData?.data || [];
-
-  console.log({ designations });
 
   // Filter designations based on search and type
   const filteredDesignations = designations.filter((designation) => {
@@ -126,7 +122,7 @@ const DesignationManagementPage = () => {
   const columns = [
     {
       field: "designationName",
-      label: "Designation Name",
+      headerName: "Designation Name",
       render: (value, row) => (
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0">
@@ -143,12 +139,11 @@ const DesignationManagementPage = () => {
     },
     {
       field: "adminUserType",
-      label: "User Type",
+      headerName: "User Type",
       render: (value) => {
         const typeConfig = ADMIN_USER_TYPES.find(
           (type) => type.value === value
         );
-        console.log({value})
         return (
           <StatusChip
             status={value}
@@ -160,7 +155,7 @@ const DesignationManagementPage = () => {
     },
     {
       field: "permissions",
-      label: "Permissions",
+      headerName: "Permissions",
       render: (value) => (
         <div className="flex items-center space-x-2">
           <FaShieldAlt className="w-4 h-4 text-green-500" />
@@ -172,7 +167,7 @@ const DesignationManagementPage = () => {
     },
     {
       field: "createdAt",
-      label: "Created At",
+      headerName: "Created At",
       render: (value) => (
         <div className="text-sm text-gray-600">
           {new Date(value).toLocaleDateString()}
@@ -181,7 +176,7 @@ const DesignationManagementPage = () => {
     },
     {
       field: "actions",
-      label: "Actions",
+      headerName: "Actions",
       render: (_, row) => (
         <div className="flex items-center space-x-2">
           <button
