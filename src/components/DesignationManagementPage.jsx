@@ -287,7 +287,7 @@ const DesignationManagementPage = () => {
 
       {/* Unified Create/Edit Modal */}
       <ReusableModal
-        isOpen={isModalOpen}
+        open={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           setSelectedDesignation(null);
@@ -295,7 +295,7 @@ const DesignationManagementPage = () => {
         title={
           modalMode === "create" ? "Create New Designation" : "Edit Designation"
         }
-        size="lg"
+        className="!max-w-4xl"
       >
         <DesignationForm
           initialData={selectedDesignation}
@@ -315,13 +315,13 @@ const DesignationManagementPage = () => {
 
       {/* View Modal */}
       <ReusableModal
-        isOpen={isViewModalOpen}
+        open={isViewModalOpen}
         onClose={() => {
           setIsViewModalOpen(false);
           setSelectedDesignation(null);
         }}
         title="Designation Details"
-        size="lg"
+        className="!max-w-4xl"
       >
         <DesignationView designation={selectedDesignation} />
       </ReusableModal>
