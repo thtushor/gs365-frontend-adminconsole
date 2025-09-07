@@ -34,6 +34,8 @@ const DesignationManagementPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
 
+  console.log({isModalOpen})
+
   // React Query hooks
   const {
     data: designationsData,
@@ -46,6 +48,8 @@ const DesignationManagementPage = () => {
   const deleteMutation = useDeleteDesignation();
 
   const designations = designationsData?.data || [];
+
+  console.log({ designations });
 
   // Filter designations based on search and type
   const filteredDesignations = designations.filter((designation) => {
@@ -121,7 +125,7 @@ const DesignationManagementPage = () => {
   // Table columns configuration
   const columns = [
     {
-      key: "designationName",
+      field: "designationName",
       label: "Designation Name",
       render: (value, row) => (
         <div className="flex items-center space-x-3">
@@ -138,12 +142,13 @@ const DesignationManagementPage = () => {
       ),
     },
     {
-      key: "adminUserType",
+      field: "adminUserType",
       label: "User Type",
       render: (value) => {
         const typeConfig = ADMIN_USER_TYPES.find(
           (type) => type.value === value
         );
+        console.log({value})
         return (
           <StatusChip
             status={value}
@@ -154,7 +159,7 @@ const DesignationManagementPage = () => {
       },
     },
     {
-      key: "permissions",
+      field: "permissions",
       label: "Permissions",
       render: (value) => (
         <div className="flex items-center space-x-2">
@@ -166,7 +171,7 @@ const DesignationManagementPage = () => {
       ),
     },
     {
-      key: "createdAt",
+      field: "createdAt",
       label: "Created At",
       render: (value) => (
         <div className="text-sm text-gray-600">
@@ -175,7 +180,7 @@ const DesignationManagementPage = () => {
       ),
     },
     {
-      key: "actions",
+      field: "actions",
       label: "Actions",
       render: (_, row) => (
         <div className="flex items-center space-x-2">
