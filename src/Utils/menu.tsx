@@ -64,6 +64,7 @@ import {
   BiTrophy,
 } from "react-icons/bi";
 import OwnerPermissionPage from "../components/OwnerPermissionPage";
+import DesignationManagementPage from "../components/DesignationManagementPage";
 import SportsListPage from "../components/SportsListPage";
 import { GiAmericanFootballBall } from "react-icons/gi";
 import { FiPercent, FiStar } from "react-icons/fi";
@@ -110,6 +111,7 @@ import {
   MdMessage,
   MdOutlineDisplaySettings,
   MdOutlinePayment,
+  MdOutlineSecurity,
   MdOutlineSpaceDashboard,
 } from "react-icons/md";
 import CreatePromotion from "../components/CreatePromotion";
@@ -654,6 +656,12 @@ export const menu = [
         path: "/owner/permission",
         icon: <TbEaseInOutControlPoints />,
         component: OwnerPermissionPage,
+      },
+      {
+        label: "Designation Management",
+        path: "/owner/designation-management",
+        icon: <MdOutlineSecurity />,
+        component: DesignationManagementPage,
       },
     ],
   },

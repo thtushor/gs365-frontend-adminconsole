@@ -1,5 +1,5 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -190,6 +190,8 @@ export const API_LIST = {
   SET_PRIMARY_ACCOUNT: "/api/withdrawal-payment-accounts",
   UPDATE_VERIFICATION_STATUS: "/api/withdrawal-payment-accounts",
   GET_ACCOUNT_STATISTICS: "/api/withdrawal-payment-accounts/stats",
+  // Permission
+  PERMISSION: "/api/designations"
 };
 
 export const DROPDOWN_ID = {
