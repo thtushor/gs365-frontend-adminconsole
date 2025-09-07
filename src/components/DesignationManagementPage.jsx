@@ -26,11 +26,11 @@ import ErrorState from "./shared/ErrorState";
 import EmptyState from "./shared/EmptyState";
 
 const DesignationManagementPage = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedDesignation, setSelectedDesignation] = useState(null);
+  const [modalMode, setModalMode] = useState("create"); // 'create' or 'edit'
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
 
@@ -57,29 +57,29 @@ const DesignationManagementPage = () => {
     return matchesSearch && matchesType;
   });
 
-  // Handle create designation
-  const handleCreate = (formData) => {
-    createMutation.mutate(formData, {
-      onSuccess: () => {
-        setIsCreateModalOpen(false);
-      },
-    });
-  };
-
-  // Handle update designation
-  const handleUpdate = (formData) => {
-    updateMutation.mutate(
-      {
-        id: selectedDesignation.id,
-        ...formData,
-      },
-      {
+  // Handle form submission (both create and update)
+  const handleFormSubmit = (formData) => {
+    if (modalMode === "create") {
+      createMutation.mutate(formData, {
         onSuccess: () => {
-          setIsEditModalOpen(false);
+          setIsModalOpen(false);
           setSelectedDesignation(null);
         },
-      }
-    );
+      });
+    } else {
+      updateMutation.mutate(
+        {
+          id: selectedDesignation.id,
+          ...formData,
+        },
+        {
+          onSuccess: () => {
+            setIsModalOpen(false);
+            setSelectedDesignation(null);
+          },
+        }
+      );
+    }
   };
 
   // Handle delete designation
@@ -101,7 +101,15 @@ const DesignationManagementPage = () => {
   // Handle edit designation
   const handleEdit = (designation) => {
     setSelectedDesignation(designation);
-    setIsEditModalOpen(true);
+    setModalMode("edit");
+    setIsModalOpen(true);
+  };
+
+  // Handle create designation
+  const handleCreate = () => {
+    setSelectedDesignation(null);
+    setModalMode("create");
+    setIsModalOpen(true);
   };
 
   // Handle delete confirmation
@@ -220,7 +228,7 @@ const DesignationManagementPage = () => {
           </p>
         </div>
         <button
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={handleCreate}
           className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <FaPlus className="w-4 h-4 mr-2" />
@@ -267,7 +275,7 @@ const DesignationManagementPage = () => {
           message="No designations found"
           description="Create your first designation to get started"
           actionText="Create Designation"
-          onAction={() => setIsCreateModalOpen(true)}
+          onAction={handleCreate}
         />
       ) : (
         <DataTable
@@ -277,39 +285,31 @@ const DesignationManagementPage = () => {
         />
       )}
 
-      {/* Create Modal */}
+      {/* Unified Create/Edit Modal */}
       <ReusableModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        title="Create New Designation"
-        size="lg"
-      >
-        <DesignationForm
-          onSubmit={handleCreate}
-          onCancel={() => setIsCreateModalOpen(false)}
-          isLoading={createMutation.isPending}
-        />
-      </ReusableModal>
-
-      {/* Edit Modal */}
-      <ReusableModal
-        isOpen={isEditModalOpen}
+        isOpen={isModalOpen}
         onClose={() => {
-          setIsEditModalOpen(false);
+          setIsModalOpen(false);
           setSelectedDesignation(null);
         }}
-        title="Edit Designation"
+        title={
+          modalMode === "create" ? "Create New Designation" : "Edit Designation"
+        }
         size="lg"
       >
         <DesignationForm
           initialData={selectedDesignation}
-          onSubmit={handleUpdate}
+          onSubmit={handleFormSubmit}
           onCancel={() => {
-            setIsEditModalOpen(false);
+            setIsModalOpen(false);
             setSelectedDesignation(null);
           }}
-          isLoading={updateMutation.isPending}
-          isEdit={true}
+          isLoading={
+            modalMode === "create"
+              ? createMutation.isPending
+              : updateMutation.isPending
+          }
+          mode={modalMode}
         />
       </ReusableModal>
 
@@ -348,7 +348,7 @@ const DesignationForm = ({
   onSubmit,
   onCancel,
   isLoading = false,
-  isEdit = false,
+  mode = "create", // 'create' or 'edit'
 }) => {
   const [formData, setFormData] = useState({
     designationName: initialData?.designationName || "",
@@ -356,15 +356,32 @@ const DesignationForm = ({
     permissions: initialData?.permissions || [],
   });
 
-  const [selectedCategories, setSelectedCategories] = useState(
-    initialData?.permissions
-      ? Object.keys(PERMISSION_CATEGORIES).filter((categoryKey) =>
+  // Reset form when initialData changes (for edit mode)
+  React.useEffect(() => {
+    if (initialData) {
+      setFormData({
+        designationName: initialData.designationName || "",
+        adminUserType: initialData.adminUserType || "admin",
+        permissions: initialData.permissions || [],
+      });
+      setSelectedCategories(
+        Object.keys(PERMISSION_CATEGORIES).filter((categoryKey) =>
           PERMISSION_CATEGORIES[categoryKey].permissions.some((permission) =>
-            initialData.permissions.includes(permission)
+            initialData.permissions?.includes(permission)
           )
         )
-      : []
-  );
+      );
+    } else {
+      setFormData({
+        designationName: "",
+        adminUserType: "admin",
+        permissions: [],
+      });
+      setSelectedCategories([]);
+    }
+  }, [initialData]);
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -396,6 +413,27 @@ const DesignationForm = ({
     });
   };
 
+  // Handle select all permissions
+  const handleSelectAll = () => {
+    const allPermissions = Object.values(PERMISSION_CATEGORIES).flatMap(
+      (category) => category.permissions
+    );
+    setFormData((prev) => ({
+      ...prev,
+      permissions: allPermissions,
+    }));
+    setSelectedCategories(Object.keys(PERMISSION_CATEGORIES));
+  };
+
+  // Handle clear all permissions
+  const handleClearAll = () => {
+    setFormData((prev) => ({
+      ...prev,
+      permissions: [],
+    }));
+    setSelectedCategories([]);
+  };
+
   const handlePermissionToggle = (permission) => {
     setFormData((prev) => ({
       ...prev,
@@ -407,6 +445,18 @@ const DesignationForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Basic validation
+    if (!formData.designationName.trim()) {
+      alert("Please enter a designation name");
+      return;
+    }
+
+    if (formData.permissions.length === 0) {
+      alert("Please select at least one permission");
+      return;
+    }
+
     onSubmit(formData);
   };
 
@@ -457,54 +507,124 @@ const DesignationForm = ({
 
         {/* Category Selection */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700">
-            Select Categories
-          </h4>
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-gray-700">
+              Select Categories
+            </h4>
+            <div className="flex space-x-2">
+              <button
+                type="button"
+                onClick={handleSelectAll}
+                className="text-xs px-2 py-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+              >
+                Select All
+              </button>
+              <button
+                type="button"
+                onClick={handleClearAll}
+                className="text-xs px-2 py-1 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {Object.entries(PERMISSION_CATEGORIES).map(
-              ([categoryKey, category]) => (
-                <label
-                  key={categoryKey}
-                  className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(categoryKey)}
-                    onChange={() => handleCategoryToggle(categoryKey)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <div className="ml-3 flex items-center">
-                    <span className="text-lg mr-2">{category.icon}</span>
-                    <span className="text-sm font-medium text-gray-700">
-                      {category.label}
-                    </span>
-                  </div>
-                </label>
-              )
+              ([categoryKey, category]) => {
+                const categoryPermissions = category.permissions;
+                const selectedInCategory = categoryPermissions.filter(
+                  (permission) => formData.permissions.includes(permission)
+                ).length;
+                const isFullySelected =
+                  selectedInCategory === categoryPermissions.length;
+                const isPartiallySelected =
+                  selectedInCategory > 0 &&
+                  selectedInCategory < categoryPermissions.length;
+
+                return (
+                  <label
+                    key={categoryKey}
+                    className={`flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors ${
+                      isFullySelected
+                        ? "border-blue-300 bg-blue-50"
+                        : isPartiallySelected
+                        ? "border-yellow-300 bg-yellow-50"
+                        : "border-gray-200"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isFullySelected}
+                      ref={(input) => {
+                        if (input) {
+                          input.indeterminate = isPartiallySelected;
+                        }
+                      }}
+                      onChange={() => handleCategoryToggle(categoryKey)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <div className="ml-3 flex items-center justify-between w-full">
+                      <div className="flex items-center">
+                        <span className="text-lg mr-2">{category.icon}</span>
+                        <span className="text-sm font-medium text-gray-700">
+                          {category.label}
+                        </span>
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {selectedInCategory}/{categoryPermissions.length}
+                      </span>
+                    </div>
+                  </label>
+                );
+              }
             )}
           </div>
         </div>
 
         {/* Individual Permission Selection */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700">
-            Individual Permissions ({formData.permissions.length} selected)
-          </h4>
-          <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-gray-700">
+              Individual Permissions ({formData.permissions.length} selected)
+            </h4>
+            <div className="text-xs text-gray-500">
+              Total:{" "}
+              {
+                Object.values(PERMISSION_CATEGORIES).flatMap(
+                  (cat) => cat.permissions
+                ).length
+              }
+            </div>
+          </div>
+          <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
             {Object.entries(PERMISSION_CATEGORIES).map(
               ([categoryKey, category]) => (
                 <div key={categoryKey} className="mb-4 last:mb-0">
-                  <div className="flex items-center mb-2">
-                    <span className="text-sm mr-2">{category.icon}</span>
-                    <h5 className="text-sm font-medium text-gray-700">
-                      {category.label}
-                    </h5>
+                  <div className="flex items-center justify-between mb-2 p-2 bg-white rounded border">
+                    <div className="flex items-center">
+                      <span className="text-sm mr-2">{category.icon}</span>
+                      <h5 className="text-sm font-medium text-gray-700">
+                        {category.label}
+                      </h5>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {
+                        category.permissions.filter((p) =>
+                          formData.permissions.includes(p)
+                        ).length
+                      }
+                      /{category.permissions.length}
+                    </span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 ml-4">
                     {category.permissions.map((permission) => (
                       <label
                         key={permission}
-                        className="flex items-center text-xs"
+                        className={`flex items-center text-xs p-2 rounded hover:bg-white transition-colors ${
+                          formData.permissions.includes(permission)
+                            ? "bg-blue-50"
+                            : ""
+                        }`}
                       >
                         <input
                           type="checkbox"
@@ -512,7 +632,7 @@ const DesignationForm = ({
                           onChange={() => handlePermissionToggle(permission)}
                           className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
-                        <span className="ml-2 text-gray-600">
+                        <span className="ml-2 text-gray-600 flex-1">
                           {permission
                             .replace(/_/g, " ")
                             .replace(/\b\w/g, (l) => l.toUpperCase())}
@@ -526,6 +646,38 @@ const DesignationForm = ({
           </div>
         </div>
       </div>
+
+      {/* Permission Summary */}
+      {formData.permissions.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 className="text-sm font-medium text-blue-900 mb-2">
+            Permission Summary
+          </h4>
+          <div className="text-sm text-blue-800">
+            <p className="mb-2">
+              <strong>{formData.permissions.length}</strong> permissions
+              selected across <strong>{selectedCategories.length}</strong>{" "}
+              categories
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {selectedCategories.map((categoryKey) => {
+                const category = PERMISSION_CATEGORIES[categoryKey];
+                const selectedCount = category.permissions.filter((p) =>
+                  formData.permissions.includes(p)
+                ).length;
+                return (
+                  <span
+                    key={categoryKey}
+                    className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
+                  >
+                    {category.icon} {category.label} ({selectedCount})
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Form Actions */}
       <div className="flex justify-end space-x-3 pt-4 border-t">
@@ -544,9 +696,9 @@ const DesignationForm = ({
           {isLoading ? (
             <div className="flex items-center">
               <BiLoader className="w-4 h-4 mr-2 animate-spin" />
-              {isEdit ? "Updating..." : "Creating..."}
+              {mode === "edit" ? "Updating..." : "Creating..."}
             </div>
-          ) : isEdit ? (
+          ) : mode === "edit" ? (
             "Update Designation"
           ) : (
             "Create Designation"
