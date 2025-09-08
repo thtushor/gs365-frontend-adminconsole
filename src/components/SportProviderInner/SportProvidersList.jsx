@@ -9,17 +9,22 @@ import { API_LIST, BASE_URL } from "../../api/ApiList";
 import DataTable from "../DataTable";
 import Pagination from "../Pagination";
 
+const initialFilters = {
+  page: 1,
+  pageSize: 20,
+  name: "",
+  status: "",
+  parentId: "",
+};
 const SportProvidersList = () => {
   const navigate = useNavigate();
   const getRequest = useGetRequest();
 
-  const [filters, setFilters] = useState({
-    page: 1,
-    pageSize: 20,
-    name: "",
-    status: "",
-    parentId: "",
-  });
+  const [filters, setFilters] = useState(initialFilters);
+
+  const handleReset = () => {
+    setFilters(initialFilters);
+  };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["sports_providers", filters],
@@ -259,6 +264,14 @@ const SportProvidersList = () => {
             </select>
           </div>
         )}
+
+        <button
+          onClick={handleReset}
+          className="bg-gray-300 text-gray-700 px-4 font-medium cursor-pointer py-[9px] rounded hover:bg-gray-400 transition text-sm"
+          type="button"
+        >
+          Reset
+        </button>
       </div>
 
       {/* Table */}

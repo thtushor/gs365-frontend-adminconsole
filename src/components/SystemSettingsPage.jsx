@@ -11,6 +11,7 @@ const SystemSettingsPage = () => {
     adminBalance: 0,
     minWithdrawableBalance: 0,
     conversionRate: 0,
+    affiliateWithdrawTime: [],
   });
 
   const { data: settingsData, isLoading, isError } = useSettings();
@@ -25,6 +26,11 @@ const SystemSettingsPage = () => {
       adminBalance: setting.adminBalance,
       minWithdrawableBalance: setting.minWithdrawableBalance,
       conversionRate: setting.conversionRate,
+      affiliateWithdrawTime: Array.isArray(setting.affiliateWithdrawTime)
+        ? setting.affiliateWithdrawTime
+        : setting.affiliateWithdrawTime
+        ? setting.affiliateWithdrawTime.split(",")
+        : [],
     });
   };
 
@@ -52,6 +58,7 @@ const SystemSettingsPage = () => {
           adminBalance: Number(editValue.adminBalance),
           minWithdrawableBalance: Number(editValue.minWithdrawableBalance),
           conversionRate: Number(editValue.conversionRate),
+          affiliateWithdrawTime: editValue.affiliateWithdrawTime,
         },
       });
       setEditingId(null);
@@ -60,6 +67,7 @@ const SystemSettingsPage = () => {
         adminBalance: 0,
         minWithdrawableBalance: 0,
         conversionRate: 0,
+        affiliateWithdrawTime: [],
       });
     } catch (error) {
       console.error("Failed to update setting:", error);
@@ -97,6 +105,16 @@ const SystemSettingsPage = () => {
       </div>
     );
   }
+
+  const daysOptions = [
+    "saturday",
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+  ];
 
   return (
     <div className="p-6">
@@ -330,6 +348,72 @@ const SystemSettingsPage = () => {
                             className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Enter value"
                           />
+                          <button
+                            onClick={() => handleSave(setting.id)}
+                            disabled={updateSettingsMutation.isLoading}
+                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                          >
+                            <FaSave className="mr-2" />
+                            Save
+                          </button>
+                          <button
+                            onClick={handleCancel}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                          >
+                            <FaTimes className="mr-2" />
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleEdit(setting)}
+                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                          <FaEdit className="mr-2" />
+                          Edit
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Affiliate Withdraw Days */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900">
+                        Affiliate Withdraw Days
+                      </h3>
+                      <p className="text-sm text-gray-600 capitalize">
+                        Current value:{" "}
+                        {Array.isArray(setting.affiliateWithdrawTime)
+                          ? setting.affiliateWithdrawTime.join(", ")
+                          : setting.affiliateWithdrawTime || "Any Time"}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {editingId === setting.id ? (
+                        <>
+                          <select
+                            multiple
+                            value={editValue.affiliateWithdrawTime}
+                            onChange={(e) =>
+                              setEditValue((prev) => ({
+                                ...prev,
+                                affiliateWithdrawTime: Array.from(
+                                  e.target.selectedOptions,
+                                  (option) => option.value
+                                ),
+                              }))
+                            }
+                            className="w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            {daysOptions.map((day) => (
+                              <option key={day} value={day}>
+                                {day.charAt(0).toUpperCase() + day.slice(1)}
+                              </option>
+                            ))}
+                          </select>
+
                           <button
                             onClick={() => handleSave(setting.id)}
                             disabled={updateSettingsMutation.isLoading}
