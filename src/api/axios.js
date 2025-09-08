@@ -1,6 +1,5 @@
 import axios from "axios";
-import { API_LIST, BASE_URL } from "./ApiList";
-import { toast } from "react-toastify";
+import { BASE_URL } from "./ApiList";
 
 const Axios = axios.create({
   baseURL: BASE_URL, // Change to your API base URL

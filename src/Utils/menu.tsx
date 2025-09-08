@@ -776,12 +776,12 @@ export const menu = [
         component: SystemSettingsPage,
         icon: <FaCogs />,
       },
-      {
-        label: "Turnover",
-        path: "/settings/turnover",
-        component: TurnoverSettingsPage,
-        icon: <BiLoader />,
-      },
+      // {
+      //   label: "Turnover",
+      //   path: "/settings/turnover",
+      //   component: TurnoverSettingsPage,
+      //   icon: <BiLoader />,
+      // },
       {
         label: "Backup & Restore",
         path: "/settings/backup",

@@ -48,7 +48,7 @@ const ProviderGatewayList = ({ providerId, providerName }) => {
     providerId: providerId, // Pre-select the current provider
     priority: "",
     status: "active",
-    commission: "",
+    commission: 0,
     licenseKey: "",
     isRecommended: false,
   });

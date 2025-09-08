@@ -33,14 +33,22 @@ const TransactionsPage = ({
   title = "Player Transactions",
   params = {},
 }) => {
+  const [conversionRate, setConversionRate] = useState(0);
   const {
     data: settingsData,
     isLoading: settingsLoading,
     isError,
   } = useSettings();
 
-  const conversionRate =
-    settingsData?.data?.length > 0 ? settingsData?.data[0]?.conversionRate : 0;
+  useEffect(() => {
+    if (settingsData) {
+      setConversionRate(
+        settingsData?.data?.length > 0
+          ? settingsData?.data[0]?.conversionRate
+          : 0
+      );
+    }
+  }, [settingsData]);
 
   console.log(conversionRate);
   const { playerId: paramPlayerId } = useParams();
@@ -87,7 +95,10 @@ const TransactionsPage = ({
       return iso;
     }
   };
-
+  const formatUSD = (amount, rate) => {
+    if (!rate || rate <= 0 || !amount) return "-";
+    return `${(amount / rate).toFixed(2)} USD`;
+  };
   const columns = useMemo(
     () => [
       { field: "sl", headerName: "#", width: 60, align: "center" },
@@ -129,9 +140,7 @@ const TransactionsPage = ({
         align: "center",
         render: (value, row) => (
           <span className="font-medium text-center">
-            {`${
-              (Number(row?.amount) / Number(conversionRate)).toFixed(2) || 0
-            } USD`}
+            {formatUSD(row.amount, conversionRate)}
           </span>
         ),
       },
@@ -245,7 +254,7 @@ const TransactionsPage = ({
         ),
       },
     ],
-    [navigate]
+    [navigate, conversionRate]
   );
 
   const handleOpenModal = (row) => {
@@ -271,6 +280,11 @@ const TransactionsPage = ({
     setModalOpen(false);
   };
 
+  console.log(conversionRate);
+
+  if (settingsLoading || isLoading) {
+    return "Loading...";
+  }
   return (
     <div className="bg-[#f5f5f5] min-h-full p-4">
       <div className="flex items-center justify-between gap-2 mb-4">
@@ -363,7 +377,11 @@ const TransactionsPage = ({
       </div>
 
       <div className="bg-white rounded-lg shadow p-4">
-        <DataTable columns={columns} data={items} isLoading={isLoading} />
+        <DataTable
+          columns={columns}
+          data={items}
+          isLoading={isLoading || settingsLoading}
+        />
         <Pagination
           currentPage={page}
           totalPages={totalPages}
