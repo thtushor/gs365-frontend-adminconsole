@@ -7,6 +7,8 @@ import { useAuth } from "../../hooks/useAuth";
 import Select from "react-select";
 import { toast } from "react-toastify";
 import { useTransactions } from "../../hooks/useTransactions";
+import { useSettings } from "../../hooks/useSettings";
+import { PiShieldWarningBold } from "react-icons/pi";
 
 const defaultFilters = {
   page: 1,
@@ -22,6 +24,18 @@ const defaultFilters = {
 };
 
 const WithdrawBalance = () => {
+  const { data: settingsData } = useSettings();
+  const isTodayWithdrawDay = (days) => {
+    const today = new Date()
+      .toLocaleDateString("en-US", { weekday: "long" })
+      .toLowerCase();
+
+    if (Array.isArray(days)) {
+      return days.map((d) => d.toLowerCase()).includes(today);
+    }
+
+    return days.toLowerCase().includes(today);
+  };
   const { affiliateInfo, affiliateCommission } = useAuth();
   const [filters, setFilters] = useState({
     ...defaultFilters,
@@ -203,6 +217,26 @@ const WithdrawBalance = () => {
             You are eligible to withdraw. However, you currently have a pending
             withdrawal request. Please wait until the existing request is
             processed before submitting a new one.
+          </p>
+        </div>
+      ) : settingsData?.data?.length > 0 &&
+        !isTodayWithdrawDay(settingsData?.data[0]?.affiliateWithdrawTime) ? (
+        <div className="border-orange-500 border bg-orange-100 rounded-lg py-3 max-w-[500px] px-5">
+          <p className="font-bold flex text-black uppercase text-[18px] text-orange-500">
+            <span className="text-[19px] block mt-[4px] mr-[2px] ">
+              <PiShieldWarningBold />
+            </span>{" "}
+            Withdraw OFF Today
+          </p>
+          <p className="text-black/70 mt-1">
+            You are not eligible to withdraw today. Withdrawals are only allowed
+            on the{" "}
+            <span className="capitalize font-medium text-orange-500">
+              {Array.isArray(settingsData?.data[0]?.affiliateWithdrawTime)
+                ? settingsData?.data[0]?.affiliateWithdrawTime.join(", ")
+                : settingsData?.data[0]?.affiliateWithdrawTime || "Any Time"}
+            </span>
+            .
           </p>
         </div>
       ) : checkWithdrawValidity() ? (

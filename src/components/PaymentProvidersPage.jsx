@@ -125,7 +125,7 @@ const PaymentProvidersPage = () => {
         await deleteMutation.mutateAsync(itemToDelete.id);
         setDeleteModalOpen(false);
         setItemToDelete(null);
-        toast.success("Payment provider deleted successfully");
+        // toast.success("Payment provider deleted successfully");
       } catch (error) {
         console.error("Delete failed:", error);
         toast.error("Failed to delete payment provider");

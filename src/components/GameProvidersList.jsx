@@ -10,17 +10,22 @@ import { FaRegEdit } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import { TbBrandTelegram } from "react-icons/tb";
 
+const initialFilters = {
+  page: 1,
+  pageSize: 20,
+  name: "",
+  status: "",
+  parentId: "",
+};
+
 const GameProvidersList = () => {
   const navigate = useNavigate();
   const getRequest = useGetRequest();
 
-  const [filters, setFilters] = useState({
-    page: 1,
-    pageSize: 20,
-    name: "",
-    status: "",
-    parentId: "",
-  });
+  const [filters, setFilters] = useState(initialFilters);
+  const handleReset = () => {
+    setFilters(initialFilters);
+  };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["game_providers", filters],
@@ -261,6 +266,14 @@ const GameProvidersList = () => {
             </select>
           </div>
         )}
+
+        <button
+          onClick={handleReset}
+          className="bg-gray-300 text-gray-700 px-4 font-medium cursor-pointer py-[9px] rounded hover:bg-gray-400 transition text-sm"
+          type="button"
+        >
+          Reset
+        </button>
       </div>
 
       {/* Table */}

@@ -358,9 +358,10 @@ const PlayerProfile = () => {
           </div>
           <div className="flex gap-4 flex-wrap whitespace-nowrap">
             <HighlightBox
-              label="Total Bets"
-              value={betResultsSummary.totalBets?.toString()}
+              label="Total Bonus Amount"
+              value={playerDetails?.balance.totalBonusAmount || 0}
               color="blue"
+              conversion={conversionRate}
             />
             <HighlightBox
               label="Total Bet Amount"

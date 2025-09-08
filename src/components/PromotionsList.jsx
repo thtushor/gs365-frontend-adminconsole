@@ -200,7 +200,7 @@ const PromotionsList = () => {
         <input
           type="text"
           name="name"
-          placeholder="Search by Name"
+          placeholder="Promotion name"
           value={filters.name}
           onChange={handleFilterChange}
           className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"

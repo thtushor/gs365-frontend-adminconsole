@@ -37,7 +37,7 @@ const defaultForm = {
   maxTrx: "",
   currency: null,
   commission_percent: null,
-  status: "inactive",
+  status: "active",
   refer_code: "",
 };
 

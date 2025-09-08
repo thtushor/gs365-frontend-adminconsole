@@ -178,7 +178,7 @@ const TransactionsPage = ({
         width: 120,
         render: (value) => (
           <span
-            className={`px-2 py-1 rounded text-xs font-medium ${
+            className={`px-2 py-1 rounded capitalize text-xs font-medium ${
               value === "approved"
                 ? "bg-green-100 text-green-800"
                 : value === "pending"
