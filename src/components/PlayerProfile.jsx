@@ -106,7 +106,13 @@ const PlayerProfile = () => {
   });
 
   // Highlight Box component for displaying stats
-  const HighlightBox = ({ label, value, color = "green", conversion }) => {
+  const HighlightBox = ({
+    label,
+    value,
+    isAmount = true,
+    color = "green",
+    conversion,
+  }) => {
     const colorClasses = {
       green: "text-green-600",
       blue: "text-blue-600",
@@ -122,7 +128,9 @@ const PlayerProfile = () => {
         <div
           className={`text-[20px] font-semibold truncate ${colorClasses[color]}`}
         >
-          {typeof value === "number" ? `BDT ${value.toFixed(2)}` : value || 0}
+          {typeof value === "number" && isAmount
+            ? `BDT ${value.toFixed(2)}`
+            : value || 0}
         </div>
         {conversion && (
           <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${
@@ -345,7 +353,7 @@ const PlayerProfile = () => {
               label="Total Transactions"
               value={transactionSummary.totalTransactions}
               color="blue"
-              conversion={conversionRate}
+              isAmount={false}
             />
           </div>
           <div className="flex gap-4 flex-wrap whitespace-nowrap">

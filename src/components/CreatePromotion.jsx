@@ -117,6 +117,9 @@ const CreatePromotion = () => {
       if (!promotionId) setForm(defaultForm);
       setSubmitLoading(false);
     },
+    onError: () => {
+      setSubmitLoading(false);
+    },
   });
 
   const handleChange = (e) => {
@@ -234,6 +237,8 @@ const CreatePromotion = () => {
     } catch (error) {
       setSubmitLoading(false);
       console.error(error);
+    } finally {
+      setSubmitLoading(false);
     }
   };
 

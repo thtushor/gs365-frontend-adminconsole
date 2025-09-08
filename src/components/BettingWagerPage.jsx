@@ -4,6 +4,7 @@ import { FaFilter, FaDownload, FaEye } from "react-icons/fa";
 import StatusChip from "./shared/StatusChip";
 import Pagination from "./Pagination";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import DownloadButtons from "../Utils/DownloadButtons";
 
 export const formatAmount = (amount) => {
   if (!amount || amount === "0.00") return "-";
@@ -130,6 +131,26 @@ const BettingWagerPage = ({
     }
   };
 
+  const formattedBets = betResultsList.map((bet) => ({
+    ID: bet.id,
+    User: bet?.user?.fullname || bet?.user?.username || bet?.userId,
+    Game: bet.gameDetails?.name || bet.gameName || "Unknown Game",
+    "Provider Name": bet.providerDetails?.name || "Unknown Provider",
+    "Bet Balance at bet time": formatAmount(bet.betBalance),
+    "Bet Amount": formatAmount(bet.betAmount),
+    "Win Amount": formatAmount(bet.winAmount),
+    "Loss Amount": formatAmount(bet.lossAmount),
+    Multiplier: `${bet.multiplier}x`,
+    "Balance at bet end": formatAmount(
+      Number(bet.betBalance) + Number(bet.winAmount) - Number(bet.lossAmount)
+    ),
+    "Current Balance": formatAmount(bet.userBalance?.currentBalance || 0),
+    "Bet Status": bet.betStatus,
+    "Playing Status": bet.playingStatus,
+    "Bet Placed At": bet.betPlacedAt
+      ? new Date(bet.betPlacedAt).toLocaleString()
+      : "-",
+  }));
   return (
     <div className="bg-[#f5f5f5] w-full min-h-full p-4">
       <div className="flex items-center justify-between mb-4">
@@ -343,6 +364,7 @@ const BettingWagerPage = ({
         </div>
       </div>
 
+      <DownloadButtons data={formattedBets} fileName="bet_result_list" />
       {/* Results Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {betResultsError && (
