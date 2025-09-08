@@ -5,7 +5,7 @@ import {
   useUpdateDesignation,
   useDeleteDesignation,
 } from "../hooks/useDesignations";
-import { PERMISSION_CATEGORIES, ADMIN_USER_TYPES } from "../Utils/permissions";
+import { PERMISSION_CATEGORIES, ADMIN_USER_TYPES, removeFirstUnderScoreWord } from "../Utils/permissions";
 import {
   FaPlus,
   FaEdit,
@@ -633,7 +633,7 @@ const DesignationForm = ({
                           className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                         <span className="ml-2 text-gray-600 flex-1">
-                          {permission
+                          {removeFirstUnderScoreWord(permission)
                             .replace(/_/g, " ")
                             .replace(/\b\w/g, (l) => l.toUpperCase())}
                         </span>
@@ -797,7 +797,7 @@ const DesignationView = ({ designation }) => {
                         className="flex items-center text-xs text-gray-600"
                       >
                         <BiCheck className="w-3 h-3 text-green-500 mr-2" />
-                        {permission
+                        {removeFirstUnderScoreWord(permission)
                           .replace(/_/g, " ")
                           .replace(/\b\w/g, (l) => l.toUpperCase())}
                       </div>

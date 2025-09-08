@@ -250,3 +250,11 @@ export const hasAllPermissions = (userPermissions, requiredPermissions) => {
         userPermissions?.includes(permission)
     );
 };
+
+export function removeFirstUnderScoreWord(str) {
+  // Split by underscore
+  const parts = str.split("_");
+
+  // Remove the first part ("agent") and join the rest with spaces
+  return parts.slice(1).join(" ");
+}
