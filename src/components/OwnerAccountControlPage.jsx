@@ -1,39 +1,34 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import DataTable from "./DataTable";
-import ReusableModal from "./ReusableModal";
-import { FaTrash, FaEdit } from "react-icons/fa";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
+import DataTable from "./DataTable";
+import ReusableModal from "./ReusableModal";
 import Pagination from "./Pagination";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { CreateAgentForm } from "./shared/CreateAgentForm";
 
-const statusColor = {
-  Active: "text-green-600",
-  Blocked: "text-red-500",
-  Suspended: "text-yellow-500",
-};
-
-const mapAdmin = (admin) => ({
-  id: admin.id,
-  fullname: admin.fullname || admin.username || admin.email,
-  email: admin.email,
-  phone: admin.phone || admin.mobile,
-  role: admin.role || "Admin",
-  device_type: admin.device_type,
-  device_name: admin.device_name,
-  os_version: admin.os_version,
-  browser: admin.browser,
-  browser_version: admin.browser_version,
-  ip_address: admin.ip_address,
-  status: admin.status || "Active",
-  created: admin.created_at
-    ? new Date(admin.created_at).toLocaleDateString()
-    : "N/A",
+const mapOwner = (owner) => ({
+  id: owner.id,
+  username: owner.username,
+  fullname: owner.fullname || owner.name || owner.email,
+  phone: owner.phone || owner.mobile,
+  email: owner.email,
+  role: owner.role || "Owner",
+  designationInfo: owner.designationInfo || null,
+  commission_percent: owner.commission_percent || 0,
+  status: owner.status || "active",
+  isVerified: owner.isVerified,
+  refCode: owner.refCode || owner.ref_code || "",
+  lastIp: owner.lastIp || owner.last_ip || "",
+  lastLogin: owner.lastLogin || owner.last_login || "",
+  device_type: owner.device_type,
+  created_at: owner.created_at,
 });
 
 const defaultFilters = {
-  search: "",
+  keyword: "",
   role: "",
   status: "",
   page: 1,
@@ -41,118 +36,205 @@ const defaultFilters = {
 };
 
 const defaultForm = {
+  username: "",
   fullname: "",
-  email: "",
   phone: "",
-  role: "Admin",
-  status: "Active",
+  email: "",
+  password: "",
+  role: "Owner",
+  city: "",
+  street: "",
+  minTrx: "",
+  maxTrx: "",
+  currency: null,
+  commission_percent: null,
+  status: "active",
+  referred_by: null,
 };
 
 const OwnerAccountControlPage = () => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false); // create modal
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [editUser, setEditUser] = useState(null);
+  const [editOwner, setEditOwner] = useState(null);
   const [editForm, setEditForm] = useState(defaultForm);
   const [filters, setFilters] = useState(defaultFilters);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedOwner, setSelectedOwner] = useState(null);
+
   const queryClient = useQueryClient();
 
+  // NOTE: This is the only useQuery that differs (owner-specific list)
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["admins", filters],
+    queryKey: ["owners", filters],
     queryFn: async () => {
       const res = await Axios.get(API_LIST.GET_ADMIN_LIST, { params: filters });
-      if (!res.data.status) throw new Error("Failed to fetch admins");
-      return res.data.data;
+      if (!res.data.status) throw new Error("Failed to fetch owners");
+      return res.data;
     },
     keepPreviousData: true,
   });
 
-  const admins = data?.map(mapAdmin) || [];
+  const owners = (data?.data || []).map(mapOwner);
   const total = data?.total || 0;
   const pageSize = filters.pageSize;
   const currentPage = filters.page;
   const totalPages = Math.ceil(total / pageSize) || 1;
 
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, ...form }) => {
-      const res = await Axios.post(`${API_LIST.UPDATE_ADMIN}/${id}`, form);
-      if (!res.data.status)
-        throw new Error(res.data.message || "Failed to update admin");
+  // Create (reuses affiliate-style endpoint)
+  const createMutation = useMutation({
+    mutationFn: async (form) => {
+      const res = await Axios.post(API_LIST.CREATE_ADMIN, form);
+      if (!res.data.status) throw new Error(res.data.message || "Failed to create owner");
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admins"] });
-      setEditModalOpen(false);
-      setEditUser(null);
-      toast.success("Admin updated successfully!");
+      // invalidate both to keep affiliate and owner lists synced
+      queryClient.invalidateQueries({ queryKey: ["affiliates"] });
+      queryClient.invalidateQueries({ queryKey: ["owners"] });
+      setModalOpen(false);
+      toast.success("Owner created successfully!");
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to create owner");
     },
   });
 
+  // Update (reuses affiliate-style endpoint)
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, ...form }) => {
+      const res = await Axios.post(`${API_LIST.UPDATE_ADMIN}/${id}`, form);
+      if (!res.data.status) throw new Error(res.data.message || "Failed to update owner");
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["affiliates"] });
+      queryClient.invalidateQueries({ queryKey: ["owners"] });
+      setEditModalOpen(false);
+      setEditOwner(null);
+      toast.success("Owner updated successfully!");
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to update owner");
+    },
+  });
+
+  // Delete (reuses affiliate-style endpoint)
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       const res = await Axios.post(`${API_LIST.DELETE_ADMIN}/${id}`);
-      if (!res.data.status)
-        throw new Error(res.data.message || "Failed to delete admin");
+      if (!res.data.status) throw new Error(res.data.message || "Failed to delete owner");
       return res.data;
     },
-    onSuccess: (data) => {
-      if (data.status) {
-        queryClient.invalidateQueries({ queryKey: ["admins"] });
-        setModalOpen(false);
-        setSelectedUser(null);
-        toast.success("Admin deleted successfully!");
+    onSuccess: (res) => {
+      if (res.status) {
+        queryClient.invalidateQueries({ queryKey: ["affiliates"] });
+        queryClient.invalidateQueries({ queryKey: ["owners"] });
+        setDeleteModalOpen(false);
+        setSelectedOwner(null);
+        toast.success("Owner deleted successfully!");
       }
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to delete owner");
     },
   });
 
   const columns = [
-    { field: "fullname", headerName: "Full Name", width: 180 },
-    { field: "email", headerName: "Email", width: 220 },
-    { field: "phone", headerName: "Phone", width: 140 },
-    { field: "role", headerName: "Role", width: 100 },
     {
-      field: "device_type",
-      headerName: "DEVICE TYPE",
-      width: 150,
+      field: "sl",
+      headerName: "SL",
+      width: 60,
+      render: (_, __, index) => (filters.page - 1) * filters.pageSize + index + 1,
     },
     {
-      field: "device_name",
-      headerName: "DEVICE NAME",
-      width: 150,
+      field: "username",
+      headerName: "Username",
+      width: 140,
+      render: (_, row) => (
+        <span className="text-green-500 cursor-pointer font-semibold">{row.username}</span>
+      ),
     },
     {
-      field: "os_version",
-      headerName: "OS VERSION",
-      width: 150,
+      field: "fullname",
+      headerName: "Full Name",
+      width: 180,
+      render: (_, row) => row.fullname,
     },
     {
-      field: "browser",
-      headerName: "BROWSER",
-      width: 150,
+      field: "phone",
+      headerName: "Phone",
+      width: 120,
+      render: (_, row) => row.phone,
     },
     {
-      field: "browser_version",
-      headerName: "BROWSER VERSION",
-      width: 150,
+      field: "email",
+      headerName: "Email",
+      width: 180,
+      render: (_, row) => row.email,
     },
     {
-      field: "ip_address",
-      headerName: "IP ADDRESS",
-      width: 150,
+      field: "role",
+      headerName: "Role",
+      width: 120,
+      render: (_, row) => row.role,
+    },
+    {
+      field: "designation",
+      headerName: "Designation",
+      width: 120,
+      render: (_, row) => row.designationInfo?.designationName,
+    },
+    {
+      field: "commission_percentage",
+      headerName: "Total Com. %",
+      width: 120,
+      render: (_, row) => row.commission_percent || 0,
     },
     {
       field: "status",
       headerName: "Status",
       width: 100,
+      align: "center",
       render: (value) => (
         <span
-          className={`font-medium ${statusColor[value] || "text-gray-700"}`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "active" ? "text-green-600" : "text-red-500"
+          }`}
         >
           {value}
         </span>
       ),
     },
-    { field: "created", headerName: "Created", width: 120 },
+    {
+      field: "isVerified",
+      headerName: "Is Verified",
+      width: 100,
+      render: (_, row) => (row.isVerified ? "Yes" : "No"),
+    },
+    {
+      field: "refCode",
+      headerName: "Referral Code",
+      width: 120,
+      render: (_, row) => row.refCode,
+    },
+    {
+      field: "lastIp",
+      headerName: "Last IP",
+      width: 120,
+      render: (_, row) => row.lastIp,
+    },
+    {
+      field: "lastLogin",
+      headerName: "Last Login",
+      width: 160,
+      render: (_, row) => (row.lastLogin ? new Date(row.lastLogin).toLocaleString() : ""),
+    },
+    {
+      field: "device_type",
+      headerName: "Device Type",
+      width: 120,
+      render: (_, row) => row.device_type,
+    },
     {
       field: "action",
       headerName: "Action",
@@ -163,17 +245,7 @@ const OwnerAccountControlPage = () => {
           <button
             className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
             title="Edit"
-            onClick={() => {
-              setEditUser(row);
-              setEditForm({
-                fullname: row.fullname,
-                email: row.email,
-                phone: row.phone,
-                role: row.role,
-                status: row.status,
-              });
-              setEditModalOpen(true);
-            }}
+            onClick={() => handleEdit(row)}
           >
             <FaEdit />
           </button>
@@ -181,8 +253,8 @@ const OwnerAccountControlPage = () => {
             className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
             title="Delete"
             onClick={() => {
-              setSelectedUser({ ...row, idx });
-              setModalOpen(true);
+              setSelectedOwner(row);
+              setDeleteModalOpen(true);
             }}
           >
             <FaTrash />
@@ -192,57 +264,87 @@ const OwnerAccountControlPage = () => {
     },
   ];
 
+  const handleEdit = (row) => {
+    setEditOwner(row);
+    setEditForm({
+      username: row.username || "",
+      fullname: row.fullname || row.name || "",
+      phone: row.phone || row.mobile || "",
+      email: row.email || "",
+      password: "",
+      role: row.role || "Owner",
+      city: row.city || "",
+      street: row.street || "",
+      minTrx: row.minTrx || "",
+      maxTrx: row.maxTrx || "",
+      currency: row.currency || 11,
+      status: row.status || "active",
+      commission_percent: row.commission_percent || null,
+      referred_by: row.referred_by || null,
+    });
+    setEditModalOpen(true);
+  };
+
+  function handleFilterChange(e) {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
+  }
+
+  function handlePageChange(page) {
+    setFilters((prev) => ({ ...prev, page }));
+  }
+
+  function handlePageSizeChange(size) {
+    setFilters((prev) => ({ ...prev, pageSize: size, page: 1 }));
+  }
+
+  function handleEditFormSubmit(formData) {
+    if (!editOwner) return;
+    const dataToSend = { ...formData };
+    if (!dataToSend.password) delete dataToSend.password;
+    updateMutation.mutate({ id: editOwner.id, ...dataToSend });
+  }
+
+  // Create owner (opens modal -> submit)
+  function handleCreateFormSubmit(formData) {
+    // If role should be owner, force it if necessary:
+    const payload = { ...formData };
+    createMutation.mutate(payload);
+  }
+
   function handleDelete() {
-    if (selectedUser) {
-      deleteMutation.mutate(selectedUser.id);
+    if (selectedOwner) {
+      deleteMutation.mutate(selectedOwner.id);
     }
   }
 
-  function handleEditFormChange(e) {
-    const { name, value } = e.target;
-    setEditForm((prev) => ({ ...prev, [name]: value }));
-  }
-
-  function handleEditFormSubmit(e) {
-    e.preventDefault();
-    if (!editUser) return;
-    updateMutation.mutate({ id: editUser.id, ...editForm });
-  }
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value, page: 1 }));
-  };
-
-  const handleFilterSubmit = (e) => {
-    e.preventDefault();
-    // Filters are applied automatically via useQuery
-  };
-
-  const handlePageChange = (page) => {
-    setFilters((prev) => ({ ...prev, page }));
-  };
-
-  const handlePageSizeChange = (size) => {
-    setFilters((prev) => ({ ...prev, pageSize: size, page: 1 }));
-  };
+  const roles = [
+    { value: "", label: "Select Role" },
+    { value: "admin", label: "Admin" },
+    { value: "superAdmin", label: "Super Admin" },
+    // { value: "finance", label: "Finance" },
+    // { value: "support", label: "Support" },
+  ];
 
   return (
     <div className="bg-[#f5f5f5] w-full min-h-full p-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">ADMIN/OWNER ACCOUNTS</h2>
+        <h2 className="text-lg font-semibold">Owner / Admin Accounts</h2>
+        <button
+          className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+          onClick={() => setModalOpen(true)}
+        >
+          Create Owner
+        </button>
       </div>
 
       {/* Filter Bar */}
-      <form
-        className="flex flex-wrap gap-2 items-center mb-4"
-        onSubmit={handleFilterSubmit}
-      >
+      <form className="flex flex-wrap gap-2 items-center mb-4" onSubmit={(e) => e.preventDefault()}>
         <input
           type="text"
-          name="search"
+          name="keyword"
           placeholder="Name/Email"
-          value={filters.search}
+          value={filters.keyword}
           onChange={handleFilterChange}
           className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
         />
@@ -252,11 +354,13 @@ const OwnerAccountControlPage = () => {
           onChange={handleFilterChange}
           className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
         >
-          <option value="">All Roles</option>
-          <option value="Owner">Owner</option>
-          <option value="Admin">Admin</option>
-          <option value="Finance">Finance</option>
-          <option value="Support">Support</option>
+
+          {roles.map((role) => (
+            <option key={role.value} value={role.value}>
+              {role.label}
+            </option>
+          ))}
+          
         </select>
         <select
           name="status"
@@ -265,32 +369,23 @@ const OwnerAccountControlPage = () => {
           className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Status</option>
-          <option value="Active">Active</option>
-          <option value="Blocked">Blocked</option>
-          <option value="Suspended">Suspended</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
         </select>
-        <button
-          type="submit"
-          className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition text-sm font-medium"
-        >
-          Apply
-        </button>
       </form>
 
-      <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">
+      <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col">
         {isLoading ? (
-          <div className="text-center text-gray-500 py-8">
-            Loading admins...
-          </div>
+          <div className="text-center text-gray-500 py-8">Loading owners...</div>
         ) : isError ? (
           <div className="text-center text-red-500 py-8">
-            Failed to load admins: {error?.message || "Unknown error"}
+            Failed to load owners: {error?.message || "Unknown error"}
           </div>
-        ) : admins.length === 0 ? (
-          <div className="text-center text-gray-500 py-8">No admins found.</div>
+        ) : owners.length === 0 ? (
+          <div className="text-center text-gray-500 py-8">No owners found.</div>
         ) : (
           <>
-            <DataTable columns={columns} data={admins} />
+            <DataTable columns={columns} data={owners} />
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -303,101 +398,54 @@ const OwnerAccountControlPage = () => {
         )}
       </div>
 
+      {/* Create Modal */}
+      <ReusableModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Create Owner"
+        className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
+      >
+        <CreateAgentForm
+          onSubmit={handleCreateFormSubmit}
+          initialValues={defaultForm}
+          isLoading={createMutation.isLoading}
+          isEdit={false}
+          roles={roles}
+          isAffiliate={false}
+          isRefVisible={false}
+        />
+      </ReusableModal>
+
       {/* Edit Modal */}
       <ReusableModal
         open={editModalOpen}
+        className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
         onClose={() => setEditModalOpen(false)}
-        title="Edit Admin"
-        onSave={handleEditFormSubmit}
+        title="Edit Owner"
       >
-        <form onSubmit={handleEditFormSubmit} className="flex flex-col gap-4">
-          <div>
-            <label className="block text-xs font-medium mb-1">Full Name</label>
-            <input
-              name="fullname"
-              value={editForm.fullname}
-              onChange={handleEditFormChange}
-              className="border rounded px-3 py-2 w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Email</label>
-            <input
-              name="email"
-              value={editForm.email}
-              onChange={handleEditFormChange}
-              className="border rounded px-3 py-2 w-full"
-              required
-              type="email"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Phone</label>
-            <input
-              name="phone"
-              value={editForm.phone}
-              onChange={handleEditFormChange}
-              className="border rounded px-3 py-2 w-full"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Role</label>
-            <select
-              name="role"
-              value={editForm.role}
-              onChange={handleEditFormChange}
-              className="border rounded px-3 py-2 w-full"
-              required
-            >
-              <option value="Owner">Owner</option>
-              <option value="Admin">Admin</option>
-              <option value="Finance">Finance</option>
-              <option value="Support">Support</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">Status</label>
-            <select
-              name="status"
-              value={editForm.status}
-              onChange={handleEditFormChange}
-              className="border rounded px-3 py-2 w-full"
-              required
-            >
-              <option value="Active">Active</option>
-              <option value="Blocked">Blocked</option>
-              <option value="Suspended">Suspended</option>
-            </select>
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition font-semibold text-sm"
-              disabled={updateMutation.isPending}
-            >
-              {updateMutation.isPending ? "Updating..." : "Update Admin"}
-            </button>
-          </div>
-        </form>
+        <CreateAgentForm
+          onSubmit={handleEditFormSubmit}
+          initialValues={editForm}
+          isLoading={updateMutation.isLoading}
+          isEdit={true}
+          roles={roles}
+          isAffiliate={false}
+          isRefVisible={true}
+        />
       </ReusableModal>
 
       {/* Delete Modal */}
       <ReusableModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Delete Account"
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Delete Owner"
         onSave={handleDelete}
       >
         <div>
           <p>
-            Are you sure you want to <b>delete</b> account{" "}
-            <b>{selectedUser?.fullname}</b>?
+            Are you sure you want to <b>delete</b> owner <b>{selectedOwner?.fullname}</b>?
           </p>
-          <p className="text-xs text-red-500 mt-2">
-            This action cannot be undone.
-          </p>
+          <p className="text-xs text-red-500 mt-2">This action cannot be undone.</p>
         </div>
       </ReusableModal>
     </div>

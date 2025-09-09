@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import { useGetRequest } from "../../Utils/apiClient";
 import { useAuth } from "../../hooks/useAuth";
+import { useDesignations } from "../../hooks/useDesignations";
 
 // simple debounce hook
 function useDebounce(value, delay = 500) {
@@ -36,6 +37,7 @@ const defaultForm = {
   minTrx: "",
   maxTrx: "",
   currency: null,
+  designation:"",
   commission_percent: null,
   status: "inactive",
   refer_code: "",
@@ -120,6 +122,18 @@ export function CreateAgentForm({
 
     onSubmit(form);
   };
+
+  // inside component
+const {
+  data: designationsData,
+  isLoading: designationsLoading,
+  error: designationsError,
+} = useDesignations();
+
+console.log(designationsData);
+// filter designations by selected role
+const filteredDesignations =
+  (designationsData?.data ||[])?.filter((d) => d.adminUserType === form.role) || [];
 
   useEffect(() => {
     if (!form.currency && currencyList) {
@@ -226,6 +240,36 @@ export function CreateAgentForm({
           </select>
         </div>
       )}
+
+      {/* designation */}
+{form.role && (
+  <div className="flex flex-col">
+    <label className="font-semibold text-xs mb-1">
+      DESIGNATION <span className="text-red-500">*</span>
+    </label>
+    {designationsLoading ? (
+      <p className="text-gray-500 text-sm">Loading designations...</p>
+    ) : filteredDesignations.length > 0 ? (
+      <select
+        className="border rounded px-3 py-2"
+        name="designation"
+        value={form.designation || ""}
+        onChange={handleChange}
+        required
+      >
+        <option value="">Select Designation</option>
+        {filteredDesignations.map((d) => (
+          <option key={d.id} value={d.id}>
+            {d.designationName}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <p className="text-gray-500 text-sm">No designations available</p>
+    )}
+  </div>
+)}
+
 
       {/* username */}
       <div className="flex flex-col">
