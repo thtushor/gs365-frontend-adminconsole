@@ -11,14 +11,30 @@ import {
 import AffiliateLayout from "./components/AffiliateLayout";
 import GameProviderLayout from "./components/GameProviderLayout.jsx";
 import SportsProviderLayout from "./components/SportProviderInner/SportsProviderLayout.jsx";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
+import { useAuth } from "./hooks/useAuth.jsx";
+import { checkHasCategoryPermission, getPermissionsByCategory } from "./Utils/permissions.js";
 
 // Handle normal menu routes (inside Layout)
 function getRoutes(menu) {
+  const {user} = useAuth();
+
+  const permissions = user?.designation?.permissions || [];
+
+  console.log({permissions});
+
   const routes = [];
   for (const item of menu) {
     const Component = item.component;
+    const hasCategoryPermission = item.accessCategory ? checkHasCategoryPermission(permissions, item.accessCategory) : false;
+    const categoryPermissions = getPermissionsByCategory(item.accessCategory);
+    const isSuperAdmin = user?.role === 'superAdmin';
+    console.log({hasCategoryPermission,item,user,categoryPermissions});
+    // console.log({item,user});
+    // Check if user has permission for this category
     if (item.path) {
+      
+      console.log({categoryPermissions});
       routes.push(
         <Route
           key={item.path}

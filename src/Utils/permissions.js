@@ -1,5 +1,17 @@
+import Dashboard from "../components/Dashboard";
+
 // Permission categories and their respective permissions
 export const PERMISSION_CATEGORIES = {
+    DASHBOARD: {
+        label: "Dashboard",
+        icon: "📊",
+        permissions: [
+            "dashboard_view_overview",
+            "dashboard_view_sales",
+            "dashboard_view_user_activity",
+            // "dashboard_view_system_health"
+        ]
+    },
     PLAYER: {
         label: "Player Management",
         icon: "👥",
@@ -10,13 +22,16 @@ export const PERMISSION_CATEGORIES = {
             "player_view_player",
             "player_view_player_list",
             "player_view_player_profile",
+            "player_manage_player_chat",
             "player_view_player_transactions",
             "player_view_player_login_history",
+            "player_view_player_promotion_history",
             "player_view_player_wagers",
+            "player_view_player_win_loss",
             "player_view_player_games",
             "player_view_player_turnover",
+            "player_export_player_data",
             "player_change_player_password",
-            "player_export_player_data"
         ]
     },
     AFFILIATE: {
@@ -37,21 +52,21 @@ export const PERMISSION_CATEGORIES = {
             "affiliate_manage_commission_rates"
         ]
     },
-    AGENT: {
-        label: "Agent Management",
-        icon: "👤",
-        permissions: [
-            "agent_create_agent",
-            "agent_edit_agent",
-            "agent_delete_agent",
-            "agent_view_agent",
-            "agent_view_agent_list",
-            "agent_view_agent_profile",
-            "agent_manage_prepayment",
-            "agent_view_commission",
-            "agent_manage_agent_balance"
-        ]
-    },
+    // AGENT: {
+    //     label: "Agent Management",
+    //     icon: "👤",
+    //     permissions: [
+    //         "agent_create_agent",
+    //         "agent_edit_agent",
+    //         "agent_delete_agent",
+    //         "agent_view_agent",
+    //         "agent_view_agent_list",
+    //         "agent_view_agent_profile",
+    //         "agent_manage_prepayment",
+    //         "agent_view_commission",
+    //         "agent_manage_agent_balance"
+    //     ]
+    // },
     PAYMENT: {
         label: "Payment Management",
         icon: "💳",
@@ -67,8 +82,11 @@ export const PERMISSION_CATEGORIES = {
             "payment_reject_withdrawals",
             "payment_manage_payment_methods",
             "payment_manage_payment_gateways",
+            "payment_manage_payment_method_types",
             "payment_manage_payment_providers",
-            "payment_view_gateway_management"
+            "payment_view_gateway_management",
+            "payment_view_provider_profile"
+
         ]
     },
     GAME: {
@@ -80,13 +98,32 @@ export const PERMISSION_CATEGORIES = {
             "game_delete_game",
             "game_view_game",
             "game_view_game_list",
+        ]
+    },
+    GAME_PROVIDER: {
+        label: "Game Provider Management",
+        icon: "🕹️",
+        permissions: [
             "game_manage_game_providers",
             "game_view_game_provider_list",
             "game_manage_game_provider_profile",
             "game_view_game_provider_deposits",
             "game_view_game_provider_expenses",
             "game_manage_featured_games"
-        ]
+        ],
+    },
+    SPORTS_PROVIDER: {
+        label: "Sports Provider Management",
+        icon: "🕹️",
+        permissions: [
+            "sports_manage_sports_providers",
+            "sports_manage_sports_sub_providers",
+            "sports_view_sports_provider_list",
+            "sports_manage_sports_provider_profile",
+            "sports_view_sports_provider_deposits",
+            "sports_view_sports_provider_expenses",
+            "sports_manage_featured_sports"
+        ],
     },
     SPORTS: {
         label: "Sports Management",
@@ -103,6 +140,14 @@ export const PERMISSION_CATEGORIES = {
             "sports_view_sport_transaction_history",
             "sports_view_betting_wagers",
             "sports_view_win_loss_reports"
+        ]
+    },
+     LIVE_SPORTS: {
+        label: "Live Sports Management",
+        icon: "⚽",
+        permissions: [
+            "live_sports_create_sport",
+            "live_sports_view_sport_list"
         ]
     },
     PROMOTION: {
@@ -220,12 +265,22 @@ export const ADMIN_USER_TYPES = [
     { value: "affiliate", label: "Affiliate", color: "bg-yellow-100 text-yellow-800" }
 ];
 
+export const checkHasCategoryPermission = (userPermissions, categoryKey) => {
+    const categoryPermissions = PERMISSION_CATEGORIES[categoryKey]?.permissions || [];
+    const hasPermission = categoryPermissions.some(permission =>
+        userPermissions?.includes(permission)
+    );
+    console.log({ categoryKey, categoryPermissions, userPermissions, hasPermission })
+    return hasPermission;
+}
+
 // Get all permissions as a flat array
 export const getAllPermissions = () => {
     return Object.values(PERMISSION_CATEGORIES).flatMap(category =>
         category.permissions
     );
 };
+
 
 // Get permissions by category
 export const getPermissionsByCategory = (categoryKey) => {
@@ -252,9 +307,9 @@ export const hasAllPermissions = (userPermissions, requiredPermissions) => {
 };
 
 export function removeFirstUnderScoreWord(str) {
-  // Split by underscore
-  const parts = str.split("_");
+    // Split by underscore
+    const parts = str.split("_");
 
-  // Remove the first part ("agent") and join the rest with spaces
-  return parts.slice(1).join(" ");
+    // Remove the first part ("agent") and join the rest with spaces
+    return parts.slice(1).join(" ");
 }
