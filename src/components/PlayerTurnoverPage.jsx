@@ -27,7 +27,7 @@ const PlayerTurnoverPage = () => {
         page: currentPage,
         pageSize: pageSize,
       });
-      
+
       if (statusFilter !== "all") {
         params.append("status", statusFilter);
       }
@@ -35,11 +35,11 @@ const PlayerTurnoverPage = () => {
       const res = await Axios.get(
         `${BASE_URL}${API_LIST.GET_PLAYERS_TURNOVER}?${params.toString()}`
       );
-      
+
       if (!res.data.status) {
         throw new Error("Failed to fetch turnover data");
       }
-      
+
       return res.data.data;
     },
     enabled: !!playerId,
@@ -114,7 +114,9 @@ const PlayerTurnoverPage = () => {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3">
           <FaSpinner className="animate-spin text-2xl text-green-500" />
-          <span className="text-lg text-gray-600">Loading turnover data...</span>
+          <span className="text-lg text-gray-600">
+            Loading turnover data...
+          </span>
         </div>
       </div>
     );
@@ -136,37 +138,43 @@ const PlayerTurnoverPage = () => {
     );
   }
 
-  const { data: turnovers, pagination } = turnoverData || { data: [], pagination: {} };
+  const { data: turnovers, pagination } = turnoverData || {
+    data: [],
+    pagination: {},
+  };
 
+  console.log(turnovers);
   return (
     <div className="space-y-6">
-             {/* Header */}
-       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-         <div className="flex items-center gap-4">
-           <button
-             onClick={handleBackToProfile}
-             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition flex items-center gap-2"
-           >
-             <FaArrowLeft className="text-sm" />
-             Back to Profile
-           </button>
-           <div>
-             <h2 className="text-2xl font-bold text-gray-800">Player Turnover</h2>
-             <p className="text-gray-600">
-               Track player turnover requirements and progress
-             </p>
-           </div>
-         </div>
-         <div className="flex items-center gap-3">
-           <button
-             onClick={handleRefresh}
-             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2"
-           >
-             <BiRefresh className="text-sm" />
-             Refresh
-           </button>
-         </div>
-       </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleBackToProfile}
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition flex items-center gap-2"
+          >
+            <FaArrowLeft className="text-sm" />
+            Back to Profile
+          </button>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Player Turnover
+            </h2>
+            <p className="text-gray-600">
+              Track player turnover requirements and progress
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleRefresh}
+            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2"
+          >
+            <BiRefresh className="text-sm" />
+            Refresh
+          </button>
+        </div>
+      </div>
 
       {/* Filters */}
       <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -181,7 +189,7 @@ const PlayerTurnoverPage = () => {
               { value: "active", label: "Active" },
               { value: "completed", label: "Completed" },
               { value: "pending", label: "Pending" },
-              { value: "rejected", label: "Rejected" },
+              { value: "rejected", label: "Inactive" },
             ].map((filter) => (
               <button
                 key={filter.value}
@@ -203,7 +211,9 @@ const PlayerTurnoverPage = () => {
       <div className="grid gap-6">
         {turnovers.length === 0 ? (
           <div className="bg-white rounded-lg p-8 text-center border border-gray-200">
-            <div className="text-gray-500 text-lg">No turnover records found</div>
+            <div className="text-gray-500 text-lg">
+              No turnover records found
+            </div>
             <p className="text-gray-400 mt-2">
               {statusFilter !== "all"
                 ? `No ${statusFilter} turnover records for this player`
@@ -239,20 +249,39 @@ const PlayerTurnoverPage = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <div className="text-sm text-gray-500">Deposit Amount</div>
-                      <div className="text-lg font-semibold text-green-600">
-                        {formatCurrency(turnover.depositAmount)}
+                    {turnover.type === "promotion" && turnover.bonusAmount ? (
+                      <div>
+                        <div className="text-sm text-gray-500">
+                          Bonus Amount
+                        </div>
+                        <div className="text-lg font-semibold text-green-600">
+                          {formatCurrency(
+                            turnover.bonusAmount ? turnover.bonusAmount : 0
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div>
+                        <div className="text-sm text-gray-500">
+                          Deposit Amount
+                        </div>
+                        <div className="text-lg font-semibold text-green-600">
+                          {formatCurrency(turnover.depositAmount)}
+                        </div>
+                      </div>
+                    )}
                     <div>
-                      <div className="text-sm text-gray-500">Target Turnover</div>
+                      <div className="text-sm text-gray-500">
+                        Target Turnover
+                      </div>
                       <div className="text-lg font-semibold text-blue-600">
                         {formatCurrency(turnover.targetTurnover)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-gray-500">Remaining Turnover</div>
+                      <div className="text-sm text-gray-500">
+                        Remaining Turnover
+                      </div>
                       <div className="text-lg font-semibold text-orange-600">
                         {formatCurrency(turnover.remainingTurnover)}
                       </div>
@@ -267,7 +296,8 @@ const PlayerTurnoverPage = () => {
                         {calculateProgress(
                           turnover.remainingTurnover,
                           turnover.targetTurnover
-                        ).toFixed(1)}%
+                        ).toFixed(1)}
+                        %
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -284,9 +314,7 @@ const PlayerTurnoverPage = () => {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                    <span>
-                      Transaction ID: {turnover.transactionId}
-                    </span>
+                    <span>Transaction ID: {turnover.transactionId}</span>
                     <span>Created: {formatDate(turnover.createdAt)}</span>
                     {turnover.updatedAt !== turnover.createdAt && (
                       <span>Updated: {formatDate(turnover.updatedAt)}</span>
@@ -304,9 +332,12 @@ const PlayerTurnoverPage = () => {
         <div className="bg-white rounded-lg p-4 border border-gray-200">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              Showing {((pagination.page - 1) * pagination.pageSize) + 1} to{" "}
-              {Math.min(pagination.page * pagination.pageSize, pagination.total)} of{" "}
-              {pagination.total} results
+              Showing {(pagination.page - 1) * pagination.pageSize + 1} to{" "}
+              {Math.min(
+                pagination.page * pagination.pageSize,
+                pagination.total
+              )}{" "}
+              of {pagination.total} results
             </div>
             <div className="flex items-center gap-2">
               <button

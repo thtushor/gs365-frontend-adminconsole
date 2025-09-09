@@ -221,6 +221,61 @@ const PlayerProfileStats = ({ playerDetails }) => {
         </div>
       )}
 
+      {/* Admin Information */}
+      {playerDetails.createdBy && (
+        <div className="bg-white rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <FaUser className="text-purple-500" />
+            Created By Information
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Name</p>
+              <div className="font-medium">
+                {playerDetails.createdBy.name || "N/A"}
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Username</p>
+              <p className="font-medium">
+                {playerDetails.createdBy.username || "N/A"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Role</p>
+              <p className="font-medium capitalize">
+                {playerDetails.createdBy.role || "N/A"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Phone</p>
+              <p className="font-medium">
+                {playerDetails.createdBy.phone || "N/A"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Email</p>
+              <p className="font-medium">
+                {playerDetails.createdBy.email || "N/A"}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <FaShieldAlt className="text-gray-400" />
+              <div>
+                <p className="text-sm text-gray-500">Status</p>
+                <span
+                  className={`px-2 py-1 rounded-full capitalize text-xs font-medium ${getStatusColor(
+                    playerDetails.createdBy.status
+                  )}`}
+                >
+                  {playerDetails.createdBy.status || "N/A"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Recent Activity */}
       <div className="bg-white rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>

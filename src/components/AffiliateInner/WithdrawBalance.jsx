@@ -26,6 +26,7 @@ const defaultFilters = {
 const WithdrawBalance = () => {
   const { data: settingsData } = useSettings();
   const isTodayWithdrawDay = (days) => {
+    if (!days) return "N/A";
     const today = new Date()
       .toLocaleDateString("en-US", { weekday: "long" })
       .toLowerCase();
