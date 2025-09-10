@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 
 import { motion } from "framer-motion";
 import { menu } from "../Utils/menu.jsx";
+import { checkHasCategoryPermission } from "../Utils/permissions.js";
+import { useAuth } from "../hooks/useAuth.jsx";
 
 const sidebarVariants = {
   open: {
@@ -33,6 +35,10 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
   const location = useLocation();
   const currentPathName = getCurrentPathName(location.pathname);
   const userType = import.meta.env.VITE_USER_TYPE;
+  const {user} = useAuth();
+  const permissions = user?.designation?.permissions || [];
+
+  console.log("sidebar",{permissions,menu})
   return (
     <>
       {/* Mobile Drawer Sidebar */}
@@ -57,6 +63,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
         <nav className="flex-1">
           {menu.map((item, idx) =>
             item?.skipFromMenu ? null : (
+              user.role==="superAdmin" || checkHasCategoryPermission(permissions,item?.accessCategory) ?
               <div key={idx} className="mb-2">
                 <Link
                   to={item.path || "#"}
@@ -75,6 +82,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                   <div className="ml-6 mt-1">
                     {item.children.map((child, cidx) =>
                       child?.skipFromMenu ? null : (
+                       user.role==="superAdmin" || checkHasCategoryPermission([child.accessKey],item?.accessCategory) ? 
                         <Link
                           key={cidx}
                           to={child.path}
@@ -87,12 +95,12 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                         >
                           {child.icon}
                           {child.label}
-                        </Link>
+                        </Link>:null
                       )
                     )}
                   </div>
                 )}
-              </div>
+              </div>:null
             )
           )}
         </nav>
@@ -111,6 +119,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
         <nav className="flex-1">
           {menu.map((item, idx) =>
             item?.skipFromMenu ? null : (
+              user.role==="superAdmin" || checkHasCategoryPermission(permissions,item?.accessCategory) ?
               <div key={idx} className="mb-2">
                 <Link
                   to={item.path || "#"}
@@ -128,6 +137,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                   <div className="ml-6 mt-1">
                     {item.children.map((child, cidx) =>
                       child?.skipFromMenu ? null : (
+                        user.role==="superAdmin" || checkHasCategoryPermission([child.accessKey],item?.accessCategory) ?
                         <Link
                           key={cidx}
                           to={child.path}
@@ -140,11 +150,12 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                           {child.icon}
                           {child.label}
                         </Link>
+                        :null
                       )
                     )}
                   </div>
                 )}
-              </div>
+              </div>: null
             )
           )}
         </nav>

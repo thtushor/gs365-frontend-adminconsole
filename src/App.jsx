@@ -11,40 +11,58 @@ import {
 import AffiliateLayout from "./components/AffiliateLayout";
 import GameProviderLayout from "./components/GameProviderLayout.jsx";
 import SportsProviderLayout from "./components/SportProviderInner/SportsProviderLayout.jsx";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
+import { useAuth } from "./hooks/useAuth.jsx";
+import { checkHasCategoryPermission, getPermissionsByCategory, hasPermission } from "./Utils/permissions.js";
+import UnAuthorized from "./components/UnAuthorizedAccess.jsx";
 
 // Handle normal menu routes (inside Layout)
+
+
 function getRoutes(menu) {
+  const { user } = useAuth();
+  const permissions = user?.designation?.permissions || [];
+  const isSuperAdmin = user?.role === "superAdmin";
+
   const routes = [];
   for (const item of menu) {
     const Component = item.component;
-    if (item.path) {
-      routes.push(
-        <Route
-          key={item.path}
-          path={item.path.replace(/^\//, "")}
-          element={
-            Component ? (
-              <Component {...item.props} />
-            ) : (
-              <ComingSoon title={item.label} />
-            )
-          }
-        />
-      );
-    }
-    if (item.children) {
+    const hasCategoryPermission = item.accessCategory
+      ? checkHasCategoryPermission(permissions, item.accessCategory)
+      : false;
+
+    const isAuthorized = isSuperAdmin || hasCategoryPermission;
+
+    if(item.path)
+    routes.push(
+      <Route
+        key={item.path}
+        path={item.path.replace(/^\//, "")}
+        element={
+          isAuthorized ? (
+            Component ? <Component {...item.props} /> : <ComingSoon title={item.label} />
+          ) : (
+            <UnAuthorized />
+          )
+        }
+      />
+    );
+
+    if (item.children && item.children.length > 0) {
       for (const child of item.children) {
         const ChildComponent = child.component;
+        const childHasPermission = isSuperAdmin || checkHasCategoryPermission([child.accessKey], item.accessCategory);
+
+        if(child.path)
         routes.push(
           <Route
             key={child.path}
             path={child.path.replace(/^\//, "")}
             element={
-              ChildComponent ? (
-                <ChildComponent {...child.props} />
+              childHasPermission ? (
+                ChildComponent ? <ChildComponent {...child.props} /> : <ComingSoon title={child.label} />
               ) : (
-                <ComingSoon title={child.label} />
+                <UnAuthorized />
               )
             }
           />
@@ -55,11 +73,25 @@ function getRoutes(menu) {
   return routes;
 }
 
+
 // Handle routes that don't use Layout
 function getOutsideRoutes(routes, LayoutWrapper = null) {
+  const { user } = useAuth();
+  const permissions = user?.designation?.permissions || [];
+  const isSuperAdmin = user?.role === "superAdmin";
+
   return routes.map((route) => {
     const Component = route.component;
-    const RouteElement = <Component {...route.props} />;
+    const hasCategoryPermission = route.accessKey
+      ? hasPermission(permissions, route.accessKey)
+      : false;
+
+    const isAuthorized = isSuperAdmin || hasCategoryPermission;
+    const RouteElement = isAuthorized ? (
+      <Component {...route.props} />
+    ) : (
+      <UnAuthorized titleClassName="text-green-500" subTittleClassName={"text-white"} />
+    );
 
     return LayoutWrapper ? (
       <Route
@@ -78,6 +110,7 @@ function getOutsideRoutes(routes, LayoutWrapper = null) {
     );
   });
 }
+
 
 function App() {
   const userType = import.meta.env.VITE_USER_TYPE;

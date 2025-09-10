@@ -12,8 +12,7 @@ const Layout = () => {
   const closeSidebar = () => setSidebarOpen(false);
   const openSidebar = () => setSidebarOpen(true);
 
-  console.log(user);
-  const isAdmin = user?.role === "admin";
+  const isAdmin = ["admin","superAdmin"].includes(user?.role);
 
   const userType = import.meta.env.VITE_USER_TYPE;
 
