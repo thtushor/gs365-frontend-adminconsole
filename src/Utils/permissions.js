@@ -24,6 +24,7 @@ export const PERMISSION_CATEGORIES = {
             "player_view_player_profile",
             "player_manage_player_chat",
             "player_view_player_transactions",
+            "player_view_player_payments",
             "player_view_player_login_history",
             "player_view_player_promotion_history",
             "player_view_player_wagers",
@@ -44,12 +45,14 @@ export const PERMISSION_CATEGORIES = {
             "affiliate_view_affiliate",
             "affiliate_view_affiliate_list",
             "affiliate_view_affiliate_profile",
+            "affiliate_view_sub_affiliate_list",
             "affiliate_view_affiliate_commissions",
             "affiliate_view_affiliate_withdraw_history",
             "affiliate_view_sub_affiliates",
             "affiliate_view_affiliate_players",
             "affiliate_approve_withdraw_requests",
-            "affiliate_manage_commission_rates"
+            "affiliate_manage_commission_rates",
+            "affiliate_manage_kyc_verification"
         ]
     },
     // AGENT: {
@@ -106,6 +109,7 @@ export const PERMISSION_CATEGORIES = {
         permissions: [
             "game_manage_game_providers",
             "game_view_game_provider_list",
+            "game_view_sub_game_provider_list",
             "game_manage_game_provider_profile",
             "game_view_game_provider_deposits",
             "game_view_game_provider_expenses",
@@ -224,9 +228,15 @@ export const PERMISSION_CATEGORIES = {
             "settings_update_system_settings",
             "settings_manage_turnover_settings",
             "settings_manage_backup_restore",
+        ]
+    },
+     CONFIGURATION: {
+        label: "System Settings",
+        icon: "⚙️",
+        permissions: [
             "settings_manage_dropdowns",
             "settings_manage_menu_management",
-            "settings_view_login_history"
+            // "settings_view_login_history"
         ]
     },
     ADMIN: {

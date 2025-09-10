@@ -244,36 +244,42 @@ export const menu = [
         path: "/players/:playerId/profile",
         component: PlayerProfile,
         skipFromMenu: true,
+        accessKey: "player_view_player_profile"
       },
       {
         label: "Player Payments",
         path: "/players/:playerId/payments",
         component: PlayerPaymentsPage,
         skipFromMenu: true,
+        accessKey: "player_view_player_payments"
       },
       {
         label: "Player Transactions",
         path: "/players/:playerId/profile/transactions",
         component: PlayerTransactionsPage,
         skipFromMenu: true,
+        accessKey: "player_view_player_transactions"
       },
       {
         label: "Player Wagers",
         path: "/players/:playerId/profile/wagers",
         component: BettingWagerPage,
         skipFromMenu: true,
+        accessKey: "player_view_player_wagers"
       },
       {
         label: "Player Games",
         path: "/players/:playerId/profile/games",
         component: PlayerGamesPage,
         skipFromMenu: true,
+        accessKey: "player_view_player_games"
       },
       {
         label: "Player Turnover",
         path: "/players/:playerId/profile/turnover",
         component: PlayerTurnoverPage,
         skipFromMenu: true,
+        accessKey: "player_view_player_turnover"
       },
       {
         label: "Betting Wager",
@@ -297,6 +303,7 @@ export const menu = [
     path: "/kyc-request-history",
     icon: <BsShieldCheck />,
     component: KYCRequestList,
+    accessCategory: "KYC",
   },
   {
     label: "Affiliate",
@@ -802,18 +809,21 @@ export const menu = [
     label: "Configuration",
     icon: <VscGitPullRequestCreate />,
     onlyOwner: true, // Only visible to owner
+    accessCategory: "CONFIGURATION",
     children: [
       {
         label: "Dropdowns",
         path: "/dropdowns",
         component: DropdownConfiguration,
         icon: <RiDropdownList />,
+        accessKey: "settings_manage_dropdowns"
       },
       {
         label: "Menu Management",
         path: "/menu-management",
         component: MenuManagement,
         icon: <TbMenuOrder />,
+        accessKey: "settings_manage_menu_management"
       },
       // {
       //   label: "Currency Conversion",
@@ -831,11 +841,13 @@ export const menu = [
   {
     label: "Settings",
     icon: <FaCogs />,
+    accessCategory: "SETTINGS",
     children: [
       {
         label: "System Settings",
         path: "/settings/system",
         component: SystemSettingsPage,
+        acessKey: "settings_view_system_settings",
         icon: <FaCogs />,
       },
       // {
@@ -848,7 +860,8 @@ export const menu = [
         label: "Backup & Restore",
         path: "/settings/backup",
         component: BackupRestorePage,
-        onlyOwner: true, // Only visible to owner
+        // onlyOwner: true, // Only visible to owner
+        accessKey: "settings_manage_backup_restore",
         icon: <FaDatabase />,
       },
     ],
@@ -859,22 +872,26 @@ export const affiliateOutsideRoute = [
     label: "Profile",
     path: "/affiliate-list/:affiliateId",
     component: AffiliateProfile,
+    accessKey: "affiliate_view_affiliate_profile"
   },
   {
     label: "Sub Affiliates List",
     path: "/affiliate-list/:affiliateId/sub-affiliates-list",
     component: SubAffiliatesList,
+    accessKey: "affiliate_view_sub_affiliate_list"
   },
 
   {
     label: "Players List",
     path: "/affiliate-list/:affiliateId/players-list",
     component: AffiliatePlayerList,
+    accessKey: "affiliate_view_affiliate_players"
   },
   {
     label: "Withdraw History",
     path: "/affiliate-list/:affiliateId/withdraw-history",
     component: AffiliateWithdrawHistory,
+    accessKey: "affiliate_view_affiliate_withdraw_history"
   },
 
   // {
@@ -891,11 +908,13 @@ export const affiliateOutsideRoute = [
     label: "Commission History",
     path: "/affiliate-list/:affiliateId/affiliate-commission-history",
     component: AffiliateCommissionListPage,
+    accessKey: "affiliate_view_affiliate_commissions"
   },
   {
     label: "KYC Verification",
     path: "/affiliate-list/:affiliateId/kyc-verification",
     component: KYCVerificationPage,
+    accessKey: "affiliate_manage_kyc_verification"
   },
 ];
 export const gameProviderOutsideRoute = [
@@ -903,26 +922,31 @@ export const gameProviderOutsideRoute = [
     label: "Profile",
     path: "/game-provider-list/:gameProviderId",
     component: GameProviderProfile,
+    accessKey: "game_manage_game_provider_profile"
   },
   {
     label: "Sub Provider List",
     path: "/game-provider-list/:gameProviderId/child-provider-list",
     component: ChildProviderList,
+    accessKey: "game_view_sub_game_provider_list"
   },
   {
     label: "Deposit History",
     path: "/game-provider-list/:gameProviderId/deposit-history",
     component: DepositHistory,
+    accessKey: "game_view_game_provider_deposits"
   },
   {
     label: "Game Expense History",
     path: "/game-provider-list/:gameProviderId/game-expense-history",
     component: GameExpenseHistory,
+    accessKey: "game_view_game_provider_expenses"
   },
   {
     label: "Game List",
     path: "/game-provider-list/:gameProviderId/games-list",
     component: ProviderWiseGameList,
+    accessKey: "game_view_game_list"
   },
 ];
 
@@ -931,20 +955,24 @@ export const sportProviderOutsideRoute = [
     label: "Profile",
     path: "/sport-provider-list/:sportProviderId",
     component: SportProviderProfile,
+    accessKey: "sports_manage_sports_provider_profile"
   },
   {
     label: "Sub Provider List",
     path: "/sport-provider-list/:sportProviderId/child-provider-list",
     component: SportChildProviderList,
+    accessKey: "sports_view_sports_provider_list"
   },
   {
     label: "Sports Transaction History",
     path: "/sport-provider-list/:sportProviderId/sport-transaction-history",
     component: SportsTransactionHistory,
+    accessKey: "sports_view_sports_provider_expenses"
   },
   {
     label: "Sport List",
     path: "/sport-provider-list/:sportProviderId/Sport-list",
     component: SportsProviderWiseSport,
+    accessKey: "sports_view_sport_list"
   },
 ];

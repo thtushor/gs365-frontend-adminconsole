@@ -19,6 +19,7 @@ import { useAuth } from "../hooks/useAuth";
 import KycRequestButton from "../Utils/KycRequestButton";
 import PlayerPasswordChange from "./PlayerPasswordChange";
 import { useSettings } from "../hooks/useSettings";
+import { hasPermission } from "../Utils/permissions";
 
 export const playerRoutes = [
   {
@@ -57,6 +58,7 @@ export const playerRoutes = [
 
 const PlayerProfile = () => {
   const { data: settingsData } = useSettings();
+  // const {user} = useAuth();/
 
   const conversionRate =
     settingsData?.data?.length > 0 ? settingsData?.data[0]?.conversionRate : 0;
@@ -65,6 +67,9 @@ const PlayerProfile = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
+
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
 
   const {
     data: playerDetails,
@@ -253,17 +258,17 @@ const PlayerProfile = () => {
                   </span>
                 </div>
               </div>
-              <KycRequestButton
+              {isSuperAdmin || hasPermission(permissions,"kyc_view_kyc_requests") && <KycRequestButton
                 holderId={playerDetails?.id}
                 holderType={"player"}
-              />
-              <button
+              />}
+            { isSuperAdmin || hasPermission(permissions,"player_edit_player") && <button
                 onClick={handleEditProfile}
                 className="bg-green-500 text-white px-2 md:px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
               >
                 <FaEdit />
                 <span className="md:flex hidden">Edit Profile</span>
-              </button>
+              </button>}
             </div>
           </div>
 

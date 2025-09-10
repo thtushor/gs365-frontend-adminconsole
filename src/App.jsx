@@ -14,53 +14,55 @@ import SportsProviderLayout from "./components/SportProviderInner/SportsProvider
 import { use, useEffect } from "react";
 import { useAuth } from "./hooks/useAuth.jsx";
 import { checkHasCategoryPermission, getPermissionsByCategory } from "./Utils/permissions.js";
+import UnAuthorized from "./components/UnAuthorizedAccess.jsx";
 
 // Handle normal menu routes (inside Layout)
+
+
 function getRoutes(menu) {
-  const {user} = useAuth();
-
+  const { user } = useAuth();
   const permissions = user?.designation?.permissions || [];
-
-  console.log({permissions});
+  const isSuperAdmin = user?.role === "superAdmin";
 
   const routes = [];
   for (const item of menu) {
     const Component = item.component;
-    const hasCategoryPermission = item.accessCategory ? checkHasCategoryPermission(permissions, item.accessCategory) : false;
-    const categoryPermissions = getPermissionsByCategory(item.accessCategory);
-    const isSuperAdmin = user?.role === 'superAdmin';
-    console.log({hasCategoryPermission,item,user,categoryPermissions});
-    // console.log({item,user});
-    // Check if user has permission for this category
-    if (item.path) {
-      
-      console.log({categoryPermissions});
-      routes.push(
-        <Route
-          key={item.path}
-          path={item.path.replace(/^\//, "")}
-          element={
-            Component ? (
-              <Component {...item.props} />
-            ) : (
-              <ComingSoon title={item.label} />
-            )
-          }
-        />
-      );
-    }
-    if (item.children) {
+    const hasCategoryPermission = item.accessCategory
+      ? checkHasCategoryPermission(permissions, item.accessCategory)
+      : false;
+
+    const isAuthorized = isSuperAdmin || hasCategoryPermission;
+
+    if(item.path)
+    routes.push(
+      <Route
+        key={item.path}
+        path={item.path.replace(/^\//, "")}
+        element={
+          isAuthorized ? (
+            Component ? <Component {...item.props} /> : <ComingSoon title={item.label} />
+          ) : (
+            <UnAuthorized />
+          )
+        }
+      />
+    );
+
+    if (item.children && item.children.length > 0) {
       for (const child of item.children) {
         const ChildComponent = child.component;
+        const childHasPermission = isSuperAdmin || checkHasCategoryPermission([child.accessKey], item.accessCategory);
+
+        if(child.path)
         routes.push(
           <Route
             key={child.path}
             path={child.path.replace(/^\//, "")}
             element={
-              ChildComponent ? (
-                <ChildComponent {...child.props} />
+              childHasPermission ? (
+                ChildComponent ? <ChildComponent {...child.props} /> : <ComingSoon title={child.label} />
               ) : (
-                <ComingSoon title={child.label} />
+                <UnAuthorized />
               )
             }
           />
@@ -70,6 +72,7 @@ function getRoutes(menu) {
   }
   return routes;
 }
+
 
 // Handle routes that don't use Layout
 function getOutsideRoutes(routes, LayoutWrapper = null) {
