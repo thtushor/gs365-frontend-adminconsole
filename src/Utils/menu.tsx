@@ -847,7 +847,7 @@ export const menu = [
         label: "System Settings",
         path: "/settings/system",
         component: SystemSettingsPage,
-        acessKey: "settings_view_system_settings",
+        accessKey: "settings_view_system_settings",
         icon: <FaCogs />,
       },
       // {

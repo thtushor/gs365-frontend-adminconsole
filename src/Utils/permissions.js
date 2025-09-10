@@ -13,7 +13,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     PLAYER: {
-        label: "Player Management",
+        label: "Players",
         icon: "👥",
         permissions: [
             "player_create_player",
@@ -36,7 +36,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     AFFILIATE: {
-        label: "Affiliate Management",
+        label: "Affiliate",
         icon: "🤝",
         permissions: [
             "affiliate_create_affiliate",
@@ -71,7 +71,7 @@ export const PERMISSION_CATEGORIES = {
     //     ]
     // },
     PAYMENT: {
-        label: "Payment Management",
+        label: "Payment Method",
         icon: "💳",
         permissions: [
             "payment_view_transactions",
@@ -93,7 +93,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     GAME: {
-        label: "Game Management",
+        label: "Games",
         icon: "🎮",
         permissions: [
             "game_create_game",
@@ -104,7 +104,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     GAME_PROVIDER: {
-        label: "Game Provider Management",
+        label: "Game Provider",
         icon: "🕹️",
         permissions: [
             "game_manage_game_providers",
@@ -117,7 +117,7 @@ export const PERMISSION_CATEGORIES = {
         ],
     },
     SPORTS_PROVIDER: {
-        label: "Sports Provider Management",
+        label: "Sport Provider",
         icon: "🕹️",
         permissions: [
             "sports_manage_sports_providers",
@@ -147,7 +147,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
      LIVE_SPORTS: {
-        label: "Live Sports Management",
+        label: "Live Sports",
         icon: "⚽",
         permissions: [
             "live_sports_create_sport",
@@ -155,7 +155,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     PROMOTION: {
-        label: "Promotion Management",
+        label: "Promotions",
         icon: "🎯",
         permissions: [
             "promotion_create_promotion",
@@ -167,7 +167,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     CMS: {
-        label: "Content Management",
+        label: "CMS",
         icon: "📝",
         permissions: [
             "cms_manage_banners",
@@ -197,7 +197,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     KYC: {
-        label: "KYC Management",
+        label: "KYC Request History",
         icon: "🛡️",
         permissions: [
             "kyc_view_kyc_requests",
@@ -221,7 +221,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     SETTINGS: {
-        label: "System Settings",
+        label: "Settings",
         icon: "⚙️",
         permissions: [
             "settings_view_system_settings",
@@ -231,7 +231,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
      CONFIGURATION: {
-        label: "System Settings",
+        label: "Configuration",
         icon: "⚙️",
         permissions: [
             "settings_manage_dropdowns",
@@ -255,7 +255,7 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
     FINANCE: {
-        label: "Finance Management",
+        label: "Finance",
         icon: "💰",
         permissions: [
             "finance_view_admin_balance",
