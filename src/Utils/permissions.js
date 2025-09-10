@@ -78,21 +78,6 @@ export const PERMISSION_CATEGORIES = {
             "promotion_manage_promotion_status"
         ]
     },
-    // AGENT: {
-    //     label: "Agent Management",
-    //     icon: "👤",
-    //     permissions: [
-    //         "agent_create_agent",
-    //         "agent_edit_agent",
-    //         "agent_delete_agent",
-    //         "agent_view_agent",
-    //         "agent_view_agent_list",
-    //         "agent_view_agent_profile",
-    //         "agent_manage_prepayment",
-    //         "agent_view_commission",
-    //         "agent_manage_agent_balance"
-    //     ]
-    // },
     PAYMENT: {
         label: "Payment Method",
         icon: "💳",
@@ -160,26 +145,10 @@ export const PERMISSION_CATEGORIES = {
             "sports_manage_sports_provider_profile",
             "sports_view_sports_provider_deposits",
             "sports_view_sports_provider_expenses",
-            "sports_manage_featured_sports"
+            "sports_manage_featured_sports",
+            "sports_view_sport_list"
         ],
     },
-    // SPORTS: {
-    //     label: "Sports Management",
-    //     icon: "⚽",
-    //     permissions: [
-    //         "sports_create_sport",
-    //         "sports_edit_sport",
-    //         "sports_delete_sport",
-    //         "sports_view_sport",
-    //         "sports_view_sport_list",
-    //         "sports_manage_sport_providers",
-    //         "sports_view_sport_provider_list",
-    //         "sports_manage_sport_provider_profile",
-    //         "sports_view_sport_transaction_history",
-    //         "sports_view_betting_wagers",
-    //         "sports_view_win_loss_reports"
-    //     ]
-    // },
      LIVE_SPORTS: {
         label: "Live Sports",
         icon: "⚽",
@@ -259,27 +228,11 @@ export const PERMISSION_CATEGORIES = {
     icon: "🔒",
     permissions: [
         "owner_view_owner_controls",
-        // "owner_manage_account_control",
+        "owner_manage_account_control",
         "owner_manage_designations",    
     ]
     },
-    // ADMIN: {
-    //     label: "Admin Management",
-    //     icon: "👑",
-    //     permissions: [
-    //         "admin_create_admin",
-    //         "admin_edit_admin",
-    //         "admin_delete_admin",
-    //         "admin_view_admin_list",
-    //         "admin_view_admin_profile",
-    //         "admin_manage_admin_permissions",
-    //         "admin_view_owner_controls",
-    //         "admin_manage_account_control",
-    //         "admin_manage_designations"
-    //     ]
-    // },
- 
-   
+  
 };
 
 // Admin user types

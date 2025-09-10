@@ -475,7 +475,7 @@ const filteredDesignations =
         )}
       </div>
 
-      {user?.role === "admin" && (
+      {["admin","superAdmin"].includes(user?.role) && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
             STATUS <span className="text-red-500">*</span>
