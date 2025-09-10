@@ -690,29 +690,6 @@ export const menu = [
   },
 
   {
-    label: "Owner Controls",
-    icon: <FaShieldAlt />,
-    onlyOwner: true, // Only visible to owner
-    accessCategory: "OWNER_CONTROLS",
-    children: [
-      {
-        label: "Account Control",
-        path: "/owner/account-control",
-        component: OwnerAccountControlPage,
-        icon: <MdControlCamera />,
-        accessKey: "owner_manage_account_control"
-      },
-      
-      {
-        label: "Designation Management",
-        path: "/owner/designation-management",
-        icon: <MdOutlineSecurity />,
-        component: DesignationManagementPage,
-        accessKey: "owner_manage_designations"
-      },
-    ],
-  },
-  {
     label: "CMS",
     icon: <MdDisplaySettings />,
     onlyOwner: true, // Only visible to owner
@@ -834,6 +811,30 @@ export const menu = [
       //   path: "/status-chip-demo",
       //   component: StatusChipDemo,
       // },
+    ],
+  },
+  
+  {
+    label: "Owner Controls",
+    icon: <FaShieldAlt />,
+    onlyOwner: true, // Only visible to owner
+    accessCategory: "OWNER_CONTROLS",
+    children: [
+      {
+        label: "Account Control",
+        path: "/owner/account-control",
+        component: OwnerAccountControlPage,
+        icon: <MdControlCamera />,
+        accessKey: "owner_manage_account_control"
+      },
+      
+      {
+        label: "Designation Management",
+        path: "/owner/designation-management",
+        icon: <MdOutlineSecurity />,
+        component: DesignationManagementPage,
+        accessKey: "owner_manage_designations"
+      },
     ],
   },
   {

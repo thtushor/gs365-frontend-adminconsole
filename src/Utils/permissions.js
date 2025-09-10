@@ -35,6 +35,17 @@ export const PERMISSION_CATEGORIES = {
             "player_change_player_password",
         ]
     },
+     KYC: {
+        label: "KYC Request History",
+        icon: "🛡️",
+        permissions: [
+            "kyc_view_kyc_requests",
+            "kyc_approve_kyc",
+            "kyc_reject_kyc",
+            "kyc_send_kyc_requests",
+            "kyc_view_kyc_history"
+        ]
+    },
     AFFILIATE: {
         label: "Affiliate",
         icon: "🤝",
@@ -53,6 +64,18 @@ export const PERMISSION_CATEGORIES = {
             "affiliate_approve_withdraw_requests",
             "affiliate_manage_commission_rates",
             "affiliate_manage_kyc_verification"
+        ]
+    },
+    PROMOTION: {
+        label: "Promotions",
+        icon: "🎯",
+        permissions: [
+            "promotion_create_promotion",
+            "promotion_edit_promotion",
+            "promotion_delete_promotion",
+            "promotion_view_promotion",
+            "promotion_view_promotion_list",
+            "promotion_manage_promotion_status"
         ]
     },
     // AGENT: {
@@ -92,15 +115,14 @@ export const PERMISSION_CATEGORIES = {
 
         ]
     },
-    GAME: {
-        label: "Games",
-        icon: "🎮",
+     FINANCE: {
+        label: "Finance",
+        icon: "💰",
         permissions: [
-            "game_create_game",
-            "game_edit_game",
-            "game_delete_game",
-            "game_view_game",
-            "game_view_game_list",
+            "finance_view_admin_balance",
+            "finance_manage_admin_balance",
+            "finance_view_commission_reports",
+            "finance_manage_commission_settings"
         ]
     },
     GAME_PROVIDER: {
@@ -116,6 +138,18 @@ export const PERMISSION_CATEGORIES = {
             "game_manage_featured_games"
         ],
     },
+    GAME: {
+        label: "Games",
+        icon: "🎮",
+        permissions: [
+            "game_create_game",
+            "game_edit_game",
+            "game_delete_game",
+            "game_view_game",
+            "game_view_game_list",
+        ]
+    },
+    
     SPORTS_PROVIDER: {
         label: "Sport Provider",
         icon: "🕹️",
@@ -129,23 +163,23 @@ export const PERMISSION_CATEGORIES = {
             "sports_manage_featured_sports"
         ],
     },
-    SPORTS: {
-        label: "Sports Management",
-        icon: "⚽",
-        permissions: [
-            "sports_create_sport",
-            "sports_edit_sport",
-            "sports_delete_sport",
-            "sports_view_sport",
-            "sports_view_sport_list",
-            "sports_manage_sport_providers",
-            "sports_view_sport_provider_list",
-            "sports_manage_sport_provider_profile",
-            "sports_view_sport_transaction_history",
-            "sports_view_betting_wagers",
-            "sports_view_win_loss_reports"
-        ]
-    },
+    // SPORTS: {
+    //     label: "Sports Management",
+    //     icon: "⚽",
+    //     permissions: [
+    //         "sports_create_sport",
+    //         "sports_edit_sport",
+    //         "sports_delete_sport",
+    //         "sports_view_sport",
+    //         "sports_view_sport_list",
+    //         "sports_manage_sport_providers",
+    //         "sports_view_sport_provider_list",
+    //         "sports_manage_sport_provider_profile",
+    //         "sports_view_sport_transaction_history",
+    //         "sports_view_betting_wagers",
+    //         "sports_view_win_loss_reports"
+    //     ]
+    // },
      LIVE_SPORTS: {
         label: "Live Sports",
         icon: "⚽",
@@ -154,18 +188,7 @@ export const PERMISSION_CATEGORIES = {
             "live_sports_view_sport_list"
         ]
     },
-    PROMOTION: {
-        label: "Promotions",
-        icon: "🎯",
-        permissions: [
-            "promotion_create_promotion",
-            "promotion_edit_promotion",
-            "promotion_delete_promotion",
-            "promotion_view_promotion",
-            "promotion_view_promotion_list",
-            "promotion_manage_promotion_status"
-        ]
-    },
+    
     CMS: {
         label: "CMS",
         icon: "📝",
@@ -196,17 +219,7 @@ export const PERMISSION_CATEGORIES = {
             "country_manage_currency_conversion"
         ]
     },
-    KYC: {
-        label: "KYC Request History",
-        icon: "🛡️",
-        permissions: [
-            "kyc_view_kyc_requests",
-            "kyc_approve_kyc",
-            "kyc_reject_kyc",
-            "kyc_send_kyc_requests",
-            "kyc_view_kyc_history"
-        ]
-    },
+   
     REPORTS: {
         label: "Reports & Analytics",
         icon: "📊",
@@ -220,16 +233,7 @@ export const PERMISSION_CATEGORIES = {
             "reports_export_reports"
         ]
     },
-    SETTINGS: {
-        label: "Settings",
-        icon: "⚙️",
-        permissions: [
-            "settings_view_system_settings",
-            "settings_update_system_settings",
-            "settings_manage_turnover_settings",
-            "settings_manage_backup_restore",
-        ]
-    },
+   
      CONFIGURATION: {
         label: "Configuration",
         icon: "⚙️",
@@ -239,21 +243,32 @@ export const PERMISSION_CATEGORIES = {
             // "settings_view_login_history"
         ]
     },
-    ADMIN: {
-        label: "Admin Management",
-        icon: "👑",
+
+     SETTINGS: {
+        label: "Settings",
+        icon: "⚙️",
         permissions: [
-            "admin_create_admin",
-            "admin_edit_admin",
-            "admin_delete_admin",
-            "admin_view_admin_list",
-            "admin_view_admin_profile",
-            "admin_manage_admin_permissions",
-            "admin_view_owner_controls",
-            "admin_manage_account_control",
-            "admin_manage_designations"
+            "settings_view_system_settings",
+            "settings_update_system_settings",
+            "settings_manage_turnover_settings",
+            "settings_manage_backup_restore",
         ]
     },
+    // ADMIN: {
+    //     label: "Admin Management",
+    //     icon: "👑",
+    //     permissions: [
+    //         "admin_create_admin",
+    //         "admin_edit_admin",
+    //         "admin_delete_admin",
+    //         "admin_view_admin_list",
+    //         "admin_view_admin_profile",
+    //         "admin_manage_admin_permissions",
+    //         "admin_view_owner_controls",
+    //         "admin_manage_account_control",
+    //         "admin_manage_designations"
+    //     ]
+    // },
     OWNER_CONTROLS: {  
     label: "Owner Controls",
     icon: "🔒",
@@ -263,16 +278,7 @@ export const PERMISSION_CATEGORIES = {
         "owner_manage_designations",    
     ]
     },
-    FINANCE: {
-        label: "Finance",
-        icon: "💰",
-        permissions: [
-            "finance_view_admin_balance",
-            "finance_manage_admin_balance",
-            "finance_view_commission_reports",
-            "finance_manage_commission_settings"
-        ]
-    }
+   
 };
 
 // Admin user types
