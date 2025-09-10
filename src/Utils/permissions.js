@@ -254,6 +254,15 @@ export const PERMISSION_CATEGORIES = {
             "admin_manage_designations"
         ]
     },
+    OWNER_CONTROLS: {  
+    label: "Owner Controls",
+    icon: "🔒",
+    permissions: [
+        "owner_view_owner_controls",
+        // "owner_manage_account_control",
+        "owner_manage_designations",    
+    ]
+    },
     FINANCE: {
         label: "Finance",
         icon: "💰",
