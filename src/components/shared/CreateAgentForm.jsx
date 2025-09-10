@@ -242,14 +242,14 @@ const filteredDesignations =
       )}
 
       {/* designation */}
-{form.role && (
+{form.role && filteredDesignations.length > 0 && (
   <div className="flex flex-col">
     <label className="font-semibold text-xs mb-1">
       DESIGNATION <span className="text-red-500">*</span>
     </label>
     {designationsLoading ? (
       <p className="text-gray-500 text-sm">Loading designations...</p>
-    ) : filteredDesignations.length > 0 ? (
+    ) : filteredDesignations.length > 0 && (
       <select
         className="border rounded px-3 py-2"
         name="designation"
@@ -264,9 +264,7 @@ const filteredDesignations =
           </option>
         ))}
       </select>
-    ) : (
-      <p className="text-gray-500 text-sm">No designations available</p>
-    )}
+    ) }
   </div>
 )}
 
@@ -432,7 +430,9 @@ const filteredDesignations =
       </div>
 
       {/* min/max trx */}
-      <div className="flex flex-col relative">
+      {  isAffiliate &&
+        <>
+        <div className="flex flex-col relative">
         <label className="font-semibold text-xs mb-1">
           MINIMUM TRANSACTION <span className="text-red-500">*</span>
         </label>
@@ -474,6 +474,8 @@ const filteredDesignations =
           </p>
         )}
       </div>
+        </>
+      }
 
       {["admin","superAdmin"].includes(user?.role) && (
         <div className="flex flex-col">

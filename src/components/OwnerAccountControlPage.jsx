@@ -430,7 +430,7 @@ const OwnerAccountControlPage = () => {
           isEdit={true}
           roles={roles}
           isAffiliate={false}
-          isRefVisible={true}
+          isRefVisible={false}
         />
       </ReusableModal>
 
