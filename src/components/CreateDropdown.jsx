@@ -39,6 +39,16 @@ const FIELD_SCHEMA = {
       required: false,
     },
   ],
+  3: [
+    { name: "title", label: "Title", type: "text", required: true },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: ["active", "inactive"],
+      required: false,
+    },
+  ],
 };
 
 const CreateDropdown = ({ editedData, setEditedData }) => {

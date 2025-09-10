@@ -1,5 +1,5 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-// export const BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+export const BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -122,6 +122,11 @@ export const API_LIST = {
   PAYMENT_METHOD: "/api/payment-method",
   UPDATE_PAYMENT_METHOD: "/api/payment-method/update",
   DELETE_PAYMENT_METHOD: "/api/payment-method/delete",
+
+  // faqs
+  CREATE_UPDATE_FAQ: "/api/admin/create-update-faq",
+  GET_FAQS: "/api/admin/get-faqs",
+  DELETE_FAQS: "/api/admin/delete-faq",
 
   // Payment Method Types
   PAYMENT_METHOD_TYPES: "/api/payment-method-types",

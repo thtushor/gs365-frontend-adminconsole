@@ -13,14 +13,16 @@ import GameProviderLayout from "./components/GameProviderLayout.jsx";
 import SportsProviderLayout from "./components/SportProviderInner/SportsProviderLayout.jsx";
 import { use, useEffect } from "react";
 import { useAuth } from "./hooks/useAuth.jsx";
-import { checkHasCategoryPermission, getPermissionsByCategory, hasPermission } from "./Utils/permissions.js";
+import {
+  checkHasCategoryPermission,
+  getPermissionsByCategory,
+  hasPermission,
+} from "./Utils/permissions.js";
 import UnAuthorized from "./components/UnAuthorizedAccess.jsx";
 
 // Handle normal menu routes (inside Layout)
 
-
-function getRoutes(menu) {
-  const { user } = useAuth();
+function getRoutes(menu, user) {
   const permissions = user?.designation?.permissions || [];
   const isSuperAdmin = user?.role === "superAdmin";
 
@@ -33,50 +35,58 @@ function getRoutes(menu) {
 
     const isAuthorized = isSuperAdmin || hasCategoryPermission;
 
-    if(item.path)
-    routes.push(
-      <Route
-        key={item.path}
-        path={item.path.replace(/^\//, "")}
-        element={
-          isAuthorized ? (
-            Component ? <Component {...item.props} /> : <ComingSoon title={item.label} />
-          ) : (
-            <UnAuthorized />
-          )
-        }
-      />
-    );
+    if (item.path)
+      routes.push(
+        <Route
+          key={item.path}
+          path={item.path.replace(/^\//, "")}
+          element={
+            isAuthorized ? (
+              Component ? (
+                <Component {...item.props} />
+              ) : (
+                <ComingSoon title={item.label} />
+              )
+            ) : (
+              <UnAuthorized />
+            )
+          }
+        />
+      );
 
     if (item.children && item.children.length > 0) {
       for (const child of item.children) {
         const ChildComponent = child.component;
-        const childHasPermission = isSuperAdmin || checkHasCategoryPermission([child.accessKey], item.accessCategory);
+        const childHasPermission =
+          isSuperAdmin ||
+          checkHasCategoryPermission([child.accessKey], item.accessCategory);
 
-        if(child.path)
-        routes.push(
-          <Route
-            key={child.path}
-            path={child.path.replace(/^\//, "")}
-            element={
-              childHasPermission ? (
-                ChildComponent ? <ChildComponent {...child.props} /> : <ComingSoon title={child.label} />
-              ) : (
-                <UnAuthorized />
-              )
-            }
-          />
-        );
+        if (child.path)
+          routes.push(
+            <Route
+              key={child.path}
+              path={child.path.replace(/^\//, "")}
+              element={
+                childHasPermission ? (
+                  ChildComponent ? (
+                    <ChildComponent {...child.props} />
+                  ) : (
+                    <ComingSoon title={child.label} />
+                  )
+                ) : (
+                  <UnAuthorized />
+                )
+              }
+            />
+          );
       }
     }
   }
   return routes;
 }
 
-
 // Handle routes that don't use Layout
-function getOutsideRoutes(routes, LayoutWrapper = null) {
-  const { user } = useAuth();
+function getOutsideRoutes(routes, LayoutWrapper = null, user) {
   const permissions = user?.designation?.permissions || [];
   const isSuperAdmin = user?.role === "superAdmin";
 
@@ -90,7 +100,10 @@ function getOutsideRoutes(routes, LayoutWrapper = null) {
     const RouteElement = isAuthorized ? (
       <Component {...route.props} />
     ) : (
-      <UnAuthorized titleClassName="text-green-500" subTittleClassName={"text-white"} />
+      <UnAuthorized
+        titleClassName="text-green-500"
+        subTittleClassName={"text-white"}
+      />
     );
 
     return LayoutWrapper ? (
@@ -111,8 +124,8 @@ function getOutsideRoutes(routes, LayoutWrapper = null) {
   });
 }
 
-
 function App() {
+  const { user } = useAuth();
   const userType = import.meta.env.VITE_USER_TYPE;
 
   useEffect(() => {
@@ -143,10 +156,14 @@ function App() {
     <Routes>
       {/* Routes inside the layout */}
       <Route path="/" element={<Layout />}>
-        {getRoutes(menu)}
-        {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout)}
-        {getOutsideRoutes(gameProviderOutsideRoute, GameProviderLayout)}
-        {getOutsideRoutes(sportProviderOutsideRoute, SportsProviderLayout)}
+        {getRoutes(menu, user)}
+        {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout, user)}
+        {getOutsideRoutes(gameProviderOutsideRoute, GameProviderLayout, user)}
+        {getOutsideRoutes(
+          sportProviderOutsideRoute,
+          SportsProviderLayout,
+          user
+        )}
       </Route>
     </Routes>
   );
