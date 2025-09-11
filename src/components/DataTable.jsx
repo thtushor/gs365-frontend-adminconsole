@@ -1,9 +1,9 @@
 import React from "react";
-import React from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { AiOutlineCloudDownload } from "react-icons/ai";
+
 import { hasPermission } from "../Utils/permissions";
+import { BiDownload } from "react-icons/bi";
 
 const DataTable = ({
   columns,
@@ -86,7 +86,7 @@ const DataTable = ({
           >
             CSV
             <span className="text-[18px]">
-              <AiOutlineCloudDownload />
+              <BiDownload />
             </span>
           </button>
           <button
@@ -95,7 +95,7 @@ const DataTable = ({
           >
             PDF
             <span className="text-[18px]">
-              <AiOutlineCloudDownload />
+              <BiDownload />
             </span>
           </button>
         </div>

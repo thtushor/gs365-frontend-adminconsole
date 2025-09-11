@@ -1,7 +1,8 @@
 import React from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { AiOutlineCloudDownload } from "react-icons/ai";
+import { BiDownload } from "react-icons/bi";
+
 
 const DownloadButtons = ({ data = [], columns, fileName = "table_data" }) => {
   // Auto-generate columns if not provided
@@ -92,13 +93,13 @@ const DownloadButtons = ({ data = [], columns, fileName = "table_data" }) => {
         onClick={exportCSV}
         className="px-2 bg-green-500 flex items-center gap-1 py-1 text-sm font-medium text-white rounded hover:bg-green-600"
       >
-        CSV <AiOutlineCloudDownload />
+        CSV <BiDownload />
       </button>
       <button
         onClick={exportPDF}
         className="px-2 bg-blue-500 flex items-center gap-1 py-1 text-sm font-medium text-white rounded hover:bg-blue-600"
       >
-        PDF <AiOutlineCloudDownload />
+        PDF <BiDownload />
       </button>
     </div>
   );

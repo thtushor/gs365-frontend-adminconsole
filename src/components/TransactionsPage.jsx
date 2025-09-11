@@ -9,6 +9,8 @@ import ReusableModal from "./ReusableModal";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatAmount } from "./BettingWagerPage";
 import { useSettings } from "../hooks/useSettings";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission, hasAnyPermission } from "../Utils/permissions";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -64,6 +66,10 @@ const TransactionsPage = ({
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [updatePayload, setUpdatePayload] = useState({ status: "", notes: "" });
   const navigate = useNavigate();
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
 
   // Update filters when playerId changes
   useEffect(() => {
@@ -228,12 +234,14 @@ const TransactionsPage = ({
         align: "center",
         render: (value, row) => (
           <div className="flex gap-2">
-            <button
-              className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
-              onClick={() => handleViewTransaction(row)}
-            >
-              View
-            </button>
+            {(isSuperAdmin || hasPermission(permissions, "player_view_player_transactions")) && (
+              <button
+                className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
+                onClick={() => handleViewTransaction(row)}
+              >
+                View
+              </button>
+            )}
             {row.attachment && (
               <button
                 className="px-3 py-1 rounded bg-green-50 text-green-600 hover:bg-green-100 text-xs"
@@ -244,17 +252,25 @@ const TransactionsPage = ({
                 Attachment
               </button>
             )}
-            <button
-              className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
-              onClick={() => handleOpenModal(row)}
-            >
-              Update
-            </button>
+            {(isSuperAdmin ||
+              hasAnyPermission(permissions, [
+                "payment_approve_deposits",
+                "payment_reject_deposits",
+                "payment_approve_withdrawals",
+                "payment_reject_withdrawals",
+              ])) && (
+              <button
+                className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
+                onClick={() => handleOpenModal(row)}
+              >
+                Update
+              </button>
+            )}
           </div>
         ),
       },
     ],
-    [navigate, conversionRate]
+    [navigate, conversionRate, isSuperAdmin, permissions]
   );
 
   const handleOpenModal = (row) => {
@@ -381,6 +397,9 @@ const TransactionsPage = ({
           columns={columns}
           data={items}
           isLoading={isLoading || settingsLoading}
+          isSuperAdmin={isSuperAdmin}
+          permissions={permissions}
+          exportPermission="player_export_player_data"
         />
         <Pagination
           currentPage={page}

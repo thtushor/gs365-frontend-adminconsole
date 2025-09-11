@@ -8,6 +8,7 @@ import { formatDate } from "../Utils/dateUtils";
 import { useGetRequest, usePostRequest } from "../Utils/apiClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { hasPermission, hasAnyPermission } from "../Utils/permissions";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -23,7 +24,10 @@ const defaultFilters = {
 };
 
 const KYCRequestList = ({ title = "KYC List" }) => {
-  const { affiliateInfo } = useAuth();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
   const [filters, setFilters] = useState(defaultFilters);
   const [pagination, setPagination] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -149,17 +153,18 @@ const KYCRequestList = ({ title = "KYC List" }) => {
         headerName: "Action",
         width: 120,
         align: "center",
-        render: (value, row) => (
-          <button
-            className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
-            onClick={() => handleViewKyc(row)}
-          >
-            View
-          </button>
-        ),
+        render: (value, row) =>
+          (isSuperAdmin || hasPermission(permissions, "kyc_view_kyc_requests")) && (
+            <button
+              className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
+              onClick={() => handleViewKyc(row)}
+            >
+              View
+            </button>
+          ),
       },
     ],
-    []
+    [isSuperAdmin, permissions]
   );
 
   const handleViewKyc = (kyc) => {
@@ -208,6 +213,9 @@ const KYCRequestList = ({ title = "KYC List" }) => {
           columns={columns}
           data={kycDataList?.data}
           isLoading={isLoading || kycListLoading}
+          isSuperAdmin={isSuperAdmin}
+          permissions={permissions}
+          exportPermission="kyc_view_kyc_history"
         />
         <Pagination
           currentPage={filters.page}
@@ -238,33 +246,39 @@ const KYCRequestList = ({ title = "KYC List" }) => {
               <div className="flex items-center justify-between mb-[10px]">
                 <h4 className="font-bold text-gray-800">KYC Information</h4>
 
-                <div className="flex gap-2 items-center">
-                  <select
-                    className="border rounded outline-none bg-green-100 text-green-500 border-green-500 px-3 py-0 pb-1"
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                  >
-                    {statusOptions.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    className="px-3 py-1 text-[14px] bg-green-500 text-white rounded hover:bg-green-600"
-                    onClick={() =>
-                      updateKycMutation.mutate({
-                        kycId: selectedKyc.id,
-                        holderId: selectedKyc.holderId,
-                        status: selectedStatus,
-                        holderType: selectedKyc.holderType,
-                      })
-                    }
-                    disabled={updateKycMutation.isLoading}
-                  >
-                    {updateKycMutation.isLoading ? "Updating..." : "Update"}
-                  </button>
-                </div>
+                {(isSuperAdmin ||
+                  hasAnyPermission(permissions, [
+                    "kyc_approve_kyc",
+                    "kyc_reject_kyc",
+                  ])) && (
+                  <div className="flex gap-2 items-center">
+                    <select
+                      className="border rounded outline-none bg-green-100 text-green-500 border-green-500 px-3 py-0 pb-1"
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                    >
+                      {statusOptions.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className="px-3 py-1 text-[14px] bg-green-500 text-white rounded hover:bg-green-600"
+                      onClick={() =>
+                        updateKycMutation.mutate({
+                          kycId: selectedKyc.id,
+                          holderId: selectedKyc.holderId,
+                          status: selectedStatus,
+                          holderType: selectedKyc.holderType,
+                        })
+                      }
+                      disabled={updateKycMutation.isLoading}
+                    >
+                      {updateKycMutation.isLoading ? "Updating..." : "Update"}
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between">
