@@ -269,7 +269,8 @@ const AffiliateListPage = () => {
       align: "center",
       render: (value, row, idx) => (
         <div className="flex gap-2 justify-center">
-          {(isSuperAdmin || hasPermission(permissions, "affiliate_edit_affiliate")) && (
+          {(isSuperAdmin ||
+            hasPermission(permissions, "affiliate_edit_affiliate")) && (
             <button
               className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
               title="Edit"
@@ -278,7 +279,8 @@ const AffiliateListPage = () => {
               <FaEdit />
             </button>
           )}
-          {(isSuperAdmin || hasPermission(permissions, "affiliate_delete_affiliate")) && (
+          {(isSuperAdmin ||
+            hasPermission(permissions, "affiliate_delete_affiliate")) && (
             <button
               className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
               title="Delete"
@@ -353,7 +355,8 @@ const AffiliateListPage = () => {
     <div className="bg-[#f5f5f5] w-full min-h-full p-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Affiliate List</h2>
-        {(isSuperAdmin || hasPermission(permissions, "affiliate_create_affiliate")) && (
+        {(isSuperAdmin ||
+          hasPermission(permissions, "affiliate_create_affiliate")) && (
           <button
             className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
             onClick={() => navigate("/create-affiliate")}
@@ -431,7 +434,7 @@ const AffiliateListPage = () => {
         open={editModalOpen}
         className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
         onClose={() => setEditModalOpen(false)}
-        title="Edit Agent"
+        title="Edit Affiliate"
         // onSave={handleEditFormSubmit}
       >
         <CreateAgentForm
@@ -440,6 +443,7 @@ const AffiliateListPage = () => {
           isLoading={updateMutation.isPending}
           isEdit={true}
           roles={roles}
+          isAffiliate={true}
         />
       </ReusableModal>
       {/* Delete Modal */}

@@ -51,6 +51,7 @@ export function CreateAgentForm({
   isRefVisible = false,
   roles,
   isAffiliate = false,
+  isOwner = false,
 }) {
   const { user } = useAuth();
   const location = useLocation();
@@ -69,7 +70,7 @@ export function CreateAgentForm({
 
   const [form, setForm] = useState(initialValues || defaultForm);
 
-  console.log({form});
+  console.log({ form });
   const [showPassword, setShowPassword] = useState(false);
 
   // state for referral details
@@ -145,7 +146,9 @@ export function CreateAgentForm({
   console.log(designationsData);
   // filter designations by selected role
   const filteredDesignations =
-    (designationsData?.data || [])?.filter((d) => d.adminUserType === form.role) || [];
+    (designationsData?.data || [])?.filter(
+      (d) => d.adminUserType === form.role
+    ) || [];
 
   const designationOptions = filteredDesignations.map((d) => ({
     value: d.id,
@@ -287,7 +290,6 @@ export function CreateAgentForm({
         </div>
       )}
 
-
       {/* username */}
       <div className="flex flex-col">
         <label className="font-semibold text-xs mb-1">
@@ -351,27 +353,28 @@ export function CreateAgentForm({
       </div>
 
       {/* commission */}
-      {isAffiliate && <div className="flex flex-col relative">
-        <label className="font-semibold text-xs mb-1">
-          COMMISSION % <span className="text-red-500">*</span>
-        </label>
-        <input
-          className="border rounded px-3 py-2"
-          name="commission_percent"
-          placeholder="Commission %"
-          value={form.commission_percent}
-          onChange={handleChange}
-          required
-          type="number"
-          readOnly={refLoading}
-        />
-        {refLoading && (
-          <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
-            Upline Searching...
-          </p>
-        )}
-      </div>
-      }
+      {isAffiliate && (
+        <div className="flex flex-col relative">
+          <label className="font-semibold text-xs mb-1">
+            COMMISSION % <span className="text-red-500">*</span>
+          </label>
+          <input
+            className="border rounded px-3 py-2"
+            name="commission_percent"
+            placeholder="Commission %"
+            value={form.commission_percent}
+            onChange={handleChange}
+            required
+            type="number"
+            readOnly={refLoading}
+          />
+          {refLoading && (
+            <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+              Upline Searching...
+            </p>
+          )}
+        </div>
+      )}
       {/* password */}
       {!isEdit && (
         <div className="flex flex-col">
@@ -449,7 +452,7 @@ export function CreateAgentForm({
       </div>
 
       {/* min/max trx */}
-      {isAffiliate &&
+      {isAffiliate && (
         <>
           <div className="flex flex-col relative">
             <label className="font-semibold text-xs mb-1">
@@ -494,7 +497,7 @@ export function CreateAgentForm({
             )}
           </div>
         </>
-      }
+      )}
 
       {["admin", "superAdmin"].includes(user?.role) && (
         <div className="flex flex-col">
@@ -519,8 +522,9 @@ export function CreateAgentForm({
         <div className="flex flex-col relative">
           <label className="font-semibold text-xs mb-1">REFERRAL CODE</label>
           <input
-            className={`border rounded px-3 py-2 ${refLoading || user?.role !== "admin" ? "opacity-50" : ""
-              }`}
+            className={`border rounded px-3 py-2 ${
+              refLoading || user?.role !== "admin" ? "opacity-50" : ""
+            }`}
             name="refer_code"
             placeholder="Referral Code"
             value={form.refer_code}
@@ -549,20 +553,23 @@ export function CreateAgentForm({
         <button
           type="submit"
           disabled={isLoading}
-          className={`px-6 py-2 rounded font-medium transition ${isLoading
+          className={`px-6 py-2 rounded font-medium transition ${
+            isLoading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-green-500 text-white hover:bg-green-600"
-            }`}
+          }`}
         >
           {isLoading
             ? isEdit
               ? "Updating..."
               : "Creating..."
             : isEdit
-              ? "Update"
-              : isAffiliate
-                ? "Create Affiliate"
-                : "Create Agent"}
+            ? "Update"
+            : isAffiliate
+            ? "Create Affiliate"
+            : isOwner
+            ? "Create Owner"
+            : "Create Agent"}
         </button>
       </div>
     </form>

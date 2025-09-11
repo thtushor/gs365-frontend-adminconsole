@@ -85,7 +85,8 @@ const OwnerAccountControlPage = () => {
   const createMutation = useMutation({
     mutationFn: async (form) => {
       const res = await Axios.post(API_LIST.CREATE_ADMIN, form);
-      if (!res.data.status) throw new Error(res.data.message || "Failed to create owner");
+      if (!res.data.status)
+        throw new Error(res.data.message || "Failed to create owner");
       return res.data;
     },
     onSuccess: () => {
@@ -104,7 +105,8 @@ const OwnerAccountControlPage = () => {
   const updateMutation = useMutation({
     mutationFn: async ({ id, ...form }) => {
       const res = await Axios.post(`${API_LIST.UPDATE_ADMIN}/${id}`, form);
-      if (!res.data.status) throw new Error(res.data.message || "Failed to update owner");
+      if (!res.data.status)
+        throw new Error(res.data.message || "Failed to update owner");
       return res.data;
     },
     onSuccess: () => {
@@ -123,7 +125,8 @@ const OwnerAccountControlPage = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       const res = await Axios.post(`${API_LIST.DELETE_ADMIN}/${id}`);
-      if (!res.data.status) throw new Error(res.data.message || "Failed to delete owner");
+      if (!res.data.status)
+        throw new Error(res.data.message || "Failed to delete owner");
       return res.data;
     },
     onSuccess: (res) => {
@@ -145,14 +148,17 @@ const OwnerAccountControlPage = () => {
       field: "sl",
       headerName: "SL",
       width: 60,
-      render: (_, __, index) => (filters.page - 1) * filters.pageSize + index + 1,
+      render: (_, __, index) =>
+        (filters.page - 1) * filters.pageSize + index + 1,
     },
     {
       field: "username",
       headerName: "Username",
       width: 140,
       render: (_, row) => (
-        <span className="text-green-500 cursor-pointer font-semibold">{row.username}</span>
+        <span className="text-green-500 cursor-pointer font-semibold">
+          {row.username}
+        </span>
       ),
     },
     {
@@ -196,9 +202,7 @@ const OwnerAccountControlPage = () => {
       headerName: "Status",
       width: 100,
       align: "center",
-      render: (value) => (
-        <StatusChip status={value} size="sm" />
-      ),
+      render: (value) => <StatusChip status={value} size="sm" />,
     },
     {
       field: "isVerified",
@@ -206,12 +210,12 @@ const OwnerAccountControlPage = () => {
       width: 100,
       render: (_, row) => (row.isVerified ? "Yes" : "No"),
     },
-    {
-      field: "refCode",
-      headerName: "Referral Code",
-      width: 120,
-      render: (_, row) => row.refCode,
-    },
+    // {
+    //   field: "refCode",
+    //   headerName: "Referral Code",
+    //   width: 120,
+    //   render: (_, row) => row.refCode,
+    // },
     {
       field: "lastIp",
       headerName: "Last IP",
@@ -222,7 +226,8 @@ const OwnerAccountControlPage = () => {
       field: "lastLogin",
       headerName: "Last Login",
       width: 160,
-      render: (_, row) => (row.lastLogin ? new Date(row.lastLogin).toLocaleString() : ""),
+      render: (_, row) =>
+        row.lastLogin ? new Date(row.lastLogin).toLocaleString() : "",
     },
     {
       field: "device_type",
@@ -335,7 +340,10 @@ const OwnerAccountControlPage = () => {
       </div>
 
       {/* Filter Bar */}
-      <form className="flex flex-wrap gap-2 items-center mb-4" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="flex flex-wrap gap-2 items-center mb-4"
+        onSubmit={(e) => e.preventDefault()}
+      >
         <input
           type="text"
           name="keyword"
@@ -350,13 +358,11 @@ const OwnerAccountControlPage = () => {
           onChange={handleFilterChange}
           className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
         >
-
           {roles.map((role) => (
             <option key={role.value} value={role.value}>
               {role.label}
             </option>
           ))}
-          
         </select>
         <select
           name="status"
@@ -372,7 +378,9 @@ const OwnerAccountControlPage = () => {
 
       <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col">
         {isLoading ? (
-          <div className="text-center text-gray-500 py-8">Loading owners...</div>
+          <div className="text-center text-gray-500 py-8">
+            Loading owners...
+          </div>
         ) : isError ? (
           <div className="text-center text-red-500 py-8">
             Failed to load owners: {error?.message || "Unknown error"}
@@ -409,6 +417,7 @@ const OwnerAccountControlPage = () => {
           roles={roles}
           isAffiliate={false}
           isRefVisible={false}
+          isOwner={true}
         />
       </ReusableModal>
 
@@ -439,9 +448,12 @@ const OwnerAccountControlPage = () => {
       >
         <div>
           <p>
-            Are you sure you want to <b>delete</b> owner <b>{selectedOwner?.fullname}</b>?
+            Are you sure you want to <b>delete</b> owner{" "}
+            <b>{selectedOwner?.fullname}</b>?
           </p>
-          <p className="text-xs text-red-500 mt-2">This action cannot be undone.</p>
+          <p className="text-xs text-red-500 mt-2">
+            This action cannot be undone.
+          </p>
         </div>
       </ReusableModal>
     </div>
