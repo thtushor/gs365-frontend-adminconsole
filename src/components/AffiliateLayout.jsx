@@ -331,44 +331,78 @@ const AffiliateLayout = () => {
         ) : (
           <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
             <div className="flex gap-4 flex-wrap whitespace-nowrap">
-              <HighlightBox
-                label="Main Balance"
-                value={(
-                  Number(affiliateDetails?.data?.remainingBalance) +
-                  Math.abs(
-                    Number(
-                      affiliateCommissionDetails?.data?.totalLossCommission || 0
+              {(isSuperAdmin ||
+                hasPermission(
+                  permissions,
+                  "affiliate_view_main_balance"
+                )) && (
+                <HighlightBox
+                  label="Main Balance"
+                  value={(
+                    Number(affiliateDetails?.data?.remainingBalance) +
+                    Math.abs(
+                      Number(
+                        affiliateCommissionDetails?.data
+                          ?.totalLossCommission || 0
+                      )
                     )
-                  )
-                ).toFixed(2)}
-              />
-              <HighlightBox
-                label="Downline Balance"
-                value={Number(
-                  affiliateCommissionDetails?.data?.totalWinCommission || 0
-                ).toFixed(2)}
-              />
-              <HighlightBox
-                label="Withdrawable Balance"
-                value={withdrawAbleBalance()}
-              />
+                  ).toFixed(2)}
+                />
+              )}
+              {(isSuperAdmin ||
+                hasPermission(
+                  permissions,
+                  "affiliate_view_downline_balance"
+                )) && (
+                <HighlightBox
+                  label="Downline Balance"
+                  value={Number(
+                    affiliateCommissionDetails?.data?.totalWinCommission || 0
+                  ).toFixed(2)}
+                />
+              )}
+              {(isSuperAdmin ||
+                hasPermission(
+                  permissions,
+                  "affiliate_view_withdrawable_balance"
+                )) && (
+                <HighlightBox
+                  label="Withdrawable Balance"
+                  value={withdrawAbleBalance()}
+                />
+              )}
             </div>
             <div className="flex gap-4 flex-wrap whitespace-nowrap ">
-              <HighlightBox
-                label="Commission %"
-                value={`${affiliateDetails?.data?.commission_percent || 0}%`}
-              />
-              <HighlightBox
-                label="Referral Code"
-                value={affiliateDetails?.data?.refCode || "N/A"}
-                uplineDetails={affiliateDetails?.data?.role}
-              />
-              <HighlightBox
-                label="Min-Max Withdraw Limit"
-                value={`${affiliateDetails?.data?.minTrx || 0} - ${
-                  affiliateDetails?.data?.maxTrx || 0
-                }`}
-              />
+              {(isSuperAdmin ||
+                hasPermission(
+                  permissions,
+                  "affiliate_view_commission_percentage"
+                )) && (
+                <HighlightBox
+                  label="Commission %"
+                  value={`${affiliateDetails?.data?.commission_percent || 0}%`}
+                />
+              )}
+              {(isSuperAdmin ||
+                hasPermission(permissions, "affiliate_view_referral_code")) && (
+                <HighlightBox
+                  label="Referral Code"
+                  value={affiliateDetails?.data?.refCode || "N/A"}
+                  uplineDetails={affiliateDetails?.data?.role}
+                />
+              )}
+              {(isSuperAdmin ||
+                hasPermission(
+                  permissions,
+                  "affiliate_view_min_max_withdraw_limit"
+                )) && (
+                <HighlightBox
+                  label="Min-Max Withdraw Limit"
+                  value={`${affiliateDetails?.data?.minTrx || 0} - ${
+                    affiliateDetails?.data?.maxTrx || 0
+                  }`}
+                />
+              )}
             </div>
           </div>
         )}

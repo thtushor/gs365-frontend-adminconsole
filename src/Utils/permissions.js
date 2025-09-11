@@ -63,7 +63,13 @@ export const PERMISSION_CATEGORIES = {
             "affiliate_view_affiliate_players",
             "affiliate_approve_withdraw_requests",
             "affiliate_manage_commission_rates",
-            "affiliate_manage_kyc_verification"
+            "affiliate_manage_kyc_verification",
+            "affiliate_view_main_balance",
+            "affiliate_view_downline_balance",
+            "affiliate_view_withdrawable_balance",
+            "affiliate_view_commission_percentage",
+            "affiliate_view_referral_code",
+            "affiliate_view_min_max_withdraw_limit"
         ]
     },
     PROMOTION: {
