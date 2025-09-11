@@ -9,6 +9,8 @@ import { formatAmount } from "./BettingWagerPage";
 import { useQuery } from "@tanstack/react-query";
 import Select from "react-select";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 // Custom hook to fetch promotions
 const usePromotions = () => {
@@ -23,6 +25,10 @@ const usePromotions = () => {
 };
 
 const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [depositForm, setDepositForm] = useState({
@@ -351,27 +357,33 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       align: "center",
       render: (value, row) => (
         <div className="flex justify-center gap-2">
-          <button
-            className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
-            title="Add Deposit"
-            onClick={() => handleOpenDepositModal(row)}
-          >
-            <FaDollarSign />
-          </button>
-          <button
-            className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
-            title="Edit"
-            onClick={() => onEdit && onEdit(row)}
-          >
-            <FaEdit />
-          </button>
-          <button
-            className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition md:p-1"
-            title="Delete"
-            onClick={() => onDelete && onDelete(row)}
-          >
-            <FaTrash />
-          </button>
+          {(isSuperAdmin || hasPermission(permissions, "payment_approve_deposits")) && (
+            <button
+              className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
+              title="Add Deposit"
+              onClick={() => handleOpenDepositModal(row)}
+            >
+              <FaDollarSign />
+            </button>
+          )}
+          {onEdit && (
+            <button
+              className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
+              title="Edit"
+              onClick={() => onEdit(row)}
+            >
+              <FaEdit />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition md:p-1"
+              title="Delete"
+              onClick={() => onDelete(row)}
+            >
+              <FaTrash />
+            </button>
+          )}
         </div>
       ),
     },
@@ -385,6 +397,9 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         data={players}
         onRowClick={onSelect}
         selectable={false}
+        isSuperAdmin={isSuperAdmin}
+        permissions={permissions}
+        exportPermission="player_export_player_data"
       />
       <ReusableModal
         open={depositModalOpen}

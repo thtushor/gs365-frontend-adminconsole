@@ -1,11 +1,16 @@
 import React from "react";
+import React from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { AiOutlineCloudDownload } from "react-icons/ai";
+import { hasPermission } from "../Utils/permissions";
 
 const DataTable = ({
   columns,
   isLoading,
+  isSuperAdmin,
+  permissions,
+  exportPermission,
   data = [],
   onRowClick,
   selectedRow,
@@ -73,26 +78,28 @@ const DataTable = ({
   return (
     <div className="w-full overflow-x-auto">
       {/* Export Buttons */}
-      <div className="flex justify-end mb-2 gap-2">
-        <button
-          onClick={exportCSV}
-          className="px-2 bg-green-500 flex cursor-pointer hover:bg-green-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
-        >
-          CSV
-          <span className="text-[18px]">
-            <AiOutlineCloudDownload />
-          </span>
-        </button>
-        <button
-          onClick={exportPDF}
-          className="px-2 bg-blue-500 py-[3px] cursor-pointer hover:bg-blue-600 flex items-center gap-[2px] text-[14px] font-medium text-white rounded"
-        >
-          PDF
-          <span className="text-[18px]">
-            <AiOutlineCloudDownload />
-          </span>
-        </button>
-      </div>
+      {(isSuperAdmin || (exportPermission && hasPermission(permissions, exportPermission))) && (
+        <div className="flex justify-end mb-2 gap-2">
+          <button
+            onClick={exportCSV}
+            className="px-2 bg-green-500 flex cursor-pointer hover:bg-green-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
+          >
+            CSV
+            <span className="text-[18px]">
+              <AiOutlineCloudDownload />
+            </span>
+          </button>
+          <button
+            onClick={exportPDF}
+            className="px-2 bg-blue-500 py-[3px] cursor-pointer hover:bg-blue-600 flex items-center gap-[2px] text-[14px] font-medium text-white rounded"
+          >
+            PDF
+            <span className="text-[18px]">
+              <AiOutlineCloudDownload />
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Table */}
       <table className="w-full table-auto text-sm border-collapse">
