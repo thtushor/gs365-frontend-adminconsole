@@ -8,6 +8,7 @@ import Pagination from "./Pagination";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
+import StatusChip from "./shared/StatusChip";
 
 const mapOwner = (owner) => ({
   id: owner.id,
@@ -184,25 +185,19 @@ const OwnerAccountControlPage = () => {
       width: 120,
       render: (_, row) => row.designationInfo?.designationName,
     },
-    {
-      field: "commission_percentage",
-      headerName: "Total Com. %",
-      width: 120,
-      render: (_, row) => row.commission_percent || 0,
-    },
+    // {
+    //   field: "commission_percentage",
+    //   headerName: "Total Com. %",
+    //   width: 120,
+    //   render: (_, row) => row.commission_percent || 0,
+    // },
     {
       field: "status",
       headerName: "Status",
       width: 100,
       align: "center",
       render: (value) => (
-        <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
-            value === "active" ? "text-green-600" : "text-red-500"
-          }`}
-        >
-          {value}
-        </span>
+        <StatusChip status={value} size="sm" />
       ),
     },
     {

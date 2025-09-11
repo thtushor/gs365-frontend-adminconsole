@@ -35,7 +35,7 @@ export const PERMISSION_CATEGORIES = {
             "player_change_player_password",
         ]
     },
-     KYC: {
+    KYC: {
         label: "KYC Request History",
         icon: "🛡️",
         permissions: [
@@ -100,7 +100,7 @@ export const PERMISSION_CATEGORIES = {
 
         ]
     },
-     FINANCE: {
+    FINANCE: {
         label: "Finance",
         icon: "💰",
         permissions: [
@@ -134,7 +134,7 @@ export const PERMISSION_CATEGORIES = {
             "game_view_game_list",
         ]
     },
-    
+
     SPORTS_PROVIDER: {
         label: "Sport Provider",
         icon: "🕹️",
@@ -149,7 +149,7 @@ export const PERMISSION_CATEGORIES = {
             "sports_view_sport_list"
         ],
     },
-     LIVE_SPORTS: {
+    LIVE_SPORTS: {
         label: "Live Sports",
         icon: "⚽",
         permissions: [
@@ -157,7 +157,7 @@ export const PERMISSION_CATEGORIES = {
             "live_sports_view_sport_list"
         ]
     },
-    
+
     CMS: {
         label: "CMS",
         icon: "📝",
@@ -188,7 +188,7 @@ export const PERMISSION_CATEGORIES = {
             "country_manage_currency_conversion"
         ]
     },
-   
+
     REPORTS: {
         label: "Reports & Analytics",
         icon: "📊",
@@ -202,8 +202,8 @@ export const PERMISSION_CATEGORIES = {
             "reports_export_reports"
         ]
     },
-   
-     CONFIGURATION: {
+
+    CONFIGURATION: {
         label: "Configuration",
         icon: "⚙️",
         permissions: [
@@ -213,7 +213,17 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
 
-     SETTINGS: {
+    OWNER_CONTROLS: {
+        label: "Owner Controls",
+        icon: "🔒",
+        permissions: [
+            "owner_view_owner_controls",
+            "owner_manage_account_control",
+            "owner_manage_designations",
+        ]
+    },
+
+    SETTINGS: {
         label: "Settings",
         icon: "⚙️",
         permissions: [
@@ -223,16 +233,8 @@ export const PERMISSION_CATEGORIES = {
             "settings_manage_backup_restore",
         ]
     },
-       OWNER_CONTROLS: {  
-    label: "Owner Controls",
-    icon: "🔒",
-    permissions: [
-        "owner_view_owner_controls",
-        "owner_manage_account_control",
-        "owner_manage_designations",    
-    ]
-    },
-  
+
+
 };
 
 // Admin user types
