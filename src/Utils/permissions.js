@@ -191,19 +191,19 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
 
-    REPORTS: {
-        label: "Reports & Analytics",
-        icon: "📊",
-        permissions: [
-            "reports_view_dashboard",
-            "reports_view_game_stats",
-            "reports_view_product_analytics",
-            "reports_view_coin_analytics",
-            "reports_view_net_profit_loss",
-            "reports_view_turnover_reports",
-            "reports_export_reports"
-        ]
-    },
+    // REPORTS: {
+    //     label: "Reports & Analytics",
+    //     icon: "📊",
+    //     permissions: [
+    //         "reports_view_dashboard",
+    //         "reports_view_game_stats",
+    //         "reports_view_product_analytics",
+    //         "reports_view_coin_analytics",
+    //         "reports_view_net_profit_loss",
+    //         "reports_view_turnover_reports",
+    //         "reports_export_reports"
+    //     ]
+    // },
 
     CONFIGURATION: {
         label: "Configuration",
