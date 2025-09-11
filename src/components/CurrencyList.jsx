@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import DataTable from "./DataTable";
 import { useCountryData } from "../hooks/useCountryData";
+import { useAuth } from "../hooks/useAuth";
 
 const CurrencyList = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("active");
 
   const { useCurrencies } = useCountryData();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
+  const canManageCurrencies =
+    isSuperAdmin || permissions.includes("country_manage_currencies");
 
   // Get currencies with filters
   const {
@@ -73,44 +80,48 @@ const CurrencyList = () => {
       align: "center",
       render: (value, row, idx) => (
         <div className="flex gap-2">
-          <button
-            className="text-green-600 hover:bg-green-50 p-1 rounded"
-            title="Edit"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
+          {canManageCurrencies && (
+            <button
+              className="text-green-600 hover:bg-green-50 p-1 rounded"
+              title="Edit"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.862 4.487a2.1 2.1 0 1 1 2.97 2.97L7.5 19.788l-4 1 1-4 14.362-14.3z"
-              />
-            </svg>
-          </button>
-          <button
-            className="text-red-500 hover:bg-red-50 p-1 rounded"
-            title="Delete"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.862 4.487a2.1 2.1 0 1 1 2.97 2.97L7.5 19.788l-4 1 1-4 14.362-14.3z"
+                />
+              </svg>
+            </button>
+          )}
+          {canManageCurrencies && (
+            <button
+              className="text-red-500 hover:bg-red-50 p-1 rounded"
+              title="Delete"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       ),
     },

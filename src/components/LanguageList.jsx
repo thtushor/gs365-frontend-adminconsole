@@ -3,6 +3,7 @@ import DataTable from "./DataTable";
 import ThumbnailImage from "./ThumbnailImage";
 import { useCountryData } from "../hooks/useCountryData";
 import AssignCountryLanguageModal from "./AssignCountryLanguageModal";
+import { useAuth } from "../hooks/useAuth";
 
 const LanguageList = () => {
   const [search, setSearch] = useState("");
@@ -11,6 +12,17 @@ const LanguageList = () => {
 
   const { useLanguages, updateLanguageStatus, isUpdatingLanguageStatus } =
     useCountryData();
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
+  const canManageLanguages =
+    isSuperAdmin || permissions.includes("country_manage_languages");
+  const canUpdateLanguageStatus =
+    isSuperAdmin || permissions.includes("country_update_language_status");
+  const canAssignCountryLanguages =
+    isSuperAdmin || permissions.includes("country_assign_country_languages");
 
   // Get languages with filters
   const {
@@ -72,46 +84,50 @@ const LanguageList = () => {
       align: "center",
       render: (value, row, idx) => (
         <div className="flex gap-2">
-          <button
-            className="text-blue-600 hover:bg-blue-50 p-1 rounded"
-            title="Toggle Status"
-            onClick={() => handleStatusToggle(row.id, row.status)}
-            disabled={isUpdatingLanguageStatus}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
+          {(canUpdateLanguageStatus || canManageLanguages) && (
+            <button
+              className="text-blue-600 hover:bg-blue-50 p-1 rounded"
+              title="Toggle Status"
+              onClick={() => handleStatusToggle(row.id, row.status)}
+              disabled={isUpdatingLanguageStatus}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-              />
-            </svg>
-          </button>
-          <button
-            className="text-green-600 hover:bg-green-50 p-1 rounded"
-            title="Edit"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+            </button>
+          )}
+          {canManageLanguages && (
+            <button
+              className="text-green-600 hover:bg-green-50 p-1 rounded"
+              title="Edit"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.862 4.487a2.1 2.1 0 1 1 2.97 2.97L7.5 19.788l-4 1 1-4 14.362-14.3z"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.862 4.487a2.1 2.1 0 1 1 2.97 2.97L7.5 19.788l-4 1 1-4 14.362-14.3z"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       ),
     },
@@ -144,12 +160,14 @@ const LanguageList = () => {
           >
             Print
           </button>
-          <button
-            className="bg-green-600 text-white px-6 py-1 rounded hover:bg-green-700 transition font-medium"
-            onClick={() => setIsAssignModalOpen(true)}
-          >
-            Assign Language
-          </button>
+          {(canAssignCountryLanguages || canManageLanguages) && (
+            <button
+              className="bg-green-600 text-white px-6 py-1 rounded hover:bg-green-700 transition font-medium"
+              onClick={() => setIsAssignModalOpen(true)}
+            >
+              Assign Language
+            </button>
+          )}
         </div>
       </div>
 
