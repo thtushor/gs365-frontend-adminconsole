@@ -79,7 +79,7 @@ export const PERMISSION_CATEGORIES = {
             "promotion_create_promotion",
             "promotion_edit_promotion",
             "promotion_delete_promotion",
-            "promotion_view_promotion",
+            // "promotion_view_promotion",
             "promotion_view_promotion_list",
             "promotion_manage_promotion_status"
         ]

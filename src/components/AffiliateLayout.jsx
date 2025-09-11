@@ -43,7 +43,7 @@ export const affiliateRoutes = [
   {
     label: "KYC Verification",
     path: "/affiliate-list/:affiliateId/kyc-verification",
-    requiredPermission: "kyc_view_kyc_requests",
+    requiredPermission: "affiliate_manage_kyc_verification",
   },
 ];
 
