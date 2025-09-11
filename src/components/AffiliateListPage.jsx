@@ -313,6 +313,7 @@ const AffiliateListPage = () => {
       status: row.status || "Active",
       commission_percent: row.commission_percent || null,
       referred_by: row.referred_by || null,
+      designation: row.designation || null,
     });
     setEditModalOpen(true);
   };
