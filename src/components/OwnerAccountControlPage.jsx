@@ -281,6 +281,7 @@ const OwnerAccountControlPage = () => {
       status: row.status || "active",
       commission_percent: row.commission_percent || null,
       referred_by: row.referred_by || null,
+      designation: row.designationInfo?.id || null,
     });
     setEditModalOpen(true);
   };

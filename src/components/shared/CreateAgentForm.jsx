@@ -37,7 +37,7 @@ const defaultForm = {
   minTrx: "",
   maxTrx: "",
   currency: null,
-  designation:"",
+  designation: "",
   commission_percent: null,
   status: "active",
   refer_code: "",
@@ -68,6 +68,8 @@ export function CreateAgentForm({
     })) || [];
 
   const [form, setForm] = useState(initialValues || defaultForm);
+
+  console.log({form});
   const [showPassword, setShowPassword] = useState(false);
 
   // state for referral details
@@ -98,6 +100,9 @@ export function CreateAgentForm({
   });
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (form.role && filteredDesignations.length > 0 && !form.designation) {
+      return toast.error("Designation is required.");
+    }
     if (isAffiliate) {
       if (!form.commission_percent) {
         return toast.error("Commission percentage is required.");
@@ -120,20 +125,32 @@ export function CreateAgentForm({
       );
     }
 
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      commission_percent: form.commission_percent
+        ? Number(form.commission_percent)
+        : null,
+      minTrx: form.minTrx ? Number(form.minTrx) : null,
+      maxTrx: form.maxTrx ? Number(form.maxTrx) : null,
+    });
   };
 
   // inside component
-const {
-  data: designationsData,
-  isLoading: designationsLoading,
-  error: designationsError,
-} = useDesignations();
+  const {
+    data: designationsData,
+    isLoading: designationsLoading,
+    error: designationsError,
+  } = useDesignations();
 
-console.log(designationsData);
-// filter designations by selected role
-const filteredDesignations =
-  (designationsData?.data ||[])?.filter((d) => d.adminUserType === form.role) || [];
+  console.log(designationsData);
+  // filter designations by selected role
+  const filteredDesignations =
+    (designationsData?.data || [])?.filter((d) => d.adminUserType === form.role) || [];
+
+  const designationOptions = filteredDesignations.map((d) => ({
+    value: d.id,
+    label: d.designationName,
+  }));
 
   useEffect(() => {
     if (!form.currency && currencyList) {
@@ -242,31 +259,33 @@ const filteredDesignations =
       )}
 
       {/* designation */}
-{form.role && filteredDesignations.length > 0 && (
-  <div className="flex flex-col">
-    <label className="font-semibold text-xs mb-1">
-      DESIGNATION <span className="text-red-500">*</span>
-    </label>
-    {designationsLoading ? (
-      <p className="text-gray-500 text-sm">Loading designations...</p>
-    ) : filteredDesignations.length > 0 && (
-      <select
-        className="border rounded px-3 py-2"
-        name="designation"
-        value={form.designation || ""}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Select Designation</option>
-        {filteredDesignations.map((d) => (
-          <option key={d.id} value={d.id}>
-            {d.designationName}
-          </option>
-        ))}
-      </select>
-    ) }
-  </div>
-)}
+      {form.role && filteredDesignations.length > 0 && (
+        <div className="flex flex-col">
+          <label className="font-semibold text-xs mb-1">
+            DESIGNATION <span className="text-red-500">*</span>
+          </label>
+          {designationsLoading ? (
+            <p className="text-gray-500 text-sm">Loading designations...</p>
+          ) : (
+            <Select
+              options={designationOptions}
+              value={
+                designationOptions.find(
+                  (opt) => opt.value === form.designation
+                ) || null
+              }
+              onChange={(selected) => {
+                setForm((prev) => ({
+                  ...prev,
+                  designation: selected ? selected.value : "",
+                }));
+              }}
+              isSearchable
+              placeholder="Select Designation"
+            />
+          )}
+        </div>
+      )}
 
 
       {/* username */}
@@ -332,7 +351,7 @@ const filteredDesignations =
       </div>
 
       {/* commission */}
-      <div className="flex flex-col relative">
+      {isAffiliate && <div className="flex flex-col relative">
         <label className="font-semibold text-xs mb-1">
           COMMISSION % <span className="text-red-500">*</span>
         </label>
@@ -352,7 +371,7 @@ const filteredDesignations =
           </p>
         )}
       </div>
-
+      }
       {/* password */}
       {!isEdit && (
         <div className="flex flex-col">
@@ -430,54 +449,54 @@ const filteredDesignations =
       </div>
 
       {/* min/max trx */}
-      {  isAffiliate &&
+      {isAffiliate &&
         <>
-        <div className="flex flex-col relative">
-        <label className="font-semibold text-xs mb-1">
-          MINIMUM TRANSACTION <span className="text-red-500">*</span>
-        </label>
-        <input
-          className="border rounded px-3 py-2"
-          name="minTrx"
-          type="number"
-          min="0"
-          placeholder="Minimum Transaction"
-          value={form.minTrx}
-          onChange={handleChange}
-          required
-          readOnly={refLoading}
-        />
-        {refLoading && (
-          <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
-            Upline Searching...
-          </p>
-        )}
-      </div>
-      <div className="flex flex-col relative">
-        <label className="font-semibold text-xs mb-1">
-          MAXIMUM TRANSACTION <span className="text-red-500">*</span>
-        </label>
-        <input
-          className="border rounded px-3 py-2"
-          name="maxTrx"
-          type="number"
-          min="0"
-          placeholder="Maximum Transaction"
-          value={form.maxTrx}
-          onChange={handleChange}
-          required
-          readOnly={refLoading}
-        />
-        {refLoading && (
-          <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
-            Upline Searching...
-          </p>
-        )}
-      </div>
+          <div className="flex flex-col relative">
+            <label className="font-semibold text-xs mb-1">
+              MINIMUM TRANSACTION <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="minTrx"
+              type="number"
+              min="0"
+              placeholder="Minimum Transaction"
+              value={form.minTrx}
+              onChange={handleChange}
+              required
+              readOnly={refLoading}
+            />
+            {refLoading && (
+              <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+                Upline Searching...
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col relative">
+            <label className="font-semibold text-xs mb-1">
+              MAXIMUM TRANSACTION <span className="text-red-500">*</span>
+            </label>
+            <input
+              className="border rounded px-3 py-2"
+              name="maxTrx"
+              type="number"
+              min="0"
+              placeholder="Maximum Transaction"
+              value={form.maxTrx}
+              onChange={handleChange}
+              required
+              readOnly={refLoading}
+            />
+            {refLoading && (
+              <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">
+                Upline Searching...
+              </p>
+            )}
+          </div>
         </>
       }
 
-      {["admin","superAdmin"].includes(user?.role) && (
+      {["admin", "superAdmin"].includes(user?.role) && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
             STATUS <span className="text-red-500">*</span>
@@ -500,9 +519,8 @@ const filteredDesignations =
         <div className="flex flex-col relative">
           <label className="font-semibold text-xs mb-1">REFERRAL CODE</label>
           <input
-            className={`border rounded px-3 py-2 ${
-              refLoading || user?.role !== "admin" ? "opacity-50" : ""
-            }`}
+            className={`border rounded px-3 py-2 ${refLoading || user?.role !== "admin" ? "opacity-50" : ""
+              }`}
             name="refer_code"
             placeholder="Referral Code"
             value={form.refer_code}
@@ -531,21 +549,20 @@ const filteredDesignations =
         <button
           type="submit"
           disabled={isLoading}
-          className={`px-6 py-2 rounded font-medium transition ${
-            isLoading
+          className={`px-6 py-2 rounded font-medium transition ${isLoading
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-green-500 text-white hover:bg-green-600"
-          }`}
+            }`}
         >
           {isLoading
             ? isEdit
               ? "Updating..."
               : "Creating..."
             : isEdit
-            ? "Update"
-            : isAffiliate
-            ? "Create Affiliate"
-            : "Create Agent"}
+              ? "Update"
+              : isAffiliate
+                ? "Create Affiliate"
+                : "Create Agent"}
         </button>
       </div>
     </form>
