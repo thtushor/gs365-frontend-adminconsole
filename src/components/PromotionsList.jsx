@@ -7,8 +7,13 @@ import Pagination from "./Pagination";
 import { MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const PromotionsList = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
   const navigate = useNavigate();
   const getRequest = useGetRequest();
 
@@ -160,14 +165,16 @@ const PromotionsList = () => {
       field: "action",
       headerName: "Action",
       width: 80,
-      render: (_, row) => (
-        <button
-          onClick={() => navigate(`/create-promotion?promotionId=${row.id}`)}
-          className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
-        >
-          <FaRegEdit size={22} />
-        </button>
-      ),
+      render: (_, row) =>
+        (isSuperAdmin ||
+          hasPermission(permissions, "promotion_edit_promotion")) && (
+          <button
+            onClick={() => navigate(`/create-promotion?promotionId=${row.id}`)}
+            className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
+          >
+            <FaRegEdit size={22} />
+          </button>
+        ),
     },
   ];
 
@@ -188,12 +195,15 @@ const PromotionsList = () => {
     <div className="bg-white rounded-lg shadow p-4 mt-6 w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Promotion List</h2>
-        <button
-          className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-          onClick={() => navigate("/create-promotion")}
-        >
-          Create Promotion
-        </button>
+        {(isSuperAdmin ||
+          hasPermission(permissions, "promotion_create_promotion")) && (
+          <button
+            className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+            onClick={() => navigate("/create-promotion")}
+          >
+            Create Promotion
+          </button>
+        )}
       </div>
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center mb-4">

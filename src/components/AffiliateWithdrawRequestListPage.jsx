@@ -10,6 +10,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { formatAmount } from "./BettingWagerPage";
 import { formatDate } from "../Utils/dateUtils";
 import { API_LIST } from "../api/ApiList";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission, hasAnyPermission } from "../Utils/permissions";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -38,6 +40,10 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [updatePayload, setUpdatePayload] = useState({ status: "", notes: "" });
   const navigate = useNavigate();
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
 
   const { data, isLoading } = useTransactions(filters);
   const updateMutation = useUpdateTransactionStatus();
@@ -125,26 +131,31 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
         align: "center",
         render: (value, row) => (
           <div className="flex gap-2">
-            <button
-              className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
-              onClick={() => handleViewTransaction(row)}
-            >
-              View
-            </button>
-
-            {row?.status === "pending" && (
+            {(isSuperAdmin ||
+              hasPermission(permissions, "affiliate_view_affiliate_withdraw_history")) && (
               <button
-                className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
-                onClick={() => handleOpenModal(row)}
+                className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
+                onClick={() => handleViewTransaction(row)}
               >
-                Update
+                View
               </button>
             )}
+
+            {row?.status === "pending" &&
+              (isSuperAdmin ||
+                hasPermission(permissions, "affiliate_approve_withdraw_requests")) && (
+                <button
+                  className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
+                  onClick={() => handleOpenModal(row)}
+                >
+                  Update
+                </button>
+              )}
           </div>
         ),
       },
     ],
-    [navigate]
+    [navigate, isSuperAdmin, permissions]
   );
 
   const handleOpenModal = (row) => {
@@ -223,7 +234,14 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
       </div>
 
       <div className="bg-white rounded-lg shadow p-4">
-        <DataTable columns={columns} data={items} isLoading={isLoading} />
+        <DataTable
+          columns={columns}
+          data={items}
+          isLoading={isLoading}
+          isSuperAdmin={isSuperAdmin}
+          permissions={permissions}
+          exportPermission="affiliate_view_affiliate_withdraw_history"
+        />
         <Pagination
           currentPage={page}
           totalPages={totalPages}

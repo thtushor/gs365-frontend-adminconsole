@@ -13,6 +13,7 @@ import { formatDateTime } from "../Utils/dateUtils";
 import { useUsers } from "../hooks/useBetResults";
 import { useAffiliates } from "../hooks/useAffiliates";
 import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const defaultFilters = {
   search: "",
@@ -33,6 +34,8 @@ const AffiliateCommissionListPage = () => {
   const navigate = useNavigate();
   const { affiliateId } = useParams();
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
 
   // Fetch users and affiliates for filters
   const { data: usersData } = useUsers();
@@ -403,7 +406,13 @@ const AffiliateCommissionListPage = () => {
           </div>
         ) : (
           <>
-            <DataTable columns={columns} data={commissions} />
+            <DataTable
+              columns={columns}
+              data={commissions}
+              isSuperAdmin={isSuperAdmin}
+              permissions={permissions}
+              exportPermission="affiliate_view_affiliate_commissions"
+            />
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

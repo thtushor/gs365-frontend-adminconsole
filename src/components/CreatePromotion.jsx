@@ -7,6 +7,8 @@ import TextEditor from "./shared/TextEditor";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Select } from "antd";
 import { MdToggleOff, MdToggleOn } from "react-icons/md";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const { Option } = Select;
 
@@ -26,6 +28,9 @@ const defaultForm = {
 };
 
 const CreatePromotion = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
   const [form, setForm] = useState(defaultForm);
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -443,17 +448,22 @@ const CreatePromotion = () => {
         </div>
 
         <div className="md:col-span-2 flex justify-end">
-          <button
-            type="submit"
-            className="bg-green-500 text-white px-4 cursor-pointer py-2 rounded hover:bg-green-600 transition"
-            disabled={submitLoading}
-          >
-            {submitLoading
-              ? "Submitting..."
-              : promotionId
-              ? "Update Promotion"
-              : "Create Promotion"}
-          </button>
+          {(isSuperAdmin ||
+            (promotionId
+              ? hasPermission(permissions, "promotion_edit_promotion")
+              : hasPermission(permissions, "promotion_create_promotion"))) && (
+            <button
+              type="submit"
+              className="bg-green-500 text-white px-4 cursor-pointer py-2 rounded hover:bg-green-600 transition"
+              disabled={submitLoading}
+            >
+              {submitLoading
+                ? "Submitting..."
+                : promotionId
+                ? "Update Promotion"
+                : "Create Promotion"}
+            </button>
+          )}
         </div>
       </form>
     </div>
