@@ -396,7 +396,7 @@ const CreatePromotion = () => {
           </div>
         </div>
 
-        {promotionId && (
+        {promotionId && hasPermission(permissions,"promotion_manage_promotion_status") && (
           <div className="w-full">
             <label className="block text-sm mb-1">Status</label>
             <select
