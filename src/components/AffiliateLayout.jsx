@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
+import { hasPermission, PERMISSION_CATEGORIES } from "../Utils/permissions";
 import { Spin } from "antd";
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import { BiCheck, BiCheckSquare, BiCopy } from "react-icons/bi";
@@ -13,18 +14,22 @@ export const affiliateRoutes = [
   {
     label: "Profile",
     path: "/affiliate-list/:affiliateId",
+    requiredPermission: "affiliate_view_affiliate_profile",
   },
   {
     label: "Sub Affiliates List",
     path: "/affiliate-list/:affiliateId/sub-affiliates-list",
+    requiredPermission: "affiliate_view_sub_affiliate_list",
   },
   {
     label: "Player List",
     path: "/affiliate-list/:affiliateId/players-list",
+    requiredPermission: "affiliate_view_affiliate_players",
   },
   {
     label: "Withdraw History",
     path: "/affiliate-list/:affiliateId/withdraw-history",
+    requiredPermission: "affiliate_view_affiliate_withdraw_history",
   },
   // {
   //   label: "Sub Affiliate C. History",
@@ -33,10 +38,12 @@ export const affiliateRoutes = [
   {
     label: "Commission History",
     path: "/affiliate-list/:affiliateId/affiliate-commission-history",
+    requiredPermission: "affiliate_view_affiliate_commissions",
   },
   {
     label: "KYC Verification",
     path: "/affiliate-list/:affiliateId/kyc-verification",
+    requiredPermission: "kyc_view_kyc_requests",
   },
 ];
 
@@ -46,6 +53,8 @@ const AffiliateLayout = () => {
   const getRequest = useGetRequest();
 
   const { user, setAffiliateInfo, setAffiliateCommission } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
   console.log(user);
   const {
     data: affiliateDetails,
@@ -134,6 +143,12 @@ const AffiliateLayout = () => {
     if (isSuperAffiliate && route.label !== "Profile") {
       return false;
     }
+
+    // Check if the user has the required permission for the route
+    if (route.requiredPermission && !isSuperAdmin && !hasPermission(permissions, route.requiredPermission)) {
+      return false;
+    }
+
     return true;
   });
   // Dummy balances (could come from API)
