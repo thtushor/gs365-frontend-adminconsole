@@ -89,10 +89,6 @@ export const PERMISSION_CATEGORIES = {
         icon: "💳",
         permissions: [
             "payment_view_transactions",
-            "payment_view_deposits",
-            "payment_view_withdrawals",
-            "payment_view_pending_deposits",
-            "payment_view_pending_withdrawals",
             "payment_approve_deposits",
             "payment_approve_withdrawals",
             "payment_reject_deposits",

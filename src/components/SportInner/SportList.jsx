@@ -8,9 +8,21 @@ import { API_LIST, BASE_URL } from "../../api/ApiList";
 import DataTable from "../DataTable";
 import Pagination from "../Pagination";
 import { toast } from "react-toastify";
+import { useAuth } from "../../hooks/useAuth";
+import { hasPermission } from "../../Utils/permissions";
 
 const SportList = ({ providerId }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userPermissions = user?.designation?.permissions || [];
+  const canCreateSport = hasPermission(userPermissions, "live_sports_create_sport");
+  const canViewSportList = hasPermission(userPermissions, "live_sports_view_sport_list");
+
+  // Check if the user has permission to view the sport list at all
+  if (!canViewSportList && user?.role !== "superAdmin") {
+    return <div className="text-center text-red-500 py-8">You do not have permission to view sports.</div>;
+  }
+
   const getRequest = useGetRequest();
 
   const [filters, setFilters] = useState({
@@ -178,12 +190,14 @@ const SportList = ({ providerId }) => {
       headerName: "Action",
       width: 80,
       render: (_, row) => (
-        <button
-          onClick={() => navigate(`/add-sport?sportId=${row.id}`)}
-          className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
-        >
-          <FaRegEdit size={22} />
-        </button>
+        canCreateSport && ( // Assuming create permission also allows editing
+          <button
+            onClick={() => navigate(`/add-sport?sportId=${row.id}`)}
+            className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
+          >
+            <FaRegEdit size={22} />
+          </button>
+        )
       ),
     },
   ];
@@ -210,12 +224,14 @@ const SportList = ({ providerId }) => {
       {!providerId && (
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Sport List</h2>
-          <button
-            className="bg-green-500 text-white cursor-pointer px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-            onClick={() => navigate("/add-sport")}
-          >
-            Create Sport
-          </button>
+          {canCreateSport && (
+            <button
+              className="bg-green-500 text-white cursor-pointer px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+              onClick={() => navigate("/add-sport")}
+            >
+              Create Sport
+            </button>
+          )}
         </div>
       )}
 

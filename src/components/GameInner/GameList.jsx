@@ -8,9 +8,21 @@ import { API_LIST, BASE_URL } from "../../api/ApiList";
 import DataTable from "../DataTable";
 import Pagination from "../Pagination";
 import { toast } from "react-toastify";
+import { useAuth } from "../../hooks/useAuth";
+import { hasPermission } from "../../Utils/permissions";
 
 const GameList = ({ providerId }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userPermissions = user?.designation?.permissions || [];
+  const canCreateGame = hasPermission(userPermissions, "game_create_game");
+  const canViewGameList = hasPermission(userPermissions, "game_view_game_list");
+
+  // Check if the user has permission to view the game list at all
+  if (!canViewGameList && user?.role !== "superAdmin") {
+    return <div className="text-center text-red-500 py-8">You do not have permission to view games.</div>;
+  }
+
   const getRequest = useGetRequest();
 
   const [filters, setFilters] = useState({
@@ -178,12 +190,14 @@ const GameList = ({ providerId }) => {
       headerName: "Action",
       width: 80,
       render: (_, row) => (
-        <button
-          onClick={() => navigate(`/add-game?gameId=${row.id}`)}
-          className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
-        >
-          <FaRegEdit size={22} />
-        </button>
+        canCreateGame && ( // Assuming create permission also allows editing
+          <button
+            onClick={() => navigate(`/add-game?gameId=${row.id}`)}
+            className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
+          >
+            <FaRegEdit size={22} />
+          </button>
+        )
       ),
     },
   ];
@@ -210,12 +224,14 @@ const GameList = ({ providerId }) => {
       {!providerId && (
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Game List</h2>
-          <button
-            className="bg-green-500 text-white cursor-pointer px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-            onClick={() => navigate("/add-game")}
-          >
-            Create Game
-          </button>
+          {canCreateGame && (
+            <button
+              className="bg-green-500 text-white cursor-pointer px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+              onClick={() => navigate("/add-game")}
+            >
+              Create Game
+            </button>
+          )}
         </div>
       )}
       {/* Filters */}

@@ -8,6 +8,8 @@ import { useGetRequest } from "../../Utils/apiClient";
 import { API_LIST, BASE_URL } from "../../api/ApiList";
 import DataTable from "../DataTable";
 import Pagination from "../Pagination";
+import { useAuth } from "../../hooks/useAuth";
+import { hasPermission } from "../../Utils/permissions";
 
 const initialFilters = {
   page: 1,
@@ -19,6 +21,15 @@ const initialFilters = {
 const SportProvidersList = () => {
   const navigate = useNavigate();
   const getRequest = useGetRequest();
+  const { user } = useAuth();
+  const userPermissions = user?.designation?.permissions || [];
+  const canManageSportProviders = hasPermission(userPermissions, "sports_manage_sports_providers");
+  const canViewSportProviderList = hasPermission(userPermissions, "sports_view_sports_provider_list");
+
+  // Check if the user has permission to view the sport provider list at all
+  if (!canViewSportProviderList && user?.role !== "superAdmin") {
+    return <div className="text-center text-red-500 py-8">You do not have permission to view sport providers.</div>;
+  }
 
   const [filters, setFilters] = useState(initialFilters);
 
@@ -184,18 +195,20 @@ const SportProvidersList = () => {
       headerName: "Action",
       width: 80,
       render: (_, row) => (
-        <button
-          onClick={() =>
-            navigate(
-              row?.parentId
-                ? `/add-sport-provider?providerId=${row.id}`
-                : `/add-parent-sport-provider?providerId=${row.id}`
-            )
-          }
-          className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
-        >
-          <FaRegEdit size={22} />
-        </button>
+        canManageSportProviders && (
+          <button
+            onClick={() =>
+              navigate(
+                row?.parentId
+                  ? `/add-sport-provider?providerId=${row.id}`
+                  : `/add-parent-sport-provider?providerId=${row.id}`
+              )
+            }
+            className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
+          >
+            <FaRegEdit size={22} />
+          </button>
+        )
       ),
     },
   ];
@@ -217,12 +230,14 @@ const SportProvidersList = () => {
     <div className="bg-white rounded-lg shadow p-4 mt-6 w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Sport Provider List</h2>
-        <button
-          className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-          onClick={() => navigate("/add-parent-sport-provider")}
-        >
-          + Parent Provider
-        </button>
+        {canManageSportProviders && (
+          <button
+            className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+            onClick={() => navigate("/add-parent-sport-provider")}
+          >
+            + Parent Provider
+          </button>
+        )}
       </div>
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center mb-4">
