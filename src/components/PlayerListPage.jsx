@@ -11,6 +11,7 @@ import ReusableModal from "./ReusableModal";
 import PlayerForm from "./PlayerForm";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const mapPlayer = (p) => ({
   id: p.id,
@@ -74,6 +75,8 @@ const PlayerListPage = () => {
   const navigate = useNavigate();
 
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["players", filters],
@@ -222,15 +225,19 @@ const PlayerListPage = () => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">PLAYER LIST</h2>
         <div>
-          <button
-            className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium mr-2"
-            onClick={handleAddPlayer}
-          >
-            Add Player
-          </button>
-          <button className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium">
-            Print
-          </button>
+          {(isSuperAdmin || hasPermission(permissions, "player_create_player")) && (
+            <button
+              className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium mr-2"
+              onClick={handleAddPlayer}
+            >
+              Add Player
+            </button>
+          )}
+          {(isSuperAdmin || hasPermission(permissions, "player_export_player_data")) && (
+            <button className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium">
+              Print
+            </button>
+          )}
         </div>
       </div>
       <div className="bg-white rounded-lg shadow p-4 mb-4">
@@ -249,8 +256,17 @@ const PlayerListPage = () => {
           <>
             <PlayerListTable
               players={players}
-              onEdit={handleEditPlayer}
-              onDelete={handleDeletePlayer}
+              onEdit={
+                isSuperAdmin || hasPermission(permissions, "player_edit_player")
+                  ? handleEditPlayer
+                  : undefined
+              }
+              onDelete={
+                isSuperAdmin ||
+                hasPermission(permissions, "player_delete_player")
+                  ? handleDeletePlayer
+                  : undefined
+              }
               onSelect={handlePlayerSelect}
             />
             <Pagination
