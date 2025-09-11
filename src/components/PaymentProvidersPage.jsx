@@ -15,6 +15,8 @@ import GatewayProvidersPage from "./GatewayProvidersPage";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const PaymentProvidersPage = () => {
   const [activeTab, setActiveTab] = useState("providers");
@@ -56,6 +58,10 @@ const PaymentProvidersPage = () => {
       commissionPercentage: "",
       status: "active",
     });
+
+    const { user } = useAuth();
+    const isSuperAdmin = user?.role === "superAdmin";
+    const permissions = user?.designation?.permissions || [];
 
     // React Query hooks
     const {
@@ -198,12 +204,15 @@ const PaymentProvidersPage = () => {
         width: 200,
         render: (value, row) => (
           <div className="flex items-center space-x-2">
-            <button
-              onClick={() => navigate(`/payment-providers/${row.id}`)}
-              className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-            >
-              {value}
-            </button>
+            {(isSuperAdmin ||
+              hasPermission(permissions, "payment_view_provider_profile")) && (
+              <button
+                onClick={() => navigate(`/payment-providers/${row.id}`)}
+                className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+              >
+                {value}
+              </button>
+            )}
           </div>
         ),
       },
@@ -237,20 +246,26 @@ const PaymentProvidersPage = () => {
         width: 120,
         render: (value, row) => (
           <div className="flex space-x-2">
-            <button
-              onClick={() => handleEdit(row)}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-              title="Edit"
-            >
-              <FaEdit />
-            </button>
-            <button
-              onClick={() => handleDelete(row)}
-              className="p-2 text-red-600 hover:bg-red-50 rounded"
-              title="Delete"
-            >
-              <FaTrash />
-            </button>
+            {(isSuperAdmin ||
+              hasPermission(permissions, "payment_manage_payment_providers")) && (
+              <button
+                onClick={() => handleEdit(row)}
+                className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                title="Edit"
+              >
+                <FaEdit />
+              </button>
+            )}
+            {(isSuperAdmin ||
+              hasPermission(permissions, "payment_manage_payment_providers")) && (
+              <button
+                onClick={() => handleDelete(row)}
+                className="p-2 text-red-600 hover:bg-red-50 rounded"
+                title="Delete"
+              >
+                <FaTrash />
+              </button>
+            )}
           </div>
         ),
       },
@@ -275,13 +290,16 @@ const PaymentProvidersPage = () => {
           <h1 className="text-2xl font-bold text-gray-900">
             Payment Providers
           </h1>
-          <button
-            onClick={handleCreate}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2"
-          >
-            <FaPlus />
-            <span>Add Provider</span>
-          </button>
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_manage_payment_providers")) && (
+            <button
+              onClick={handleCreate}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2"
+            >
+              <FaPlus />
+              <span>Add Provider</span>
+            </button>
+          )}
         </div>
 
         {/* Filters */}

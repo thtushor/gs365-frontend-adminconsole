@@ -12,6 +12,8 @@ import StatusChip from "./shared/StatusChip";
 import DeleteConfirmationModal from "./shared/DeleteConfirmationModal";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const PaymentMethodTypesPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -26,6 +28,10 @@ const PaymentMethodTypesPage = () => {
     paymentMethodId: "",
     status: "active",
   });
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
 
   // React Query hooks
   const {
@@ -139,20 +145,26 @@ const PaymentMethodTypesPage = () => {
       align: "center",
       render: (value, row) => (
         <div className="flex items-center justify-center space-x-2">
-          <button
-            className="inline-flex items-center justify-center text-blue-500 hover:bg-blue-100 rounded-full p-2 transition"
-            title="Edit"
-            onClick={() => handleEdit(row)}
-          >
-            <FaEdit size={14} />
-          </button>
-          <button
-            className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
-            title="Delete"
-            onClick={() => handleDelete(row)}
-          >
-            <FaTrash size={14} />
-          </button>
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_manage_payment_method_types")) && (
+            <button
+              className="inline-flex items-center justify-center text-blue-500 hover:bg-blue-100 rounded-full p-2 transition"
+              title="Edit"
+              onClick={() => handleEdit(row)}
+            >
+              <FaEdit size={14} />
+            </button>
+          )}
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_manage_payment_method_types")) && (
+            <button
+              className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
+              title="Delete"
+              onClick={() => handleDelete(row)}
+            >
+              <FaTrash size={14} />
+            </button>
+          )}
         </div>
       ),
     },
@@ -187,13 +199,16 @@ const PaymentMethodTypesPage = () => {
     <div className="bg-[#f5f5f5] min-h-full p-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Payment Method Types</h2>
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition text-sm font-medium flex items-center space-x-2"
-          onClick={handleCreate}
-        >
-          <FaPlus size={14} />
-          <span>Create Payment Method Type</span>
-        </button>
+        {(isSuperAdmin ||
+          hasPermission(permissions, "payment_manage_payment_method_types")) && (
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition text-sm font-medium flex items-center space-x-2"
+            onClick={handleCreate}
+          >
+            <FaPlus size={14} />
+            <span>Create Payment Method Type</span>
+          </button>
+        )}
       </div>
 
       {/* Filter Section */}

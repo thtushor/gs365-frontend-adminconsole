@@ -16,6 +16,8 @@ import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { usePaymentMethods } from "../hooks/usePaymentMethods";
 import Pagination from "./Pagination";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const PaymentGatewaysPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -51,6 +53,10 @@ const PaymentGatewaysPage = () => {
     currencyConversionRate: "",
     bonus: 0,
   });
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
 
   // React Query hooks
   const {
@@ -267,18 +273,24 @@ const PaymentGatewaysPage = () => {
       width: 120,
       render: (value, row) => (
         <div className="flex space-x-2">
-          <button
-            onClick={() => handleEdit(row)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-          >
-            <FaEdit />
-          </button>
-          <button
-            onClick={() => handleDelete(row)}
-            className="p-2 text-red-600 hover:bg-red-50 rounded"
-          >
-            <FaTrash />
-          </button>
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_manage_payment_gateways")) && (
+            <button
+              onClick={() => handleEdit(row)}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+            >
+              <FaEdit />
+            </button>
+          )}
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_manage_payment_gateways")) && (
+            <button
+              onClick={() => handleDelete(row)}
+              className="p-2 text-red-600 hover:bg-red-50 rounded"
+            >
+              <FaTrash />
+            </button>
+          )}
         </div>
       ),
     },
@@ -288,13 +300,16 @@ const PaymentGatewaysPage = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Payment Gateways</h1>
-        <button
-          onClick={handleCreate}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-        >
-          <FaPlus />
-          <span>Create Gateway</span>
-        </button>
+        {(isSuperAdmin ||
+          hasPermission(permissions, "payment_manage_payment_gateways")) && (
+          <button
+            onClick={handleCreate}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+          >
+            <FaPlus />
+            <span>Create Gateway</span>
+          </button>
+        )}
       </div>
 
       {/* Filters */}

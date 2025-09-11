@@ -234,7 +234,8 @@ const TransactionsPage = ({
         align: "center",
         render: (value, row) => (
           <div className="flex gap-2">
-            {(isSuperAdmin || hasPermission(permissions, "player_view_player_transactions")) && (
+            {(isSuperAdmin ||
+              hasPermission(permissions, "payment_view_transactions")) && (
               <button
                 className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
                 onClick={() => handleViewTransaction(row)}
