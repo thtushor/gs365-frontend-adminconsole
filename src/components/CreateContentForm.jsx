@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ImageUploader from "./shared/ImageUploader";
+import { toast } from "react-toastify";
 
 const CreateContentForm = ({
   initialData = null,
@@ -17,6 +18,7 @@ const CreateContentForm = ({
   isDescription = false,
   isDuration = false,
   isExtraField = true,
+  categories = [],
 }) => {
   const mainSubmitRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -30,9 +32,16 @@ const CreateContentForm = ({
   const [uploadRes, setUploadRes] = useState(null);
   const [yearFrom, setYearFrom] = useState("");
   const [yearTo, setYearTo] = useState("");
-
+  const [category, setCategory] = useState(null);
+  const handleChangeCategory = (e) => {
+    const { name, value, files } = e.target;
+    setCategory(value);
+  };
   useEffect(() => {
     if (initialData) {
+      if (categories?.length > 0) {
+        setCategory(initialData.dropdownOptionsId || null);
+      }
       setTitle(initialData.title || initialData.name || "");
       setMessage(initialData.message || initialData?.description || "");
       setStatus(initialData.status || "inactive");
@@ -87,6 +96,11 @@ const CreateContentForm = ({
       return;
     }
 
+    if (categories?.length > 0 && !category) {
+      toast.error(`Category is required.`);
+      return;
+    }
+
     if (
       extraInput &&
       requiredFields[extraInput.paramName] &&
@@ -130,7 +144,9 @@ const CreateContentForm = ({
         id: initialData?.id,
         status,
       };
-
+      if (categories?.length > 0 && category) {
+        payload.dropdownOptionsId = category;
+      }
       if (extraInput?.titleName) {
         payload[extraInput?.titleName] = title.trim();
       } else {
@@ -193,6 +209,25 @@ const CreateContentForm = ({
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
+
+        {categories.length > 0 && (
+          <div className="mb-2">
+            <select
+              name="categoryId"
+              value={category}
+              onChange={handleChangeCategory}
+              className="w-full border px-3 py-2 rounded"
+              required
+            >
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <input
           type="text"

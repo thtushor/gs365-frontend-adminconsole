@@ -73,13 +73,25 @@ const Faqs = () => {
         (filters.page - 1) * filters.pageSize + index + 1,
     },
     {
+      field: "category",
+      headerName: "Category",
+      width: 200,
+      render: (value) => (
+        <span
+          className={`px-2 py-1 font-bold rounded-full text-xs capitalize `}
+        >
+          {value}
+        </span>
+      ),
+    },
+    {
       field: "title",
-      headerName: "Title",
+      headerName: "Question",
       width: 200,
     },
     {
       field: "message",
-      headerName: "Message",
+      headerName: "Answer",
       width: 250,
       render: (value) =>
         typeof value === "string" && value ? (
@@ -151,7 +163,7 @@ const Faqs = () => {
 
       <div className="mt-6 border border-gray-300 p-5 rounded-lg">
         <h2 className="text-[20px] font-semibold mb-4 text-left">
-          Frequently Asked Questions
+          Frequently Asked Questions ({"FAQ'S"})
         </h2>
 
         {isLoading ? (

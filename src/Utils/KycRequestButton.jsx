@@ -32,7 +32,8 @@ const KycRequestButton = ({ holderType, holderId }) => {
   });
 
   return (
-    user?.role === "admin" && (
+    user?.role === "admin" ||
+    (user?.role === "superAdmin" && (
       <button
         disabled={loading}
         onClick={() => mutation.mutate()}
@@ -49,7 +50,7 @@ const KycRequestButton = ({ holderType, holderId }) => {
         </span>
         <span className="mt-[-2px] md:hidden flex">KYC</span>
       </button>
-    )
+    ))
   );
 };
 

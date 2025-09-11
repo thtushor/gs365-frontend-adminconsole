@@ -180,7 +180,7 @@ import { RiDropdownList, RiExchangeDollarFill } from "react-icons/ri";
 import SocialList from "../components/SocialList";
 import { FaWallet } from "react-icons/fa";
 import CurrencyConversion from "../components/CurrencyConversion";
-
+import Faqs from "../components/Faqs";
 
 export const menu = [
   {
@@ -201,14 +201,14 @@ export const menu = [
         path: "/players",
         component: PlayerListPage,
         icon: <FaUserFriends />,
-        accessKey: "player_view_player_list"
+        accessKey: "player_view_player_list",
       },
       {
         label: "Player Transactions",
         path: "/transactions",
         component: TransactionsPage,
         icon: <FaMoneyCheckAlt />,
-        accessKey: "player_view_player_transactions"
+        accessKey: "player_view_player_transactions",
       },
       {
         label: "Login History",
@@ -216,7 +216,7 @@ export const menu = [
         component: PlayerLoginHistoryPage,
         icon: <LiaHistorySolid />,
         skipFromMenu: true,
-        accessKey: "player_view_player_login_history"
+        accessKey: "player_view_player_login_history",
       },
       {
         label: "Promotion History",
@@ -230,7 +230,7 @@ export const menu = [
         },
         icon: <FaHistory />,
         skipFromMenu: true,
-        accessKey: "player_view_player_promotion_history"
+        accessKey: "player_view_player_promotion_history",
       },
       {
         label: "Win/Loss",
@@ -244,56 +244,56 @@ export const menu = [
         path: "/players/:playerId/profile",
         component: PlayerProfile,
         skipFromMenu: true,
-        accessKey: "player_view_player_profile"
+        accessKey: "player_view_player_profile",
       },
       {
         label: "Player Payments",
         path: "/players/:playerId/payments",
         component: PlayerPaymentsPage,
         skipFromMenu: true,
-        accessKey: "player_view_player_payments"
+        accessKey: "player_view_player_payments",
       },
       {
         label: "Player Transactions",
         path: "/players/:playerId/profile/transactions",
         component: PlayerTransactionsPage,
         skipFromMenu: true,
-        accessKey: "player_view_player_transactions"
+        accessKey: "player_view_player_transactions",
       },
       {
         label: "Player Wagers",
         path: "/players/:playerId/profile/wagers",
         component: BettingWagerPage,
         skipFromMenu: true,
-        accessKey: "player_view_player_wagers"
+        accessKey: "player_view_player_wagers",
       },
       {
         label: "Player Games",
         path: "/players/:playerId/profile/games",
         component: PlayerGamesPage,
         skipFromMenu: true,
-        accessKey: "player_view_player_games"
+        accessKey: "player_view_player_games",
       },
       {
         label: "Player Turnover",
         path: "/players/:playerId/profile/turnover",
         component: PlayerTurnoverPage,
         skipFromMenu: true,
-        accessKey: "player_view_player_turnover"
+        accessKey: "player_view_player_turnover",
       },
       {
         label: "Betting Wager",
         path: "/betting-wager",
         component: BettingWagerPage,
         icon: <BiTrophy />,
-        accessKey: "player_view_player_wagers"
+        accessKey: "player_view_player_wagers",
       },
       {
         label: "Message/Chat Box",
         path: "/message-chat-box",
         component: ComingSoon,
         icon: <BiMessage />,
-        accessKey: "player_manage_player_chat"
+        accessKey: "player_manage_player_chat",
       },
     ],
     // Full DB list, max winning filter, etc.
@@ -439,14 +439,14 @@ export const menu = [
         path: "/payment-methods",
         component: PaymentMethodsPage,
         icon: <FaCreditCard />,
-        accessKey: "payment_manage_payment_methods"
+        accessKey: "payment_manage_payment_methods",
       },
       {
         label: "Payment Method Types",
         path: "/payment-method-types",
         component: PaymentMethodTypesPage,
         icon: <FaMoneyBills />,
-        accessKey: "payment_manage_payment_method_types"
+        accessKey: "payment_manage_payment_method_types",
       },
       // {
       //   label: "Payment List",
@@ -503,7 +503,7 @@ export const menu = [
         path: "/admin-balance",
         component: AdminBalancePage,
         icon: <FaWallet />,
-        accessKey: "finance_view_admin_balance"
+        accessKey: "finance_view_admin_balance",
       },
     ],
   },
@@ -517,21 +517,21 @@ export const menu = [
         path: "/add-parent-game-provider",
         component: AddParentProvider,
         icon: <FaUserPlus />,
-        accessKey: "game_manage_game_providers"
+        accessKey: "game_manage_game_providers",
       },
       {
         label: "Add Sub Provider",
         path: "/add-game-provider",
         component: AddGameProvider,
         icon: <FaUserPlus />,
-        accessKey: "game_manage_game_providers"
+        accessKey: "game_manage_game_providers",
       },
       {
         label: "Provider List",
         path: "/game-provider-list",
         component: GameProvidersList,
         icon: <FaListUl />,
-        accessKey: "game_view_game_provider_list"
+        accessKey: "game_view_game_provider_list",
       },
     ],
   },
@@ -545,14 +545,14 @@ export const menu = [
         path: "/add-game",
         component: AddOrUpdateGame,
         icon: <BiAddToQueue />,
-        accessKey: "game_create_game"
+        accessKey: "game_create_game",
       },
       {
         label: "Game List",
         path: "/game-list",
         component: GameList,
         icon: <MdFormatListBulletedAdd />,
-        accessKey: "game_view_game_list"
+        accessKey: "game_view_game_list",
       },
     ],
   },
@@ -567,21 +567,21 @@ export const menu = [
         path: "/add-parent-sport-provider",
         component: AddSportParentProvider,
         icon: <FaUserPlus />,
-        accessKey: "sports_manage_sports_providers"
+        accessKey: "sports_manage_sports_providers",
       },
       {
         label: "Add Sub Provider",
         path: "/add-sport-provider",
         component: AddSportProvider,
         icon: <FaUserPlus />,
-        accessKey: "sports_manage_sports_sub_providers"
+        accessKey: "sports_manage_sports_sub_providers",
       },
       {
         label: "Provider List",
         path: "/sport-provider-list",
         component: SportProvidersList,
         icon: <FaListUl />,
-        accessKey: "sports_view_sports_provider_list"
+        accessKey: "sports_view_sports_provider_list",
       },
     ],
   },
@@ -595,14 +595,14 @@ export const menu = [
         path: "/add-sport",
         component: AddOrUpdateSport,
         icon: <BiAddToQueue />,
-        accessKey: "live_sports_create_sport"
+        accessKey: "live_sports_create_sport",
       },
       {
         label: "Sport List",
         path: "/sport-list",
         component: SportList,
         icon: <MdFormatListBulletedAdd />,
-        accessKey: "live_sports_view_sport_list"
+        accessKey: "live_sports_view_sport_list",
       },
     ],
   },
@@ -684,7 +684,7 @@ export const menu = [
         path: "/languages",
         component: LanguageList,
         icon: <LiaLanguageSolid />,
-        accessKey: "country_manage_languages"
+        accessKey: "country_manage_languages",
       },
     ],
   },
@@ -700,77 +700,84 @@ export const menu = [
         path: "/banners",
         component: Banner,
         icon: <CgDisplayFullwidth />,
-        accessKey: "cms_manage_banners"
+        accessKey: "cms_manage_banners",
       },
       {
         label: "Popup",
         path: "/popup",
         component: Popup,
         icon: <CgDisplayFlex />,
-        accessKey: "cms_manage_popups"
+        accessKey: "cms_manage_popups",
       },
       {
         label: "Announcements",
         path: "/announcements",
         component: Announcement,
         icon: <GrAnnounce />,
-        accessKey: "cms_manage_announcements"
+        accessKey: "cms_manage_announcements",
       },
       {
         label: "Advertisement",
         path: "/advertisement",
         component: Advertisement,
         icon: <LiaAdSolid />,
-        accessKey: "cms_manage_advertisements"
+        accessKey: "cms_manage_advertisements",
       },
       {
         label: "Sponsor",
         path: "/sponsor",
         component: Sponsor,
         icon: <LiaPeopleCarrySolid />,
-        accessKey: "cms_manage_sponsors"
+        accessKey: "cms_manage_sponsors",
       },
       {
         label: "Ambassador",
         path: "/ambassador",
         component: Ambassador,
         icon: <FaPeopleRobbery />,
-        accessKey: "cms_manage_ambassadors"
+        accessKey: "cms_manage_ambassadors",
       },
       {
         label: "Gaming License",
         path: "/gaming-license",
         component: GamingLicense,
         icon: <TbLicense />,
-        accessKey: "cms_manage_gaming_licenses"
+        accessKey: "cms_manage_gaming_licenses",
       },
       {
         label: "Responsible Gaming",
         path: "/responsible-gaming",
         component: ResponsibleGaming,
         icon: <SiLegacygames />,
-        accessKey: "cms_manage_responsible_gaming"
+        accessKey: "cms_manage_responsible_gaming",
       },
       {
         label: "Events",
         path: "/event",
         component: EventList,
         icon: <BsCalendar2Event />,
-        accessKey: "cms_manage_events"
+        accessKey: "cms_manage_events",
       },
       {
         label: "Featured Game",
         path: "/featured-game",
         component: FeaturedGames,
         icon: <MdOutlineDisplaySettings />,
-        accessKey: "cms_manage_featured_games"
+        accessKey: "cms_manage_featured_games",
       },
       {
         label: "Social Media",
         path: "/social-media",
         component: SocialList,
         icon: <MdOutlineDisplaySettings />,
-        accessKey: "cms_manage_social_media"
+        accessKey: "cms_manage_social_media",
+      },
+      {
+        label: "FAQ'S",
+        path: "/faqs",
+        component: Faqs,
+        icon: <MdOutlineDisplaySettings />,
+        accessKey: "cms_manage_social_media",
       },
     ],
   },
@@ -791,14 +798,14 @@ export const menu = [
         path: "/dropdowns",
         component: DropdownConfiguration,
         icon: <RiDropdownList />,
-        accessKey: "settings_manage_dropdowns"
+        accessKey: "settings_manage_dropdowns",
       },
       {
         label: "Menu Management",
         path: "/menu-management",
         component: MenuManagement,
         icon: <TbMenuOrder />,
-        accessKey: "settings_manage_menu_management"
+        accessKey: "settings_manage_menu_management",
       },
       // {
       //   label: "Currency Conversion",
@@ -813,7 +820,7 @@ export const menu = [
       // },
     ],
   },
-  
+
   {
     label: "Owner Controls",
     icon: <FaShieldAlt />,
@@ -825,15 +832,15 @@ export const menu = [
         path: "/owner/account-control",
         component: OwnerAccountControlPage,
         icon: <MdControlCamera />,
-        accessKey: "owner_manage_account_control"
+        accessKey: "owner_manage_account_control",
       },
-      
+
       {
         label: "Designation Management",
         path: "/owner/designation-management",
         icon: <MdOutlineSecurity />,
         component: DesignationManagementPage,
-        accessKey: "owner_manage_designations"
+        accessKey: "owner_manage_designations",
       },
     ],
   },
@@ -871,26 +878,26 @@ export const affiliateOutsideRoute = [
     label: "Profile",
     path: "/affiliate-list/:affiliateId",
     component: AffiliateProfile,
-    accessKey: "affiliate_view_affiliate_profile"
+    accessKey: "affiliate_view_affiliate_profile",
   },
   {
     label: "Sub Affiliates List",
     path: "/affiliate-list/:affiliateId/sub-affiliates-list",
     component: SubAffiliatesList,
-    accessKey: "affiliate_view_sub_affiliate_list"
+    accessKey: "affiliate_view_sub_affiliate_list",
   },
 
   {
     label: "Players List",
     path: "/affiliate-list/:affiliateId/players-list",
     component: AffiliatePlayerList,
-    accessKey: "affiliate_view_affiliate_players"
+    accessKey: "affiliate_view_affiliate_players",
   },
   {
     label: "Withdraw History",
     path: "/affiliate-list/:affiliateId/withdraw-history",
     component: AffiliateWithdrawHistory,
-    accessKey: "affiliate_view_affiliate_withdraw_history"
+    accessKey: "affiliate_view_affiliate_withdraw_history",
   },
 
   // {
@@ -907,13 +914,13 @@ export const affiliateOutsideRoute = [
     label: "Commission History",
     path: "/affiliate-list/:affiliateId/affiliate-commission-history",
     component: AffiliateCommissionListPage,
-    accessKey: "affiliate_view_affiliate_commissions"
+    accessKey: "affiliate_view_affiliate_commissions",
   },
   {
     label: "KYC Verification",
     path: "/affiliate-list/:affiliateId/kyc-verification",
     component: KYCVerificationPage,
-    accessKey: "affiliate_manage_kyc_verification"
+    accessKey: "affiliate_manage_kyc_verification",
   },
 ];
 export const gameProviderOutsideRoute = [
@@ -921,31 +928,31 @@ export const gameProviderOutsideRoute = [
     label: "Profile",
     path: "/game-provider-list/:gameProviderId",
     component: GameProviderProfile,
-    accessKey: "game_manage_game_provider_profile"
+    accessKey: "game_manage_game_provider_profile",
   },
   {
     label: "Sub Provider List",
     path: "/game-provider-list/:gameProviderId/child-provider-list",
     component: ChildProviderList,
-    accessKey: "game_view_sub_game_provider_list"
+    accessKey: "game_view_sub_game_provider_list",
   },
   {
     label: "Deposit History",
     path: "/game-provider-list/:gameProviderId/deposit-history",
     component: DepositHistory,
-    accessKey: "game_view_game_provider_deposits"
+    accessKey: "game_view_game_provider_deposits",
   },
   {
     label: "Game Expense History",
     path: "/game-provider-list/:gameProviderId/game-expense-history",
     component: GameExpenseHistory,
-    accessKey: "game_view_game_provider_expenses"
+    accessKey: "game_view_game_provider_expenses",
   },
   {
     label: "Game List",
     path: "/game-provider-list/:gameProviderId/games-list",
     component: ProviderWiseGameList,
-    accessKey: "game_view_game_list"
+    accessKey: "game_view_game_list",
   },
 ];
 
@@ -954,24 +961,24 @@ export const sportProviderOutsideRoute = [
     label: "Profile",
     path: "/sport-provider-list/:sportProviderId",
     component: SportProviderProfile,
-    accessKey: "sports_manage_sports_provider_profile"
+    accessKey: "sports_manage_sports_provider_profile",
   },
   {
     label: "Sub Provider List",
     path: "/sport-provider-list/:sportProviderId/child-provider-list",
     component: SportChildProviderList,
-    accessKey: "sports_view_sports_provider_list"
+    accessKey: "sports_view_sports_provider_list",
   },
   {
     label: "Sports Transaction History",
     path: "/sport-provider-list/:sportProviderId/sport-transaction-history",
     component: SportsTransactionHistory,
-    accessKey: "sports_view_sports_provider_expenses"
+    accessKey: "sports_view_sports_provider_expenses",
   },
   {
     label: "Sport List",
     path: "/sport-provider-list/:sportProviderId/Sport-list",
     component: SportsProviderWiseSport,
-    accessKey: "sports_view_sport_list"
+    accessKey: "sports_view_sport_list",
   },
 ];

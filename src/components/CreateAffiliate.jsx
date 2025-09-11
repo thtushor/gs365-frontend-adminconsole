@@ -73,7 +73,7 @@ const CreateAffiliate = () => {
     window.print();
   };
 
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin" || user?.role === "superAdmin";
 
   return (
     <div className="bg-[#f5f5f5] min-h-screen p-6">

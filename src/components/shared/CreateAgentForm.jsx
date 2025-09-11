@@ -523,14 +523,14 @@ export function CreateAgentForm({
           <label className="font-semibold text-xs mb-1">REFERRAL CODE</label>
           <input
             className={`border rounded px-3 py-2 ${
-              refLoading || user?.role !== "admin" ? "opacity-50" : ""
+              refLoading ? "opacity-50" : ""
             }`}
             name="refer_code"
             placeholder="Referral Code"
             value={form.refer_code}
             onChange={handleChange}
-            readOnly={refLoading || user?.role !== "admin"}
-            disabled={refLoading || user?.role !== "admin"}
+            readOnly={refLoading}
+            disabled={refLoading}
           />
           {refLoading ? (
             <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">

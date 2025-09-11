@@ -44,7 +44,7 @@ const AffiliateCommissionListPage = () => {
   const users = usersData?.users?.data || [];
   const affiliates = affiliatesData?.data || [];
 
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin" || user?.role === "superAdmin";
 
   // Set adminUserId from affiliateId parameter if available
   useEffect(() => {

@@ -28,7 +28,7 @@ const AffiliatePlayerList = () => {
     keepPreviousData: true,
   });
 
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin" || user?.role === "superAdmin";
 
   // console.log("sub affiliate", data);
 
