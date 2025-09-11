@@ -123,6 +123,11 @@ export const API_LIST = {
   UPDATE_PAYMENT_METHOD: "/api/payment-method/update",
   DELETE_PAYMENT_METHOD: "/api/payment-method/delete",
 
+  // faqs
+  CREATE_UPDATE_FAQ: "/api/admin/create-update-faq",
+  GET_FAQS: "/api/admin/get-faqs",
+  DELETE_FAQS: "/api/admin/delete-faq",
+
   // Payment Method Types
   PAYMENT_METHOD_TYPES: "/api/payment-method-types",
   UPDATE_PAYMENT_METHOD_TYPES: "/api/payment-method-types/update",
