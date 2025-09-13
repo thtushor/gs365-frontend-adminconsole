@@ -42,6 +42,7 @@ const KYCVerificationPage = () => {
   useEffect(() => {
     if (kycDetails?.data) {
       const d = kycDetails.data;
+      console.log("ddddd", d);
       setFormData({
         fullName: d.fullName || "",
         documentType: d.documentType || "",
@@ -57,9 +58,9 @@ const KYCVerificationPage = () => {
       });
 
       setStatus(
-        d.status
-          ? d.status.charAt(0).toUpperCase() + d.status.slice(1)
-          : "Pending"
+        d.kyc_status
+          ? d.kyc_status.charAt(0).toUpperCase() + d.status.slice(1)
+          : affiliateInfo?.kyc_status || "Pending"
       );
     }
   }, [kycDetails]);
@@ -305,15 +306,26 @@ const KYCVerificationPage = () => {
             <p>Date of Birth:</p> {formData.dob || "Not selected"}
           </p>
           <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 px-3  bg-white py-2 rounded-md">
-            <p>Status:</p>{" "}
+            <p>Kyc Status:</p>{" "}
             <span
               className={`px-2 py-1 rounded text-sm ${
-                status === "Submitted" || status === "Approved"
-                  ? "bg-green-200 text-green-800"
-                  : "bg-yellow-200 text-yellow-800"
+                (!status || status.toLowerCase() === "pending") &&
+                affiliateInfo?.kyc_status?.toLowerCase() === "required"
+                  ? "bg-red-200 text-red-800" // Required in red
+                  : status === "Submitted" || status === "Approved"
+                  ? "bg-green-200 text-green-800" // Submitted/Approved in green
+                  : "bg-yellow-200 text-yellow-800" // Others in yellow
               }`}
             >
-              {status}
+              {!status
+                ? "Unverified"
+                : status.toLowerCase() === "pending"
+                ? affiliateInfo?.kyc_status?.toLowerCase() === "required"
+                  ? "Required"
+                  : "Unverified"
+                : status.toLowerCase() === "required"
+                ? "Required"
+                : status}
             </span>
           </p>
           {/* Uploaded Images Preview */}

@@ -88,7 +88,8 @@ function getRoutes(menu, user) {
 // Handle routes that don't use Layout
 function getOutsideRoutes(routes, LayoutWrapper = null, user) {
   const permissions = user?.designation?.permissions || [];
-  const isSuperAdmin = user?.role === "superAdmin";
+  const isSuperAdmin =
+    user?.role === "superAdmin" || user?.role === "superAffiliate";
 
   return routes.map((route) => {
     const Component = route.component;

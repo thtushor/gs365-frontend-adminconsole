@@ -37,7 +37,7 @@ const KycRequestButton = ({ holderType, holderId }) => {
       <button
         disabled={loading}
         onClick={() => mutation.mutate()}
-        className={`text-base font-semibold cursor-pointer w-fit md:w-[180px] px-3 py-1 rounded-full flex items-center gap-1
+        className={`text-base font-semibold cursor-pointer w-fit px-3 py-1 rounded-full flex items-center gap-1
         ${
           loading
             ? "bg-gray-400 cursor-not-allowed"
