@@ -1,6 +1,8 @@
-export function staticAffiliatePermission(userRole) {
-  if (userRole === "superAdmin" || userRole === "admin") {
+import { hasPermission } from "./permissions";
+
+export function staticAffiliatePermission(userRole,permissionList,permissionKey) {
+  if (userRole === "superAdmin" || userRole === "affiliate" || userRole === "superAffiliate") {
     return true;
   }
-  return false;
+  return hasPermission(permissionList, permissionKey)||falsess;
 }
