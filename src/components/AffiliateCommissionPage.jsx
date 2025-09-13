@@ -14,6 +14,7 @@ import { useUsers } from "../hooks/useBetResults";
 import { useAffiliates } from "../hooks/useAffiliates";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
+import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
 
 const defaultFilters = {
   search: "",
@@ -34,7 +35,7 @@ const AffiliateCommissionListPage = () => {
   const navigate = useNavigate();
   const { affiliateId } = useParams();
   const { user } = useAuth();
-  const isSuperAdmin = user?.role === "superAdmin";
+  const isSuperAdmin = staticAffiliatePermission(user.role);
   const permissions = user?.designation?.permissions || [];
 
   // Fetch users and affiliates for filters
@@ -44,7 +45,7 @@ const AffiliateCommissionListPage = () => {
   const users = usersData?.users?.data || [];
   const affiliates = affiliatesData?.data || [];
 
-  const isAdmin = user?.role === "admin" || user?.role === "superAdmin";
+  const isAdmin = staticAffiliatePermission(user.role);
 
   // Set adminUserId from affiliateId parameter if available
   useEffect(() => {
