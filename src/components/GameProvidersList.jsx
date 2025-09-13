@@ -25,8 +25,14 @@ const GameProvidersList = () => {
   const getRequest = useGetRequest();
   const { user } = useAuth();
   const userPermissions = user?.designation?.permissions || [];
-  const canManageGameProviders = hasPermission(userPermissions, "game_manage_game_providers");
-  const canViewGameProviderList = hasPermission(userPermissions, "game_view_game_provider_list");
+  const canManageGameProviders = hasPermission(
+    userPermissions,
+    "game_manage_game_providers"
+  );
+  const canViewGameProviderList = hasPermission(
+    userPermissions,
+    "game_view_game_provider_list"
+  );
   // const canViewSubGameProviderList = hasPermission(userPermissions, "game_view_sub_game_provider_list");
   // const canManageGameProviderProfile = hasPermission(userPermissions, "game_manage_game_provider_profile");
   // const canViewGameProviderDeposits = hasPermission(userPermissions, "game_view_game_provider_deposits");
@@ -35,7 +41,11 @@ const GameProvidersList = () => {
 
   // Check if the user has permission to view the game provider list at all
   if (!canViewGameProviderList && user?.role !== "superAdmin") {
-    return <div className="text-center text-red-500 py-8">You do not have permission to view game providers.</div>;
+    return (
+      <div className="text-center text-red-500 py-8">
+        You do not have permission to view game providers.
+      </div>
+    );
   }
 
   const [filters, setFilters] = useState(initialFilters);
@@ -201,7 +211,7 @@ const GameProvidersList = () => {
       field: "action",
       headerName: "Action",
       width: 80,
-      render: (_, row) => (
+      render: (_, row) =>
         canManageGameProviders && (
           <button
             onClick={() =>
@@ -215,8 +225,7 @@ const GameProvidersList = () => {
           >
             <FaRegEdit size={22} />
           </button>
-        )
-      ),
+        ),
     },
   ];
 

@@ -35,7 +35,7 @@ const KYCVerificationPage = () => {
     selfie: null,
   });
 
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState("Unverified");
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // ✅ Prefill when details available
@@ -59,7 +59,7 @@ const KYCVerificationPage = () => {
       setStatus(
         d.status
           ? d.status.charAt(0).toUpperCase() + d.status.slice(1)
-          : "Pending"
+          : "Unverified"
       );
     }
   }, [kycDetails]);

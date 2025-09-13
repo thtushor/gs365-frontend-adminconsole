@@ -15,9 +15,14 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate(user?.role !== "admin" ? `/affiliate-list/${user?.id}` : "/", {
-        replace: true,
-      });
+      navigate(
+        user?.role === "affiliate" && user?.role === "superAffiliate"
+          ? `/affiliate-list/${user?.id}`
+          : "/",
+        {
+          replace: true,
+        }
+      );
     }
   }, [user, navigate]);
 

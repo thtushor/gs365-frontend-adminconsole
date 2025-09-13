@@ -131,8 +131,8 @@ export function CreateAgentForm({
       commission_percent: form.commission_percent
         ? Number(form.commission_percent)
         : null,
-      minTrx: form.minTrx ? Number(form.minTrx) : null,
-      maxTrx: form.maxTrx ? Number(form.maxTrx) : null,
+      minTrx: form.minTrx ? String(form.minTrx) : null,
+      maxTrx: form.maxTrx ? String(form.maxTrx) : null,
     });
   };
 
