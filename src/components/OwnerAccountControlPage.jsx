@@ -249,27 +249,48 @@ const OwnerAccountControlPage = () => {
       headerName: "Action",
       width: 120,
       align: "center",
-      render: (value, row, idx) => (
-        <div className="flex gap-2 justify-center">
-          <button
-            className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
-            title="Edit"
-            onClick={() => handleEdit(row)}
-          >
-            <FaEdit />
-          </button>
-          <button
-            className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
-            title="Delete"
-            onClick={() => {
-              setSelectedOwner(row);
-              setDeleteModalOpen(true);
-            }}
-          >
-            <FaTrash />
-          </button>
-        </div>
-      ),
+      render: (value, row, idx) => {
+        const isCurrentUser = user && user.id === row.id;
+        const isSuperAdminRow = row.role === "superAdmin";
+        const isDeletable = !isCurrentUser && !isSuperAdminRow;
+
+        return (
+          <div className="flex gap-2 justify-center">
+            <button
+              className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
+              title="Edit"
+              onClick={() => handleEdit(row)}
+            >
+              <FaEdit />
+            </button>
+            <button
+              className={`inline-flex items-center justify-center rounded-full p-2 transition ${
+                isDeletable
+                  ? "text-red-500 hover:bg-red-100"
+                  : "text-gray-400 cursor-not-allowed"
+              }`}
+              title={
+                isDeletable
+                  ? "Delete"
+                  : isCurrentUser
+                  ? "Cannot delete your own account"
+                  : "Cannot delete Super Admin account"
+              }
+              onClick={(e) => {
+                if (isDeletable) {
+                  setSelectedOwner(row);
+                  setDeleteModalOpen(true);
+                } else {
+                  e.preventDefault(); // Prevent modal from opening
+                }
+              }}
+              disabled={!isDeletable}
+            >
+              <FaTrash />
+            </button>
+          </div>
+        );
+      },
     },
   ];
 
