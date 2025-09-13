@@ -35,8 +35,10 @@ const AffiliateCommissionListPage = () => {
   const navigate = useNavigate();
   const { affiliateId } = useParams();
   const { user } = useAuth();
-  const isSuperAdmin = staticAffiliatePermission(user.role);
   const permissions = user?.designation?.permissions || [];
+  // Check if the user has the specific permission to view affiliate commissions.
+  // The staticAffiliatePermission function checks roles first, then permissions.
+  const canViewAffiliateCommissions = staticAffiliatePermission(user.role, permissions, "affiliate_view_affiliate_commissions");
 
   // Fetch users and affiliates for filters
   const { data: usersData } = useUsers();
@@ -45,7 +47,9 @@ const AffiliateCommissionListPage = () => {
   const users = usersData?.users?.data || [];
   const affiliates = affiliatesData?.data || [];
 
-  const isAdmin = staticAffiliatePermission(user.role);
+  // Check if the user has the permission to link to affiliate details.
+  // Using the same permission key for now as no other specific key was provided for this context.
+  const canLinkToAffiliateDetails = staticAffiliatePermission(user.role, permissions, "affiliate_view_affiliate_commissions");
 
   // Set adminUserId from affiliateId parameter if available
   useEffect(() => {
@@ -104,7 +108,7 @@ const AffiliateCommissionListPage = () => {
       headerName: "Affiliate",
       width: 200,
       render: (_, row) =>
-        isAdmin ? (
+        canLinkToAffiliateDetails ? (
           <div>
             <Link
               to={`/affiliate-list/${row?.adminUser?.id}`}
@@ -144,7 +148,7 @@ const AffiliateCommissionListPage = () => {
       headerName: "Player",
       width: 180,
       render: (_, row) =>
-        isAdmin ? (
+        canLinkToAffiliateDetails ? (
           <div>
             <Link
               to={`/players/${row?.user?.id}/profile`}
@@ -359,7 +363,7 @@ const AffiliateCommissionListPage = () => {
             </div>
           )}
 
-          {isAdmin && (
+          {canLinkToAffiliateDetails && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Player
@@ -410,7 +414,7 @@ const AffiliateCommissionListPage = () => {
             <DataTable
               columns={columns}
               data={commissions}
-              isSuperAdmin={isSuperAdmin}
+              isSuperAdmin={canViewAffiliateCommissions}
               permissions={permissions}
               exportPermission="affiliate_view_affiliate_commissions"
             />
