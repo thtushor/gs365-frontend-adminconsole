@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import App from "./App";
@@ -15,10 +15,22 @@ const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }) {
   const { user, isValidating } = useAuth();
-  console.log({ isValidating, user });
+
+  const navigate = useNavigate();
+  // console.log({ isValidating, user });
   if (!user && !isValidating) {
     return <Navigate to="/login" replace />;
   }
+
+    useEffect(() => {
+      if (user) {
+        if (user?.role === "affiliate" || user?.role === "superAffiliate") {
+          navigate(`/affiliate-list/${user?.id}`, {
+            replace: true,
+          });
+        }
+      }
+    }, [user, navigate]);
   return (
     <>
       <ToastContainer
