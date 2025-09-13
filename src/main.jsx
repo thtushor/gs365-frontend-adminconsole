@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import App from "./App";
@@ -16,6 +16,8 @@ const queryClient = new QueryClient();
 function ProtectedRoute({ children }) {
   const { user, isValidating } = useAuth();
 
+  const pathname = useLocation().pathname;
+
   const navigate = useNavigate();
   // console.log({ isValidating, user });
   if (!user && !isValidating) {
@@ -24,7 +26,10 @@ function ProtectedRoute({ children }) {
 
     useEffect(() => {
       if (user) {
-        if (user?.role === "affiliate" || user?.role === "superAffiliate") {
+        if (
+          (user?.role === "affiliate" || user?.role === "superAffiliate") &&
+          !pathname.includes(`/affiliate-list/${user?.id}`)
+        ) {
           navigate(`/affiliate-list/${user?.id}`, {
             replace: true,
           });
