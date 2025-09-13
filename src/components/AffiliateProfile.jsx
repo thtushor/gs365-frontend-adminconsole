@@ -3,27 +3,28 @@ import { useAuth } from "../hooks/useAuth";
 import AffiliatePersonalInfo from "./AffiliateInner/AffiliatePersonalInfo";
 import AffiliateSettingsForm from "./AffiliateInner/AffiliateSettingsForm";
 import WithdrawBalance from "./AffiliateInner/WithdrawBalance";
-import { hasPermission, hasAnyPermission } from "../Utils/permissions";
+import { hasPermission } from "../Utils/permissions";
 const AffiliateProfile = () => {
   const { affiliateInfo, user } = useAuth();
 
   if (!affiliateInfo) return <div>Loading...</div>;
 
   // console.log(affiliateInfo);
+  const isSuperAdmin = user?.role === "superAdmin";
   const userPermissions = user?.designation?.permissions || [];
 
   const canViewProfile =
-    user?.role === "superAdmin" ||
+    isSuperAdmin ||
     user?.id === affiliateInfo?.id ||
     affiliateInfo?.id === user?.id ||
     hasPermission(userPermissions, "affiliate_view_affiliate_profile");
 
   const canViewWithdrawBalance =
-    user?.role === "superAdmin" ||
+    isSuperAdmin ||
     hasPermission(userPermissions, "affiliate_view_withdrawable_balance");
 
   const canManageAffiliateSettings =
-    user?.role === "superAdmin" ||
+    isSuperAdmin ||
     user?.id === affiliateInfo?.id ||
     affiliateInfo?.id === user?.id ||
     hasPermission(userPermissions, "affiliate_edit_affiliate");
