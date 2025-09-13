@@ -29,7 +29,11 @@ const AffiliatePlayerList = () => {
     keepPreviousData: true,
   });
 
-  const isAdmin = staticAffiliatePermission(user.role);
+  const canViewPlayers = staticAffiliatePermission(
+    user.role,
+    user.permissions,
+    "affiliate_view_affiliate_players"
+  );
 
   // console.log("sub affiliate", data);
 
@@ -46,7 +50,7 @@ const AffiliatePlayerList = () => {
       headerName: "Username",
       width: 140,
       render: (_, row) =>
-        !isAdmin ? (
+        !canViewPlayers ? (
           <div className="font-semibold cursor-default">{row.username}</div>
         ) : (
           <Link
