@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useGetRequest } from "../../Utils/apiClient";
 import { useAuth } from "../../hooks/useAuth";
 import { useDesignations } from "../../hooks/useDesignations";
-import { staticAffiliatePermission } from "../../Utils/staticAffiliatePermission";
+import { staticAdminCheck, staticAffiliatePermission } from "../../Utils/staticAffiliatePermission";
 
 // simple debounce hook
 function useDebounce(value, delay = 500) {
@@ -500,7 +500,7 @@ export function CreateAgentForm({
         </>
       )}
 
-      {staticAffiliatePermission(user.role) && (
+      {staticAdminCheck(user.role) && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
             STATUS <span className="text-red-500">*</span>
