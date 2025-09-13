@@ -24,12 +24,13 @@ const GameProvidersList = () => {
   const navigate = useNavigate();
   const getRequest = useGetRequest();
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
   const userPermissions = user?.designation?.permissions || [];
-  const canManageGameProviders = hasPermission(
+  const canManageGameProviders = isSuperAdmin || hasPermission(
     userPermissions,
     "game_manage_game_providers"
   );
-  const canViewGameProviderList = hasPermission(
+  const canViewGameProviderList = isSuperAdmin || hasPermission(
     userPermissions,
     "game_view_game_provider_list"
   );
@@ -40,7 +41,7 @@ const GameProvidersList = () => {
   // const canManageFeaturedGames = hasPermission(userPermissions, "game_manage_featured_games");
 
   // Check if the user has permission to view the game provider list at all
-  if (!canViewGameProviderList && user?.role !== "superAdmin") {
+  if (!canViewGameProviderList) {
     return (
       <div className="text-center text-red-500 py-8">
         You do not have permission to view game providers.
@@ -75,8 +76,7 @@ const GameProvidersList = () => {
       }),
     keepPreviousData: true,
   });
-  const parentProviderList = parentProvider?.data || [];
-  console.log(parentProviderList);
+  const parentProviderList = parentProvider?.data || [];s
 
   const game_providers = data?.data || [];
   const total = data?.pagination?.total || 0;
@@ -212,7 +212,7 @@ const GameProvidersList = () => {
       headerName: "Action",
       width: 80,
       render: (_, row) =>
-        canManageGameProviders && (
+        (canManageGameProviders) && (
           <button
             onClick={() =>
               navigate(

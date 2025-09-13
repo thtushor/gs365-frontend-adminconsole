@@ -74,6 +74,7 @@ export function AuthProvider({ children }) {
       if (!data.status) throw new Error(data.message || "Login failed");
       // Store accessToken
       localStorage.setItem("token", data.accessToken);
+      setIsValidating(false);
       return data;
     },
     onSuccess: (data) => {
