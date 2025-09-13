@@ -10,17 +10,20 @@ import Pagination from "../Pagination";
 import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth";
 import { hasPermission } from "../../Utils/permissions";
+import UnAuthorized from "../UnAuthorizedAccess";
 
 const GameList = ({ providerId }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
   const userPermissions = user?.designation?.permissions || [];
-  const canCreateGame = hasPermission(userPermissions, "game_create_game");
-  const canViewGameList = hasPermission(userPermissions, "game_view_game_list");
+  const canCreateGame = isSuperAdmin ||  hasPermission(userPermissions, "game_create_game");
+  const canViewGameList = isSuperAdmin || hasPermission(userPermissions, "game_view_game_list");
 
   // Check if the user has permission to view the game list at all
-  if (!canViewGameList && user?.role !== "superAdmin") {
-    return <div className="text-center text-red-500 py-8">You do not have permission to view games.</div>;
+  // Super admins have all permissions, otherwise check specific permissions.
+  if (!canViewGameList) {
+    return <UnAuthorized />;
   }
 
   const getRequest = useGetRequest();
@@ -190,7 +193,7 @@ const GameList = ({ providerId }) => {
       headerName: "Action",
       width: 80,
       render: (_, row) => (
-        canCreateGame && ( // Assuming create permission also allows editing
+        (canCreateGame) && ( // Super Admins have all permissions, otherwise check create permission
           <button
             onClick={() => navigate(`/add-game?gameId=${row.id}`)}
             className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"

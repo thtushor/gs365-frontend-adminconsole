@@ -9,7 +9,7 @@ import { hasPermission } from "./permissions";
 
 const KycRequestButton = ({ holderType, holderId }) => {
   const { user } = useAuth();
-  console.log(user);
+  const isSuperAdmin = user?.role === "superAdmin";
   const postRequest = usePostRequest();
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +33,7 @@ const KycRequestButton = ({ holderType, holderId }) => {
     },
   });
   const userPermissions = user?.designation?.permissions || [];
-  const canSendKyc = hasPermission(userPermissions, "kyc_send_kyc_requests");
+  const canSendKyc = isSuperAdmin || hasPermission(userPermissions, "kyc_send_kyc_requests");
   return (
     canSendKyc && (
       <button

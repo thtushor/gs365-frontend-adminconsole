@@ -10,6 +10,7 @@ import DataTable from "../DataTable";
 import Pagination from "../Pagination";
 import { useAuth } from "../../hooks/useAuth";
 import { hasPermission } from "../../Utils/permissions";
+import UnAuthorized from "../UnAuthorizedAccess";
 
 const initialFilters = {
   page: 1,
@@ -22,13 +23,14 @@ const SportProvidersList = () => {
   const navigate = useNavigate();
   const getRequest = useGetRequest();
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
   const userPermissions = user?.designation?.permissions || [];
-  const canManageSportProviders = hasPermission(userPermissions, "sports_manage_sports_providers");
-  const canViewSportProviderList = hasPermission(userPermissions, "sports_view_sports_provider_list");
+  const canManageSportProviders = isSuperAdmin || hasPermission(userPermissions, "sports_manage_sports_providers");
+  const canViewSportProviderList = isSuperAdmin || hasPermission(userPermissions, "sports_view_sports_provider_list");
 
   // Check if the user has permission to view the sport provider list at all
-  if (!canViewSportProviderList && user?.role !== "superAdmin") {
-    return <div className="text-center text-red-500 py-8">You do not have permission to view sport providers.</div>;
+  if (!canViewSportProviderList) {
+    return <UnAuthorized />;
   }
 
   const [filters, setFilters] = useState(initialFilters);

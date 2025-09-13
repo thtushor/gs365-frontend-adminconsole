@@ -14,12 +14,13 @@ import { hasPermission } from "../../Utils/permissions";
 const SportList = ({ providerId }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
   const userPermissions = user?.designation?.permissions || [];
-  const canCreateSport = hasPermission(userPermissions, "live_sports_create_sport");
-  const canViewSportList = hasPermission(userPermissions, "live_sports_view_sport_list");
+  const canCreateSport = isSuperAdmin || hasPermission(userPermissions, "live_sports_create_sport");
+  const canViewSportList = isSuperAdmin || hasPermission(userPermissions, "live_sports_view_sport_list");
 
   // Check if the user has permission to view the sport list at all
-  if (!canViewSportList && user?.role !== "superAdmin") {
+  if (!canViewSportList) {
     return <div className="text-center text-red-500 py-8">You do not have permission to view sports.</div>;
   }
 
