@@ -3,6 +3,7 @@ import Topbar from "./Topbar";
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
 
 const Layout = () => {
   const { user } = useAuth();
@@ -12,7 +13,7 @@ const Layout = () => {
   const closeSidebar = () => setSidebarOpen(false);
   const openSidebar = () => setSidebarOpen(true);
 
-  const isAdmin = ["admin","superAdmin"].includes(user?.role);
+  const isAdmin = staticAffiliatePermission(user.role);
 
   const userType = import.meta.env.VITE_USER_TYPE;
 

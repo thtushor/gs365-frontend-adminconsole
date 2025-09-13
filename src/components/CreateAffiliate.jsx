@@ -5,6 +5,7 @@ import { API_LIST } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
 import { Link } from "react-router-dom";
+import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
 
 const defaultForm = {
   username: "",
@@ -73,7 +74,7 @@ const CreateAffiliate = () => {
     window.print();
   };
 
-  const isAdmin = user?.role === "admin" || user?.role === "superAdmin";
+  const isAdmin = staticAffiliatePermission(user.role);
 
   return (
     <div className="bg-[#f5f5f5] min-h-screen p-6">
