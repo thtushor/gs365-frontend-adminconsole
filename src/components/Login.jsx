@@ -14,12 +14,12 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      navigate(user?.role !== "admin" ? `/affiliate-list/${user?.id}` : "/", {
-        replace: true,
-      });
+    if (user?.role === "admin" || user?.role === "superAdmin") {
+      navigate("/", { replace: true });
+    } else if (user) {
+      navigate(`/affiliate-list/${user?.id}`, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user?.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
