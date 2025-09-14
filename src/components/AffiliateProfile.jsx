@@ -20,6 +20,8 @@ const AffiliateProfile = () => {
     hasPermission(userPermissions, "affiliate_view_affiliate_profile");
 
   const canViewWithdrawBalance =
+    ((user?.role === "superAffiliate" || user?.role === "affiliate") &&
+      user?.role === affiliateInfo?.role) ||
     isSuperAdmin ||
     hasPermission(userPermissions, "affiliate_view_withdrawable_balance");
 

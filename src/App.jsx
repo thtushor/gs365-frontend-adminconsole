@@ -59,8 +59,7 @@ function getRoutes(menu, user) {
       for (const child of item.children) {
         const ChildComponent = child.component;
         const childHasPermission =
-          isSuperAdmin ||
-          hasPermission(permissions, child.accessKey);
+          isSuperAdmin || hasPermission(permissions, child.accessKey);
 
         if (child.path)
           routes.push(

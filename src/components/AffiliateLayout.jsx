@@ -145,7 +145,12 @@ const AffiliateLayout = () => {
     }
 
     // Check if the user has the required permission for the route
-    if (route.requiredPermission && !isSuperAdmin && !hasPermission(permissions, route.requiredPermission)) {
+    if (
+      (user?.role === "admin" || user?.role === "superAdmin") &&
+      route.requiredPermission &&
+      !isSuperAdmin &&
+      !hasPermission(permissions, route.requiredPermission)
+    ) {
       return false;
     }
 
@@ -331,25 +336,26 @@ const AffiliateLayout = () => {
         ) : (
           <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
             <div className="flex gap-4 flex-wrap whitespace-nowrap">
-              {(isSuperAdmin ||
-                hasPermission(
-                  permissions,
-                  "affiliate_view_main_balance"
-                )) && (
+              {(user?.role === "superAffiliate" ||
+                user?.role === "affiliate" ||
+                isSuperAdmin ||
+                hasPermission(permissions, "affiliate_view_main_balance")) && (
                 <HighlightBox
                   label="Main Balance"
                   value={(
                     Number(affiliateDetails?.data?.remainingBalance) +
                     Math.abs(
                       Number(
-                        affiliateCommissionDetails?.data
-                          ?.totalLossCommission || 0
+                        affiliateCommissionDetails?.data?.totalLossCommission ||
+                          0
                       )
                     )
                   ).toFixed(2)}
                 />
               )}
-              {(isSuperAdmin ||
+              {(user?.role === "superAffiliate" ||
+                user?.role === "affiliate" ||
+                isSuperAdmin ||
                 hasPermission(
                   permissions,
                   "affiliate_view_downline_balance"
@@ -361,7 +367,9 @@ const AffiliateLayout = () => {
                   ).toFixed(2)}
                 />
               )}
-              {(isSuperAdmin ||
+              {(user?.role === "superAffiliate" ||
+                user?.role === "affiliate" ||
+                isSuperAdmin ||
                 hasPermission(
                   permissions,
                   "affiliate_view_withdrawable_balance"
@@ -373,7 +381,9 @@ const AffiliateLayout = () => {
               )}
             </div>
             <div className="flex gap-4 flex-wrap whitespace-nowrap ">
-              {(isSuperAdmin ||
+              {(user?.role === "superAffiliate" ||
+                user?.role === "affiliate" ||
+                isSuperAdmin ||
                 hasPermission(
                   permissions,
                   "affiliate_view_commission_percentage"
@@ -383,7 +393,9 @@ const AffiliateLayout = () => {
                   value={`${affiliateDetails?.data?.commission_percent || 0}%`}
                 />
               )}
-              {(isSuperAdmin ||
+              {(user?.role === "superAffiliate" ||
+                user?.role === "affiliate" ||
+                isSuperAdmin ||
                 hasPermission(permissions, "affiliate_view_referral_code")) && (
                 <HighlightBox
                   label="Referral Code"
@@ -391,7 +403,9 @@ const AffiliateLayout = () => {
                   uplineDetails={affiliateDetails?.data?.role}
                 />
               )}
-              {(isSuperAdmin ||
+              {(user?.role === "superAffiliate" ||
+                user?.role === "affiliate" ||
+                isSuperAdmin ||
                 hasPermission(
                   permissions,
                   "affiliate_view_min_max_withdraw_limit"
