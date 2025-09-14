@@ -34,8 +34,11 @@ function getRoutes(menu, user) {
     const hasCategoryPermission = item.accessCategory
       ? checkHasCategoryPermission(permissions, item.accessCategory)
       : false;
+    const skipPermissionUsers = item.skipPermissionUsers || [];
 
-    const isAuthorized = isSuperAdmin || hasCategoryPermission;
+    const hasSkipPermissionUser = skipPermissionUsers.includes(user?.role);
+
+    const isAuthorized = isSuperAdmin || hasSkipPermissionUser || hasCategoryPermission;
 
     if (item.path)
       routes.push(
@@ -59,8 +62,13 @@ function getRoutes(menu, user) {
     if (item.children && item.children.length > 0) {
       for (const child of item.children) {
         const ChildComponent = child.component;
-        const childHasPermission =
-          isSuperAdmin ||
+       
+
+        const skipPermissionUsers = child.skipPermissionUsers || [];
+        const hasSkipPermissionUser = skipPermissionUsers.includes(user?.role);
+
+         const childHasPermission =
+          isSuperAdmin ||hasSkipPermissionUser ||
           hasPermission(permissions, child.accessKey);
 
         if (child.path)

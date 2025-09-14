@@ -316,6 +316,7 @@ export const menu = [
         component: CreateAffiliate,
         icon: <FaUserPlus />,
         accessKey: "affiliate_create_affiliate",
+        skipPermissionUsers: ["superAffiliate"], // Skip permission check for admin
         props: {},
       },
       {

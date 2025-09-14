@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission, PERMISSION_CATEGORIES } from "../Utils/permissions";
+import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
 import { Spin } from "antd";
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import { BiCheck, BiCheckSquare, BiCopy } from "react-icons/bi";
@@ -145,7 +146,7 @@ const AffiliateLayout = () => {
     }
 
     // Check if the user has the required permission for the route
-    if (route.requiredPermission && !isSuperAdmin && !hasPermission(permissions, route.requiredPermission)) {
+    if (route.requiredPermission && !staticAffiliatePermission(user?.role, permissions, route.requiredPermission)) {
       return false;
     }
 
@@ -331,11 +332,11 @@ const AffiliateLayout = () => {
         ) : (
           <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
             <div className="flex gap-4 flex-wrap whitespace-nowrap">
-              {(isSuperAdmin ||
-                hasPermission(
-                  permissions,
-                  "affiliate_view_main_balance"
-                )) && (
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_main_balance"
+              ) && (
                 <HighlightBox
                   label="Main Balance"
                   value={(
@@ -349,11 +350,11 @@ const AffiliateLayout = () => {
                   ).toFixed(2)}
                 />
               )}
-              {(isSuperAdmin ||
-                hasPermission(
-                  permissions,
-                  "affiliate_view_downline_balance"
-                )) && (
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_downline_balance"
+              ) && (
                 <HighlightBox
                   label="Downline Balance"
                   value={Number(
@@ -361,11 +362,11 @@ const AffiliateLayout = () => {
                   ).toFixed(2)}
                 />
               )}
-              {(isSuperAdmin ||
-                hasPermission(
-                  permissions,
-                  "affiliate_view_withdrawable_balance"
-                )) && (
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_withdrawable_balance"
+              ) && (
                 <HighlightBox
                   label="Withdrawable Balance"
                   value={withdrawAbleBalance()}
@@ -373,29 +374,32 @@ const AffiliateLayout = () => {
               )}
             </div>
             <div className="flex gap-4 flex-wrap whitespace-nowrap ">
-              {(isSuperAdmin ||
-                hasPermission(
-                  permissions,
-                  "affiliate_view_commission_percentage"
-                )) && (
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_commission_percentage"
+              ) && (
                 <HighlightBox
                   label="Commission %"
                   value={`${affiliateDetails?.data?.commission_percent || 0}%`}
                 />
               )}
-              {(isSuperAdmin ||
-                hasPermission(permissions, "affiliate_view_referral_code")) && (
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_referral_code"
+              ) && (
                 <HighlightBox
                   label="Referral Code"
                   value={affiliateDetails?.data?.refCode || "N/A"}
                   uplineDetails={affiliateDetails?.data?.role}
                 />
               )}
-              {(isSuperAdmin ||
-                hasPermission(
-                  permissions,
-                  "affiliate_view_min_max_withdraw_limit"
-                )) && (
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_min_max_withdraw_limit"
+              ) && (
                 <HighlightBox
                   label="Min-Max Withdraw Limit"
                   value={`${affiliateDetails?.data?.minTrx || 0} - ${
