@@ -25,6 +25,7 @@ const usePromotions = () => {
 };
 
 const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
+  console.log(players);
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
@@ -172,6 +173,20 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         <span
           className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
             value === "active" ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {value}
+        </span>
+      ),
+    },
+    {
+      field: "kyc_status",
+      headerName: "KYC STATUS",
+      width: 100,
+      render: (value) => (
+        <span
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "verified" ? "text-green-600" : "text-red-500"
           }`}
         >
           {value}
@@ -357,7 +372,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       align: "center",
       render: (value, row) => (
         <div className="flex justify-center gap-2">
-          {(isSuperAdmin || hasPermission(permissions, "payment_approve_deposits")) && (
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_approve_deposits")) && (
             <button
               className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
               title="Add Deposit"

@@ -136,7 +136,7 @@ const KYCVerificationPage = () => {
       </div>
       <div className="flex md:flex-row flex-col-reverse  gap-8 items-start">
         {kycDetails?.data.holderKycStatus !== "verified" && (
-          <form onSubmit={handleSubmit} className="space-y-3 w-1/2">
+          <form onSubmit={handleSubmit} className="space-y-3 w-full md:w-1/2">
             {/* Full Name */}
             <div>
               <label className="text-sm font-medium text-gray-700">
@@ -254,7 +254,7 @@ const KYCVerificationPage = () => {
         <div
           className={`border border-green-500 bg-green-50 ${
             kycDetails?.data.holderKycStatus !== "verified"
-              ? "md:mt-[28px] w-1/2"
+              ? "md:mt-[28px] w-full md:w-1/2"
               : "w-full"
           } p-4 rounded-lg  space-y-2`}
         >

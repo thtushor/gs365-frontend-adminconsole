@@ -171,6 +171,21 @@ const AffiliateListPage = () => {
         </span>
       ),
     },
+    {
+      field: "kyc_status",
+      headerName: "KYC Status",
+      width: 100,
+      align: "center",
+      render: (value) => (
+        <span
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "verified" ? "text-green-600" : "text-red-500"
+          }`}
+        >
+          {value}
+        </span>
+      ),
+    },
     // {
     //   field: "city",
     //   headerName: "Address",

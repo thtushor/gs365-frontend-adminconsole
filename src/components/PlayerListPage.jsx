@@ -28,6 +28,7 @@ const mapPlayer = (p) => ({
   browser_version: p.browser_version,
   ip_address: p.ip_address,
   status: p.status || "active",
+  kyc_status: p.kyc_status,
   created: new Date(p.created_at).toLocaleDateString(),
   // New fields from updated API
   isVerified: p.isVerified,
@@ -225,7 +226,8 @@ const PlayerListPage = () => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">PLAYER LIST</h2>
         <div>
-          {(isSuperAdmin || hasPermission(permissions, "player_create_player")) && (
+          {(isSuperAdmin ||
+            hasPermission(permissions, "player_create_player")) && (
             <button
               className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium mr-2"
               onClick={handleAddPlayer}
@@ -233,7 +235,8 @@ const PlayerListPage = () => {
               Add Player
             </button>
           )}
-          {(isSuperAdmin || hasPermission(permissions, "player_export_player_data")) && (
+          {(isSuperAdmin ||
+            hasPermission(permissions, "player_export_player_data")) && (
             <button className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium">
               Print
             </button>
