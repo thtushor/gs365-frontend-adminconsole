@@ -70,8 +70,6 @@ export function CreateAgentForm({
     })) || [];
 
   const [form, setForm] = useState(initialValues || defaultForm);
-
-  console.log({ form });
   const [showPassword, setShowPassword] = useState(false);
 
   // state for referral details
@@ -102,7 +100,7 @@ export function CreateAgentForm({
   });
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (form.role && filteredDesignations.length > 0 && !form.designation) {
+    if (form.role && filteredDesignations.length > 0 && !form.designation && !isAffiliate) {
       return toast.error("Designation is required.");
     }
     if (isAffiliate) {
@@ -263,7 +261,7 @@ export function CreateAgentForm({
       )}
 
       {/* designation */}
-      {form.role && filteredDesignations.length > 0 && (
+      {form.role && filteredDesignations.length > 0 && !isAffiliate && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
             DESIGNATION <span className="text-red-500">*</span>

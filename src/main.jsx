@@ -28,7 +28,7 @@ function ProtectedRoute({ children }) {
       if (user) {
         if (
           (user?.role === "affiliate" || user?.role === "superAffiliate") &&
-          !pathname.includes(`/affiliate-list/${user?.id}`) && !pathname.includes('/create-affiliate')
+          !pathname.includes(`/affiliate-list/`) && !pathname.includes('/create-affiliate')
         ) {
           navigate(`/affiliate-list/${user?.id}`, {
             replace: true,
