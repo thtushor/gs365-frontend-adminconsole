@@ -35,7 +35,7 @@ const KYCVerificationPage = () => {
     selfie: null,
   });
 
-  const [status, setStatus] = useState("Unverified");
+  const [status, setStatus] = useState("Pending");
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // ✅ Prefill when details available

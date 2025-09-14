@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../../api/ApiList";
 import { useCurrencies } from "../shared/useCurrencies";
@@ -37,16 +37,17 @@ const WithdrawBalance = () => {
 
     return days.toLowerCase().includes(today);
   };
+
   const { affiliateInfo, affiliateCommission } = useAuth();
+  console.log(affiliateInfo);
   const [filters, setFilters] = useState({
     ...defaultFilters,
     affiliateId: affiliateInfo?.id || "",
   });
   const { data: affiliatePreviousWithdraws } = useTransactions(filters);
+
   const withdrawAbleBalance = () => {
-    if (!affiliateCommission) {
-      return 0;
-    }
+    if (!affiliateCommission) return 0;
     const totalLoss = (
       Number(affiliateInfo?.remainingBalance) +
       Math.abs(Number(affiliateCommission?.totalLossCommission || 0))
@@ -54,7 +55,6 @@ const WithdrawBalance = () => {
     const totalWin = Math.abs(
       Number(affiliateCommission?.totalWinCommission || 0)
     );
-
     return (totalLoss - totalWin).toFixed(2);
   };
 
@@ -130,7 +130,7 @@ const WithdrawBalance = () => {
       const payload = {
         affiliateId: affiliateInfo?.id,
         amount: Number(form.amount),
-        currencyId: form.currencyId,
+        currencyId: form.withdrawMethod === "crypto" ? null : form.currencyId,
         type: "withdraw",
         status: "pending",
         notes: form.notes,
@@ -197,9 +197,15 @@ const WithdrawBalance = () => {
     const minWithdraw = Number(affiliateInfo?.minTrx) || 0;
     const maxWithdraw = Number(affiliateInfo?.maxTrx) || 0;
     const currentBalance = withdrawAbleBalance();
-
     return currentBalance >= minWithdraw && currentBalance <= maxWithdraw;
   };
+
+  useEffect(() => {
+    const balance = withdrawAbleBalance();
+    if (balance > 0) {
+      setForm((prev) => ({ ...prev, amount: balance }));
+    }
+  }, []);
 
   return (
     <div className="bg-white p-4 rounded-md mb-6" id="withdraw-section">
@@ -220,10 +226,23 @@ const WithdrawBalance = () => {
             processed before submitting a new one.
           </p>
         </div>
+      ) : affiliateInfo?.kyc_status !== "verified" ? (
+        <div className="border-purple-500 border bg-purple-100 rounded-lg py-3 max-w-[500px] px-5">
+          <p className="font-bold text-black uppercase text-[18px]">
+            <span className="font-bold text-purple-500">
+              KYC Verification Needed!
+            </span>
+          </p>
+          <p className="text-black/70 mt-1">
+            To keep your account secure and enjoy smooth withdrawals, please
+            complete your KYC verification. This one-time step helps us confirm
+            your identity and ensures faster processing of future requests.
+          </p>
+        </div>
       ) : settingsData?.data?.length > 0 &&
         !isTodayWithdrawDay(settingsData?.data[0]?.affiliateWithdrawTime) ? (
         <div className="border-orange-500 border bg-orange-100 rounded-lg py-3 max-w-[500px] px-5">
-          <p className="font-bold flex text-black uppercase text-[18px] text-orange-500">
+          <p className="font-bold flex uppercase text-[18px] text-orange-500">
             <span className="text-[19px] block mt-[4px] mr-[2px] ">
               <PiShieldWarningBold />
             </span>{" "}
@@ -263,41 +282,44 @@ const WithdrawBalance = () => {
                 className="w-full p-2 border rounded"
               >
                 <option value="bank">Bank</option>
-                <option value="wallet">Wallet</option>
+                <option value="ewallet">E-wallet</option>
+                <option value="crypto">Crypto</option>
               </select>
             </div>
 
-            {/* Currency */}
-            <div className="flex flex-col relative">
-              <label className="font-semibold text-xs mb-1">Currency</label>
-              {currencyLoading ? (
-                <p className="text-gray-500 text-sm">Loading currencies...</p>
-              ) : (
-                <Select
-                  options={currencyOptions}
-                  value={
-                    currencyOptions.find(
-                      (opt) => opt.value === form.currencyId
-                    ) || null
-                  }
-                  onChange={(selected) =>
-                    setForm({
-                      ...form,
-                      currencyId: selected ? selected.value : "",
-                    })
-                  }
-                  isSearchable
-                  placeholder="Select Currency"
-                  styles={{
-                    menuList: (base) => ({
-                      ...base,
-                      maxHeight: "300px",
-                      overflowY: "auto",
-                    }),
-                  }}
-                />
-              )}
-            </div>
+            {/* Currency - not for Crypto */}
+            {form.withdrawMethod !== "crypto" && (
+              <div className="flex flex-col relative">
+                <label className="font-semibold text-xs mb-1">Currency</label>
+                {currencyLoading ? (
+                  <p className="text-gray-500 text-sm">Loading currencies...</p>
+                ) : (
+                  <Select
+                    options={currencyOptions}
+                    value={
+                      currencyOptions.find(
+                        (opt) => opt.value === form.currencyId
+                      ) || null
+                    }
+                    onChange={(selected) =>
+                      setForm({
+                        ...form,
+                        currencyId: selected ? selected.value : "",
+                      })
+                    }
+                    isSearchable
+                    placeholder="Select Currency"
+                    styles={{
+                      menuList: (base) => ({
+                        ...base,
+                        maxHeight: "300px",
+                        overflowY: "auto",
+                      }),
+                    }}
+                  />
+                )}
+              </div>
+            )}
 
             {/* Amount */}
             <div>
@@ -306,7 +328,7 @@ const WithdrawBalance = () => {
                 type="number"
                 name="amount"
                 placeholder="Amount"
-                value={form.amount || withdrawAbleBalance()}
+                defaultValue={form.amount || withdrawAbleBalance()}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
@@ -350,31 +372,40 @@ const WithdrawBalance = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3 col-span-full">
-                {["Wallet Address / Phone Number", "Network"].map(
-                  (label, idx) => (
-                    <div key={idx}>
-                      <label className="font-semibold text-xs mb-1 block">
-                        {label}
-                      </label>
-                      <input
-                        type="text"
-                        name={label === "Network" ? "network" : "walletAddress"}
-                        placeholder={
-                          label === "Network"
-                            ? "Ex: bKash / crypto / paypal etc."
-                            : label
-                        }
-                        value={
-                          label === "Network"
-                            ? form.network
-                            : form.walletAddress
-                        }
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                      />
-                    </div>
-                  )
-                )}
+                <div>
+                  <label className="font-semibold text-xs mb-1 block">
+                    Wallet Address / Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    name="walletAddress"
+                    placeholder={
+                      form.withdrawMethod === "crypto"
+                        ? "Wallet Address"
+                        : "Phone / Email / Wallet Address"
+                    }
+                    value={form.walletAddress}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div>
+                  <label className="font-semibold text-xs mb-1 block">
+                    Network
+                  </label>
+                  <input
+                    type="text"
+                    name="network"
+                    placeholder={
+                      form.withdrawMethod === "crypto"
+                        ? "ex. TRC20, ERC20 etc."
+                        : "ex. bKash / PayPal / Skrill etc."
+                    }
+                    value={form.network}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
               </div>
             )}
 

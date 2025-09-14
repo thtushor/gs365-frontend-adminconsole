@@ -67,10 +67,10 @@ const PlayerProfile = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
-
+  console.log(user);
   const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
-
+  console.log(isSuperAdmin);
   const {
     data: playerDetails,
     isLoading,
@@ -258,17 +258,23 @@ const PlayerProfile = () => {
                   </span>
                 </div>
               </div>
-              {isSuperAdmin || hasPermission(permissions,"kyc_view_kyc_requests") && <KycRequestButton
-                holderId={playerDetails?.id}
-                holderType={"player"}
-              />}
-            { isSuperAdmin || hasPermission(permissions,"player_edit_player") && <button
-                onClick={handleEditProfile}
-                className="bg-green-500 text-white px-2 md:px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
-              >
-                <FaEdit />
-                <span className="md:flex hidden">Edit Profile</span>
-              </button>}
+              {(isSuperAdmin ||
+                hasPermission(permissions, "kyc_view_kyc_requests")) && (
+                <KycRequestButton
+                  holderId={playerDetails?.id}
+                  holderType={"player"}
+                />
+              )}
+              {(isSuperAdmin ||
+                hasPermission(permissions, "player_edit_player")) && (
+                <button
+                  onClick={handleEditProfile}
+                  className="bg-green-500 text-white px-2 md:px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
+                >
+                  <FaEdit />
+                  <span className="md:flex hidden">Edit Profile</span>
+                </button>
+              )}
             </div>
           </div>
 
