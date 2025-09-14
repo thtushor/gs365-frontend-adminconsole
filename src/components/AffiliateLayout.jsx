@@ -105,7 +105,7 @@ const AffiliateLayout = () => {
     if (affiliateCommissionDetails?.data) {
       setAffiliateCommission(affiliateCommissionDetails?.data);
     }
-  }, [affiliateCommissionDetails]);
+  }, [affiliateCommissionDetails?.data]);
 
   const withdrawAbleBalance = () => {
     if (!affiliateCommissionDetails?.data) {
@@ -128,7 +128,7 @@ const AffiliateLayout = () => {
     if (affiliateDetails?.data && !isError) {
       setAffiliateInfo(affiliateDetails.data);
     }
-  }, [affiliateDetails, isError, setAffiliateInfo]);
+  }, [affiliateDetails?.data, isError, setAffiliateInfo]);
 
   const role = affiliateDetails?.data?.role;
 
