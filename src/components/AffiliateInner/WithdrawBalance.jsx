@@ -240,7 +240,7 @@ const WithdrawBalance = () => {
           </p>
         </div>
       ) : settingsData?.data?.length > 0 &&
-        !isTodayWithdrawDay(settingsData?.data[0]?.affiliateWithdrawTime) ? (
+        isTodayWithdrawDay(settingsData?.data[0]?.affiliateWithdrawTime) ? (
         <div className="border-orange-500 border bg-orange-100 rounded-lg py-3 max-w-[500px] px-5">
           <p className="font-bold flex uppercase text-[18px] text-orange-500">
             <span className="text-[19px] block mt-[4px] mr-[2px] ">
