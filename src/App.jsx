@@ -18,6 +18,7 @@ import {
   getPermissionsByCategory,
   hasPermission,
 } from "./Utils/permissions.js";
+import { staticAffiliatePermission } from "./Utils/staticAffiliatePermission.js";
 import UnAuthorized from "./components/UnAuthorizedAccess.jsx";
 import Loader from "./components/Loader.jsx"; // Import the Loader component
 
@@ -87,7 +88,7 @@ function getRoutes(menu, user) {
 }
 
 // Handle routes that don't use Layout
-function getOutsideRoutes(routes, LayoutWrapper = null, user) {
+function getOutsideRoutes(routes, LayoutWrapper = null, user,isAffiliate=false) {
   const permissions = user?.designation?.permissions || [];
   const isSuperAdmin =
     user?.role === "superAdmin" || user?.role === "superAffiliate";
@@ -98,7 +99,13 @@ function getOutsideRoutes(routes, LayoutWrapper = null, user) {
       ? hasPermission(permissions, route.accessKey)
       : false;
 
-    const isAuthorized = isSuperAdmin || hasCategoryPermission;
+    let isAuthorized;
+    if (isAffiliate) {
+      isAuthorized = staticAffiliatePermission(user?.role, permissions, route.accessKey);
+    } else {
+      isAuthorized = isSuperAdmin || hasCategoryPermission;
+    }
+
     const RouteElement = isAuthorized ? (
       <Component {...route.props} />
     ) : (
@@ -164,7 +171,7 @@ function App() {
       {/* Routes inside the layout */}
       <Route path="/" element={<Layout />}>
         {getRoutes(menu, user)}
-        {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout, user)}
+        {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout, user,true)}
         {getOutsideRoutes(gameProviderOutsideRoute, GameProviderLayout, user)}
         {getOutsideRoutes(
           sportProviderOutsideRoute,
