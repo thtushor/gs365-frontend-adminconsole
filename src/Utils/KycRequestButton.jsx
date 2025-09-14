@@ -5,9 +5,11 @@ import { LuSend } from "react-icons/lu";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { usePostRequest } from "../Utils/apiClient";
 import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "./permissions";
 
 const KycRequestButton = ({ holderType, holderId }) => {
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
   const postRequest = usePostRequest();
   const [loading, setLoading] = useState(false);
 
@@ -30,10 +32,10 @@ const KycRequestButton = ({ holderType, holderId }) => {
       //   toast.error("Failed to send KYC request. Please try again.");
     },
   });
-
+  const userPermissions = user?.designation?.permissions || [];
+  const canSendKyc = isSuperAdmin || hasPermission(userPermissions, "kyc_send_kyc_requests");
   return (
-    user?.role === "admin" ||
-    (user?.role === "superAdmin" && (
+    canSendKyc && (
       <button
         disabled={loading}
         onClick={() => mutation.mutate()}
@@ -50,7 +52,7 @@ const KycRequestButton = ({ holderType, holderId }) => {
         </span>
         <span className="mt-[-2px] md:hidden flex">KYC</span>
       </button>
-    ))
+    )
   );
 };
 

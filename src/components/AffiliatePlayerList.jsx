@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
 import { useAuth } from "../hooks/useAuth";
+import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
 
 const AffiliatePlayerList = () => {
   const { user, affiliateInfo } = useAuth();
@@ -28,7 +29,11 @@ const AffiliatePlayerList = () => {
     keepPreviousData: true,
   });
 
-  const isAdmin = user?.role === "admin" || user?.role === "superAdmin";
+  const canViewPlayers = staticAffiliatePermission(
+    user.role,
+    user.permissions,
+    "affiliate_view_affiliate_players"
+  );
 
   // console.log("sub affiliate", data);
 
@@ -45,7 +50,7 @@ const AffiliatePlayerList = () => {
       headerName: "Username",
       width: 140,
       render: (_, row) =>
-        !isAdmin ? (
+        !canViewPlayers ? (
           <div className="font-semibold cursor-default">{row.username}</div>
         ) : (
           <Link

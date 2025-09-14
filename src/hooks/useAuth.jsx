@@ -20,12 +20,16 @@ export function AuthProvider({ children }) {
   const [gameProviderInfo, setGameProviderInfo] = useState(null);
   const [sportProviderInfo, setSportProviderInfo] = useState(null);
   const [user, setUser] = useState(null);
+  const [authStateToken, setAuthStateToken] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("token");
+    }
+    return null;
+  });
   const [isValidating, setIsValidating] = useState(true);
   const queryClient = useQueryClient();
 
   // Profile query using react-query
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const {
     data: profileData,
     isLoading: isProfileLoading,
@@ -37,34 +41,63 @@ export function AuthProvider({ children }) {
       const res = await Axios.get(API_LIST.GET_PROFILE);
 
       if (!res.data || !res.data.status) {
-        window.location.href = "/login";
+        // If token is invalid, clear it and throw an error.
+        // The onError handler will manage the redirection.
         throw new Error("Profile fetch failed");
       }
 
       return res.data.data;
     },
-    enabled: !!token && !user,
+    // Use authStateToken for enabling the query
+    enabled: !!authStateToken && !user, // Only fetch profile if token exists and user is not yet set
     retry: false,
-    onError: () => {
+    onError: (error) => {
       setUser(null);
-      setIsValidating(false);
+      setIsValidating(false); // Stop validation immediately on error
+      setAuthStateToken(null); // Clear state token on error
       localStorage.removeItem("token");
+
+      // Redirect to login if the error indicates an invalid token or unauthorized access.
+      // This check is more robust than just checking for any error.
+      // We assume that if the profile fetch fails and we have no token, it's an invalid session.
+      // The condition `!authStateToken` in the useEffect below will also trigger a redirect if the token is cleared.
+      if (error.response?.status === 401 || error.message === "Profile fetch failed") {
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+      }
     },
   });
 
+  // Effect to handle redirection when token is missing or invalid
   useEffect(() => {
-    if (!token) {
+    // If there's no token in state AND no user data, it means the user is not authenticated.
+    // We should stop validating and redirect to login if not already there.
+    if (!authStateToken && !user) {
+      setIsValidating(false); // Stop validation as we are unauthenticated
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    } else if (authStateToken && !user && !isProfileLoading) {
+      // This case handles when a token exists, but user data hasn't loaded yet, and the profile fetch is not ongoing.
+      // This might happen if the profile fetch failed previously but the token is still in state.
+      // The onError handler of the profile query should have already redirected if the token was invalid.
+      // If we reach here, it might mean the token is valid but the user data fetch is stuck or failed in a way
+      // that didn't trigger the redirect in onError. We set isValidating to false to prevent infinite loading.
       setIsValidating(false);
-    } else {
-      setIsValidating(true);
+    } else if (user) {
+      // If user data is loaded, validation is complete.
+      setIsValidating(false);
     }
-  }, [token]);
+    // Dependencies: authStateToken, user, isProfileLoading.
+    // If any of these change, this effect will re-run.
+  }, [authStateToken, user, isProfileLoading]);
 
   // Keep user in sync with profileData
   useEffect(() => {
     if (profileData) {
       setUser(profileData);
-      setIsValidating(false);
+      setIsValidating(false); // Profile data loaded, no longer validating
     }
   }, [profileData]);
 
@@ -72,12 +105,15 @@ export function AuthProvider({ children }) {
     mutationFn: async (credentials) => {
       const { data } = await axios.post(BASE_URL + API_LIST.LOGIN, credentials);
       if (!data.status) throw new Error(data.message || "Login failed");
-      // Store accessToken
+      // Store accessToken in state and localStorage
       localStorage.setItem("token", data.accessToken);
+      setAuthStateToken(data.accessToken); // Update state token
+      setIsValidating(false);
       return data;
     },
     onSuccess: (data) => {
       setUser(data.data); // user info is in data.data
+      setAuthStateToken(data.accessToken); // Ensure state token is set
       queryClient.invalidateQueries(["user"]);
       setIsValidating(false);
     },
@@ -90,12 +126,14 @@ export function AuthProvider({ children }) {
     onSuccess: () => {
       setUser(null);
       setIsValidating(false);
+      setAuthStateToken(null); // Clear state token on logout
       localStorage.removeItem("token");
       queryClient.invalidateQueries(["user"]);
     },
     onError: () => {
       setUser(null);
       setIsValidating(false);
+      setAuthStateToken(null); // Clear state token on error
       localStorage.removeItem("token");
     },
   });
@@ -116,7 +154,7 @@ export function AuthProvider({ children }) {
         isLogoutLoading: logoutMutation.isLoading,
         isLoading: loginMutation.isLoading || logoutMutation.isLoading,
         isProfileLoading,
-        token,
+        token: authStateToken, // Expose the state token
         setAffiliateInfo,
         affiliateInfo,
         gameProviderInfo,

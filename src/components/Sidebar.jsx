@@ -82,7 +82,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                   <div className="ml-6 mt-1">
                     {item.children.map((child, cidx) =>
                       child?.skipFromMenu ? null : (
-                       user.role==="superAdmin" || checkHasCategoryPermission([child.accessKey],item?.accessCategory) ? 
+                       user.role==="superAdmin" || permissions?.includes(child.accessKey) ? 
                         <Link
                           key={cidx}
                           to={child.path}
@@ -137,7 +137,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                   <div className="ml-6 mt-1">
                     {item.children.map((child, cidx) =>
                       child?.skipFromMenu ? null : (
-                        user.role==="superAdmin" || checkHasCategoryPermission([child.accessKey],item?.accessCategory) ?
+                        user.role==="superAdmin" || permissions?.includes(child.accessKey) ?
                         <Link
                           key={cidx}
                           to={child.path}

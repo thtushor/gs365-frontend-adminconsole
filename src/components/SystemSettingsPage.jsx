@@ -3,8 +3,19 @@ import { useSettings, useUpdateSettings } from "../hooks/useSettings";
 import { FaCogs, FaTimes, FaEdit, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { formatAmount } from "./BettingWagerPage";
+import { useAuth } from "../hooks/useAuth"; // Import useAuth hook
+import { hasPermission } from "../Utils/permissions";
 
 const SystemSettingsPage = () => {
+  const { user } = useAuth(); // Get user from auth context
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
+  // Helper function to check if user has a specific permission
+  const hasAccess = (permission) => {
+    return isSuperAdmin || hasPermission(permissions,permission);
+  };
+  
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState({
     defaultTurnover: 0,
@@ -183,7 +194,10 @@ const SystemSettingsPage = () => {
                           />
                           <button
                             onClick={() => handleSave(setting.id)}
-                            disabled={updateSettingsMutation.isLoading}
+                            disabled={
+                              updateSettingsMutation.isLoading ||
+                              !hasAccess("settings_update_system_settings")
+                            }
                             className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                           >
                             <FaSave className="mr-2" />
@@ -198,13 +212,15 @@ const SystemSettingsPage = () => {
                           </button>
                         </>
                       ) : (
-                        <button
-                          onClick={() => handleEdit(setting)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                        >
-                          <FaEdit className="mr-2" />
-                          Edit
-                        </button>
+                        hasAccess("settings_update_system_settings") && (
+                          <button
+                            onClick={() => handleEdit(setting)}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                          >
+                            <FaEdit className="mr-2" />
+                            Edit
+                          </button>
+                        )
                       )}
                     </div>
                   </div>
@@ -238,7 +254,10 @@ const SystemSettingsPage = () => {
                           />
                           <button
                             onClick={() => handleSave(setting.id)}
-                            disabled={updateSettingsMutation.isLoading}
+                            disabled={
+                              updateSettingsMutation.isLoading ||
+                              !hasAccess("settings_update_system_settings")
+                            }
                             className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                           >
                             <FaSave className="mr-2" />
@@ -253,13 +272,15 @@ const SystemSettingsPage = () => {
                           </button>
                         </>
                       ) : (
-                        <button
-                          onClick={() => handleEdit(setting)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                        >
-                          <FaEdit className="mr-2" />
-                          Edit
-                        </button>
+                        hasAccess("settings_update_system_settings") && (
+                          <button
+                            onClick={() => handleEdit(setting)}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                          >
+                            <FaEdit className="mr-2" />
+                            Edit
+                          </button>
+                        )
                       )}
                     </div>
                   </div>
@@ -294,7 +315,10 @@ const SystemSettingsPage = () => {
                           />
                           <button
                             onClick={() => handleSave(setting.id)}
-                            disabled={updateSettingsMutation.isLoading}
+                            disabled={
+                              updateSettingsMutation.isLoading ||
+                              !hasAccess("settings_update_system_settings")
+                            }
                             className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                           >
                             <FaSave className="mr-2" />
@@ -309,13 +333,15 @@ const SystemSettingsPage = () => {
                           </button>
                         </>
                       ) : (
-                        <button
-                          onClick={() => handleEdit(setting)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                        >
-                          <FaEdit className="mr-2" />
-                          Edit
-                        </button>
+                        hasAccess("settings_update_system_settings") && (
+                          <button
+                            onClick={() => handleEdit(setting)}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                          >
+                            <FaEdit className="mr-2" />
+                            Edit
+                          </button>
+                        )
                       )}
                     </div>
                   </div>
@@ -350,7 +376,10 @@ const SystemSettingsPage = () => {
                           />
                           <button
                             onClick={() => handleSave(setting.id)}
-                            disabled={updateSettingsMutation.isLoading}
+                            disabled={
+                              updateSettingsMutation.isLoading ||
+                              !hasAccess("settings_update_system_settings")
+                            }
                             className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                           >
                             <FaSave className="mr-2" />
@@ -416,7 +445,10 @@ const SystemSettingsPage = () => {
 
                           <button
                             onClick={() => handleSave(setting.id)}
-                            disabled={updateSettingsMutation.isLoading}
+                            disabled={
+                              updateSettingsMutation.isLoading ||
+                              !hasAccess("settings_update_system_settings")
+                            }
                             className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                           >
                             <FaSave className="mr-2" />
@@ -431,13 +463,15 @@ const SystemSettingsPage = () => {
                           </button>
                         </>
                       ) : (
-                        <button
-                          onClick={() => handleEdit(setting)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                        >
-                          <FaEdit className="mr-2" />
-                          Edit
-                        </button>
+                        hasAccess("settings_update_system_settings") && (
+                          <button
+                            onClick={() => handleEdit(setting)}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                          >
+                            <FaEdit className="mr-2" />
+                            Edit
+                          </button>
+                        )
                       )}
                     </div>
                   </div>

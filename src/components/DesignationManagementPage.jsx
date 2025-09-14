@@ -15,6 +15,7 @@ import {
   FaFilter,
   FaShieldAlt,
 } from "react-icons/fa";
+import { useAuth } from "../hooks/useAuth"; // Import useAuth
 import { BiLoader, BiCheck, BiX } from "react-icons/bi";
 import { MdOutlineAdminPanelSettings, MdOutlineSecurity } from "react-icons/md";
 import DataTable from "./DataTable";
@@ -26,6 +27,16 @@ import ErrorState from "./shared/ErrorState";
 import EmptyState from "./shared/EmptyState";
 
 const DesignationManagementPage = () => {
+  const { user } = useAuth(); // Get user from auth context
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
+  // Check if the user has permission to manage designations
+  const canManageDesignations =
+    isSuperAdmin || permissions.includes("owner_manage_designations");
+  const canViewOwnerControls =
+    isSuperAdmin || permissions.includes("owner_view_owner_controls");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -215,6 +226,14 @@ const DesignationManagementPage = () => {
     );
   }
 
+  if (!canManageDesignations && !canViewOwnerControls) {
+    return (
+      <div className="text-center text-red-500 py-8">
+        You do not have permission to view this page.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -227,13 +246,15 @@ const DesignationManagementPage = () => {
             Manage user designations and their permissions
           </p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          <FaPlus className="w-4 h-4 mr-2" />
-          Create Designation
-        </button>
+        {canManageDesignations && (
+          <button
+            onClick={handleCreate}
+            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <FaPlus className="w-4 h-4 mr-2" />
+            Create Designation
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -276,11 +297,14 @@ const DesignationManagementPage = () => {
           description="Create your first designation to get started"
           actionText="Create Designation"
           onAction={handleCreate}
+          hideActionButton={!canManageDesignations} // Hide create button if no permission
         />
       ) : (
         <DataTable
           data={filteredDesignations}
-          columns={columns}
+          columns={columns.filter((col) =>
+            col.field === "actions" ? canManageDesignations : true
+          )} // Hide actions column if no permission
           searchable={false} // We handle search in the component
         />
       )}
@@ -310,6 +334,7 @@ const DesignationManagementPage = () => {
               : updateMutation.isPending
           }
           mode={modalMode}
+          canManageDesignations={canManageDesignations} // Pass permission to form
         />
       </ReusableModal>
 
@@ -349,6 +374,7 @@ const DesignationForm = ({
   onCancel,
   isLoading = false,
   mode = "create", // 'create' or 'edit'
+  canManageDesignations = false, // New prop for permission
 }) => {
   const [formData, setFormData] = useState({
     designationName: initialData?.designationName || "",
@@ -690,7 +716,7 @@ const DesignationForm = ({
         </button>
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !canManageDesignations} // Disable if no permission
           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (

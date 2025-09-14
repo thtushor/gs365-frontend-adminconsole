@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useGetRequest } from "../../Utils/apiClient";
 import { useAuth } from "../../hooks/useAuth";
 import { useDesignations } from "../../hooks/useDesignations";
+import { staticAdminCheck, staticAffiliatePermission } from "../../Utils/staticAffiliatePermission";
 
 // simple debounce hook
 function useDebounce(value, delay = 500) {
@@ -131,8 +132,8 @@ export function CreateAgentForm({
       commission_percent: form.commission_percent
         ? Number(form.commission_percent)
         : null,
-      minTrx: form.minTrx ? Number(form.minTrx) : null,
-      maxTrx: form.maxTrx ? Number(form.maxTrx) : null,
+      minTrx: form.minTrx ? String(form.minTrx) : null,
+      maxTrx: form.maxTrx ? String(form.maxTrx) : null,
     });
   };
 
@@ -499,7 +500,7 @@ export function CreateAgentForm({
         </>
       )}
 
-      {["admin", "superAdmin"].includes(user?.role) && (
+      {staticAdminCheck(user.role) && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
             STATUS <span className="text-red-500">*</span>

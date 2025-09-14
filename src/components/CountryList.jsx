@@ -4,6 +4,7 @@ import ThumbnailImage from "./ThumbnailImage";
 import { useCountryData } from "../hooks/useCountryData";
 import Pagination from "./Pagination";
 import AssignCountryLanguageModal from "./AssignCountryLanguageModal";
+import { useAuth } from "../hooks/useAuth";
 
 const defaultFilters = {
   searchKey: "",
@@ -18,6 +19,17 @@ const CountryList = () => {
   const { useCountries, updateCountryStatus, isUpdatingCountryStatus } =
     useCountryData();
   const [selectedCountry, setSelectedCountry] = useState(null);
+
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
+  const canManageCountries =
+    isSuperAdmin || permissions.includes("country_manage_countries");
+  const canAssignCountryLanguages =
+    isSuperAdmin || permissions.includes("country_assign_country_languages");
+  const canUpdateCountryStatus =
+    isSuperAdmin || permissions.includes("country_update_country_status");
 
   console.log({ filters });
   // Get countries with filters
@@ -135,51 +147,55 @@ const CountryList = () => {
       align: "center",
       render: (value, row, idx) => (
         <div className="flex gap-2">
-          <button
-            className="text-blue-600 hover:bg-blue-50 p-1 rounded"
-            title="Toggle Status"
-            onClick={() => handleStatusToggle(row.id, row.status)}
-            disabled={isUpdatingCountryStatus}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
+          {(canUpdateCountryStatus || canManageCountries) && (
+            <button
+              className="text-blue-600 hover:bg-blue-50 p-1 rounded"
+              title="Toggle Status"
+              onClick={() => handleStatusToggle(row.id, row.status)}
+              disabled={isUpdatingCountryStatus}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-              />
-            </svg>
-          </button>
-          <button
-            className="text-green-600 hover:bg-green-50 p-1 rounded"
-            title="Edit"
-            type="button"
-            onClick={() => {
-              setSelectedCountry(row);
-              setIsAssignModalOpen(true);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+            </button>
+          )}
+          {(canAssignCountryLanguages || canManageCountries) && (
+            <button
+              className="text-green-600 hover:bg-green-50 p-1 rounded"
+              title="Edit"
+              type="button"
+              onClick={() => {
+                setSelectedCountry(row);
+                setIsAssignModalOpen(true);
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16.862 4.487a2.1 2.1 0 1 1 2.97 2.97L7.5 19.788l-4 1 1-4 14.362-14.3z"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.862 4.487a2.1 2.1 0 1 1 2.97 2.97L7.5 19.788l-4 1 1-4 14.362-14.3z"
+                />
+              </svg>
+            </button>
+          )}
         </div>
       ),
     },
@@ -203,12 +219,14 @@ const CountryList = () => {
   return (
     <div className="min-h-screen bg-[#f5f5f5] p-6">
       <div className="flex justify-between items-center mb-4">
-        <button
-          className="bg-green-600 text-white px-[10px] cursor-pointer py-1 rounded hover:bg-green-700 transition font-medium"
-          onClick={() => setIsAssignModalOpen(true)}
-        >
-          Assign Language
-        </button>
+        {(canAssignCountryLanguages || canManageCountries) && (
+          <button
+            className="bg-green-600 text-white px-[10px] cursor-pointer py-1 rounded hover:bg-green-700 transition font-medium"
+            onClick={() => setIsAssignModalOpen(true)}
+          >
+            Assign Language
+          </button>
+        )}
         <button
           className="border border-green-400 text-green-700 px-6 py-1 rounded hover:bg-green-50 transition font-medium"
           onClick={() => window.print()}

@@ -13,7 +13,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { 
     if (user?.role === "admin" || user?.role === "superAdmin") {
       navigate("/", { replace: true });
     } else if (user) {

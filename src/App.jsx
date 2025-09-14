@@ -19,6 +19,7 @@ import {
   hasPermission,
 } from "./Utils/permissions.js";
 import UnAuthorized from "./components/UnAuthorizedAccess.jsx";
+import Loader from "./components/Loader.jsx"; // Import the Loader component
 
 // Handle normal menu routes (inside Layout)
 
@@ -59,7 +60,7 @@ function getRoutes(menu, user) {
         const ChildComponent = child.component;
         const childHasPermission =
           isSuperAdmin ||
-          checkHasCategoryPermission([child.accessKey], item.accessCategory);
+          hasPermission(permissions, child.accessKey);
 
         if (child.path)
           routes.push(
@@ -126,7 +127,7 @@ function getOutsideRoutes(routes, LayoutWrapper = null, user) {
 }
 
 function App() {
-  const { user } = useAuth();
+  const { user, isValidating } = useAuth(); // Get isValidating from useAuth
   const userType = import.meta.env.VITE_USER_TYPE;
 
   useEffect(() => {
@@ -153,6 +154,11 @@ function App() {
       document.head.appendChild(link);
     }
   }, [userType]);
+
+  if (isValidating) {
+    return <Loader />; // Show loader while validating
+  }
+
   return (
     <Routes>
       {/* Routes inside the layout */}

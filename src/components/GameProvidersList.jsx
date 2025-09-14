@@ -9,6 +9,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
 import { BsWhatsapp } from "react-icons/bs";
 import { TbBrandTelegram } from "react-icons/tb";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const initialFilters = {
   page: 1,
@@ -21,6 +23,31 @@ const initialFilters = {
 const GameProvidersList = () => {
   const navigate = useNavigate();
   const getRequest = useGetRequest();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const userPermissions = user?.designation?.permissions || [];
+  const canManageGameProviders = isSuperAdmin || hasPermission(
+    userPermissions,
+    "game_manage_game_providers"
+  );
+  const canViewGameProviderList = isSuperAdmin || hasPermission(
+    userPermissions,
+    "game_view_game_provider_list"
+  );
+  // const canViewSubGameProviderList = hasPermission(userPermissions, "game_view_sub_game_provider_list");
+  // const canManageGameProviderProfile = hasPermission(userPermissions, "game_manage_game_provider_profile");
+  // const canViewGameProviderDeposits = hasPermission(userPermissions, "game_view_game_provider_deposits");
+  // const canViewGameProviderExpenses = hasPermission(userPermissions, "game_view_game_provider_expenses");
+  // const canManageFeaturedGames = hasPermission(userPermissions, "game_manage_featured_games");
+
+  // Check if the user has permission to view the game provider list at all
+  if (!canViewGameProviderList) {
+    return (
+      <div className="text-center text-red-500 py-8">
+        You do not have permission to view game providers.
+      </div>
+    );
+  }
 
   const [filters, setFilters] = useState(initialFilters);
   const handleReset = () => {
@@ -49,8 +76,7 @@ const GameProvidersList = () => {
       }),
     keepPreviousData: true,
   });
-  const parentProviderList = parentProvider?.data || [];
-  console.log(parentProviderList);
+  const parentProviderList = parentProvider?.data || [];s
 
   const game_providers = data?.data || [];
   const total = data?.pagination?.total || 0;
@@ -185,20 +211,21 @@ const GameProvidersList = () => {
       field: "action",
       headerName: "Action",
       width: 80,
-      render: (_, row) => (
-        <button
-          onClick={() =>
-            navigate(
-              row?.parentId
-                ? `/add-game-provider?providerId=${row.id}`
-                : `/add-parent-game-provider?providerId=${row.id}`
-            )
-          }
-          className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
-        >
-          <FaRegEdit size={22} />
-        </button>
-      ),
+      render: (_, row) =>
+        (canManageGameProviders) && (
+          <button
+            onClick={() =>
+              navigate(
+                row?.parentId
+                  ? `/add-game-provider?providerId=${row.id}`
+                  : `/add-parent-game-provider?providerId=${row.id}`
+              )
+            }
+            className="text-blue-600 hover:text-blue-800 cursor-pointer w-full flex items-center justify-center"
+          >
+            <FaRegEdit size={22} />
+          </button>
+        ),
     },
   ];
 
@@ -219,12 +246,14 @@ const GameProvidersList = () => {
     <div className="bg-white rounded-lg shadow p-4 mt-6 w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Game Provider List</h2>
-        <button
-          className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-          onClick={() => navigate("/add-parent-game-provider")}
-        >
-          + Parent Provider
-        </button>
+        {canManageGameProviders && (
+          <button
+            className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+            onClick={() => navigate("/add-parent-game-provider")}
+          >
+            + Parent Provider
+          </button>
+        )}
       </div>
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center mb-4">

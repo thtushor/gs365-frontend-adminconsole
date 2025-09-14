@@ -5,6 +5,7 @@ import { API_LIST } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
 import { Link } from "react-router-dom";
+import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
 
 const defaultForm = {
   username: "",
@@ -73,7 +74,11 @@ const CreateAffiliate = () => {
     window.print();
   };
 
-  const isAdmin = user?.role === "admin" || user?.role === "superAdmin";
+  const isAdmin = staticAffiliatePermission(
+    user.role,
+    user.permissions,
+    "affiliate_create_affiliate"
+  );
 
   return (
     <div className="bg-[#f5f5f5] min-h-screen p-6">
@@ -103,18 +108,20 @@ const CreateAffiliate = () => {
         </div>
       )}
 
-      <div className="border border-green-400 rounded-md bg-white p-6">
-        <CreateAgentForm
-          onSubmit={handleFormSubmit}
-          initialValues={formData}
-          isLoading={isLoading}
-          isEdit={false}
-          ref={formRef}
-          roles={[]}
-          isAffiliate
-          isRefVisible
-        />
-      </div>
+      {isAdmin && (
+        <div className="border border-green-400 rounded-md bg-white p-6">
+          <CreateAgentForm
+            onSubmit={handleFormSubmit}
+            initialValues={formData}
+            isLoading={isLoading}
+            isEdit={false}
+            ref={formRef}
+            roles={[]}
+            isAffiliate
+            isRefVisible
+          />
+        </div>
+      )}
 
       <ReusableModal
         open={modalOpen}

@@ -10,10 +10,14 @@ import EmptyState  from './shared/EmptyState';
 import StatusChip from './shared/StatusChip';
 import DataTable from './DataTable';
 import Pagination from './Pagination';
+import { hasPermission } from '../Utils/permissions';
+import UnAuthorizedAccess from './UnAuthorizedAccess';
 
 const AdminBalancePage = () => {
   const { adminBalanceData, loading, error, fetchAdminBalance, createAdminBalance } = useAdminBalance();
   const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
   
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -277,6 +281,13 @@ const AdminBalancePage = () => {
     });
   }, [pagination.page, pagination.pageSize]);
 
+  const canViewAdminBalance = isSuperAdmin || hasPermission(permissions, "finance_view_admin_balance");
+  const canManageAdminBalance = isSuperAdmin || hasPermission(permissions, "finance_manage_admin_balance");
+
+  if (!canViewAdminBalance) {
+    return <UnAuthorizedAccess />;
+  }
+
   if (loading && !adminBalanceData.data.length) {
     return <LoadingState message="Loading admin balance data..." />;
   }
@@ -290,13 +301,13 @@ const AdminBalancePage = () => {
       <PageHeader
         title="Admin Balance Management"
         subtitle="Manage and track admin main balance transactions"
-        actions={[
+        actions={canManageAdminBalance ? [
           {
             label: 'Add Record',
             onClick: () => setShowForm(true),
             variant: 'primary'
           }
-        ]}
+        ] : []}
       />
 
       {/* Stats Cards */}

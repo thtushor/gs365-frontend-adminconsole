@@ -63,7 +63,13 @@ export const PERMISSION_CATEGORIES = {
             "affiliate_view_affiliate_players",
             "affiliate_approve_withdraw_requests",
             "affiliate_manage_commission_rates",
-            "affiliate_manage_kyc_verification"
+            "affiliate_manage_kyc_verification",
+            "affiliate_view_main_balance",
+            "affiliate_view_downline_balance",
+            "affiliate_view_withdrawable_balance",
+            "affiliate_view_commission_percentage",
+            "affiliate_view_referral_code",
+            "affiliate_view_min_max_withdraw_limit"
         ]
     },
     PROMOTION: {
@@ -73,7 +79,7 @@ export const PERMISSION_CATEGORIES = {
             "promotion_create_promotion",
             "promotion_edit_promotion",
             "promotion_delete_promotion",
-            "promotion_view_promotion",
+            // "promotion_view_promotion",
             "promotion_view_promotion_list",
             "promotion_manage_promotion_status"
         ]
@@ -83,10 +89,6 @@ export const PERMISSION_CATEGORIES = {
         icon: "💳",
         permissions: [
             "payment_view_transactions",
-            "payment_view_deposits",
-            "payment_view_withdrawals",
-            "payment_view_pending_deposits",
-            "payment_view_pending_withdrawals",
             "payment_approve_deposits",
             "payment_approve_withdrawals",
             "payment_reject_deposits",
@@ -189,19 +191,19 @@ export const PERMISSION_CATEGORIES = {
         ]
     },
 
-    REPORTS: {
-        label: "Reports & Analytics",
-        icon: "📊",
-        permissions: [
-            "reports_view_dashboard",
-            "reports_view_game_stats",
-            "reports_view_product_analytics",
-            "reports_view_coin_analytics",
-            "reports_view_net_profit_loss",
-            "reports_view_turnover_reports",
-            "reports_export_reports"
-        ]
-    },
+    // REPORTS: {
+    //     label: "Reports & Analytics",
+    //     icon: "📊",
+    //     permissions: [
+    //         "reports_view_dashboard",
+    //         "reports_view_game_stats",
+    //         "reports_view_product_analytics",
+    //         "reports_view_coin_analytics",
+    //         "reports_view_net_profit_loss",
+    //         "reports_view_turnover_reports",
+    //         "reports_export_reports"
+    //     ]
+    // },
 
     CONFIGURATION: {
         label: "Configuration",
