@@ -451,7 +451,7 @@ export function CreateAgentForm({
       </div>
 
       {/* min/max trx */}
-      {isAffiliate && (
+      {isAffiliate && user?.role !== "superAffiliate" && (
         <>
           <div className="flex flex-col relative">
             <label className="font-semibold text-xs mb-1">
