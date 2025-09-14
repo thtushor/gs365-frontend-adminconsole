@@ -99,7 +99,7 @@ function getRoutes(menu, user) {
 function getOutsideRoutes(routes, LayoutWrapper = null, user,isAffiliate=false) {
   const permissions = user?.designation?.permissions || [];
   const isSuperAdmin =
-    user?.role === "superAdmin" || user?.role === "superAffiliate";
+    user?.role === "superAdmin";
 
   return routes.map((route) => {
     const Component = route.component;
