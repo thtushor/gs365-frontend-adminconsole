@@ -1,4 +1,10 @@
-import { FaDollarSign, FaEdit, FaTrash } from "react-icons/fa";
+import {
+  FaDollarSign,
+  FaEdit,
+  FaTrash,
+  FaMoneyBillWave,
+  FaEllipsisV,
+} from "react-icons/fa";
 import DataTable from "./DataTable";
 import { useState } from "react";
 import ReusableModal from "./ReusableModal";
@@ -6,11 +12,12 @@ import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
 import { formatAmount } from "./BettingWagerPage";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Select from "react-select";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
+import ActionDropdown from "./shared/ActionDropdown";
 
 // Custom hook to fetch promotions
 const usePromotions = () => {
@@ -31,6 +38,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const permissions = user?.designation?.permissions || [];
 
   const [depositModalOpen, setDepositModalOpen] = useState(false);
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [depositForm, setDepositForm] = useState({
     amount: "",
@@ -38,7 +46,32 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     notes: "",
     attachment: "",
   });
+  const [withdrawForm, setWithdrawForm] = useState({
+    amount: "",
+    notes: "",
+    attachment: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const withdrawMutation = useMutation({
+    mutationFn: async (payload) => {
+      const response = await Axios.post(API_LIST.WITHDRAW_TRANSACTION, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Withdrawal added successfully");
+      setWithdrawModalOpen(false);
+      // Optionally refresh player data here
+    },
+    onError: (error) => {
+      const message =
+        error?.response?.data?.message || "Failed to add withdrawal";
+      toast.error(message);
+    },
+    onSettled: () => {
+      setIsSubmitting(false);
+    },
+  });
 
   // Fetch promotions using react-query
   const { data: promotionsData, isLoading: promotionsLoading } =
@@ -53,6 +86,42 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       attachment: "",
     });
     setDepositModalOpen(true);
+  };
+
+  const handleOpenWithdrawModal = (player) => {
+    setSelectedPlayer(player);
+    setWithdrawForm({
+      amount: "",
+      notes: "",
+      attachment: "",
+    });
+    setWithdrawModalOpen(true);
+  };
+
+  const handleWithdrawSubmit = async () => {
+    if (!selectedPlayer) return;
+
+    if (!withdrawForm.amount || parseFloat(withdrawForm.amount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        userId: selectedPlayer.id,
+        amount: parseFloat(withdrawForm.amount),
+        currencyId: selectedPlayer.currencyId || 10, // Assuming default currencyId
+        notes: withdrawForm.notes || null,
+        attachment: withdrawForm.attachment || null,
+      };
+
+      await withdrawMutation.mutateAsync(payload);
+    } catch (error) {
+      // Error handling is done in the useMutation hook
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDepositSubmit = async () => {
@@ -129,6 +198,48 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       ...depositForm,
       promotionId: selectedOption ? selectedOption.value : "",
     });
+  };
+
+  const getActionsForRow = (row) => {
+    const actions = [];
+
+    if (isSuperAdmin || hasPermission(permissions, "payment_approve_deposits")) {
+      actions.push({
+        label: "Add Deposit",
+        icon: <FaDollarSign size={14} />,
+        onClick: () => handleOpenDepositModal(row),
+        className: "text-green-600 hover:bg-green-50",
+      });
+    }
+
+    if (isSuperAdmin || hasPermission(permissions, "payment_approve_withdrawals")) { // Assuming a permission for withdrawals
+      actions.push({
+        label: "Withdraw",
+        icon: <FaMoneyBillWave size={14} />,
+        onClick: () => handleOpenWithdrawModal(row),
+        className: "text-orange-600 hover:bg-orange-50",
+      });
+    }
+
+    if (onEdit) {
+      actions.push({
+        label: "Edit",
+        icon: <FaEdit size={14} />,
+        onClick: () => onEdit(row),
+        className: "text-blue-600 hover:bg-blue-50",
+      });
+    }
+
+    if (onDelete) {
+      actions.push({
+        label: "Delete",
+        icon: <FaTrash size={14} />,
+        onClick: () => onDelete(row),
+        className: "text-red-600 hover:bg-red-50",
+      });
+    }
+
+    return actions;
   };
 
   const columns = [
@@ -371,36 +482,10 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       width: 150,
       align: "center",
       render: (value, row) => (
-        <div className="flex justify-center gap-2">
-          {(isSuperAdmin ||
-            hasPermission(permissions, "payment_approve_deposits")) && (
-            <button
-              className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
-              title="Add Deposit"
-              onClick={() => handleOpenDepositModal(row)}
-            >
-              <FaDollarSign />
-            </button>
-          )}
-          {onEdit && (
-            <button
-              className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition md:p-1 mr-2"
-              title="Edit"
-              onClick={() => onEdit(row)}
-            >
-              <FaEdit />
-            </button>
-          )}
-          {onDelete && (
-            <button
-              className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition md:p-1"
-              title="Delete"
-              onClick={() => onDelete(row)}
-            >
-              <FaTrash />
-            </button>
-          )}
-        </div>
+        <ActionDropdown
+          actions={getActionsForRow(row)}
+          isLoading={withdrawMutation.isPending}
+        />
       ),
     },
   ];
@@ -531,6 +616,64 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               value={depositForm.notes}
               onChange={(e) =>
                 setDepositForm({ ...depositForm, notes: e.target.value })
+              }
+            />
+          </div>
+        </div>
+      </ReusableModal>
+
+      {/* Withdraw Modal */}
+      <ReusableModal
+        open={withdrawModalOpen}
+        onClose={() => setWithdrawModalOpen(false)}
+        title={`Withdraw from ${selectedPlayer?.fullname || "Player"}`}
+        onSave={handleWithdrawSubmit}
+        isLoading={isSubmitting || withdrawMutation.isPending}
+        loadingText="Processing Withdrawal..."
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Player ID
+              </label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2 bg-gray-100"
+                value={selectedPlayer?.id || ""}
+                readOnly
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Amount *
+            </label>
+            <input
+              type="number"
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter amount"
+              value={withdrawForm.amount}
+              onChange={(e) =>
+                setWithdrawForm({ ...withdrawForm, amount: e.target.value })
+              }
+              min="0"
+              step="0.01"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notes (Optional)
+            </label>
+            <textarea
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter notes"
+              rows={3}
+              value={withdrawForm.notes}
+              onChange={(e) =>
+                setWithdrawForm({ ...withdrawForm, notes: e.target.value })
               }
             />
           </div>
