@@ -226,7 +226,7 @@ const WithdrawBalance = () => {
             processed before submitting a new one.
           </p>
         </div>
-      ) : affiliateInfo?.kyc_status !== "verified" ? (
+      ) : affiliateInfo?.kyc_status === "required" ? (
         <div className="border-purple-500 border bg-purple-100 rounded-lg py-3 max-w-[500px] px-5">
           <p className="font-bold text-black uppercase text-[18px]">
             <span className="font-bold text-purple-500">
