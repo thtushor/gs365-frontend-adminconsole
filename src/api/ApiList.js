@@ -158,6 +158,7 @@ export const API_LIST = {
   PAYMENT_TRANSACTION: "/api/transactions",
   DEPOSIT_TRANSACTION: "/api/transactions/deposit",
   WITHDRAW_TRANSACTION: "/api/transactions/affiliate-withdraw",
+  PLAYER_WITHDRAW_TRANSACTION: "/api/transactions/withdraw",
 
   // Admin Main Balance
   ADMIN_MAIN_BALANCE: "/api/admin-main-balance",

@@ -12,12 +12,13 @@ import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
 import { formatAmount } from "./BettingWagerPage";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Select from "react-select";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
 import ActionDropdown from "./shared/ActionDropdown";
+import WithdrawFormModal from "./WithdrawFormModal";
 
 // Custom hook to fetch promotions
 const usePromotions = () => {
@@ -38,6 +39,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const permissions = user?.designation?.permissions || [];
 
   const [depositModalOpen, setDepositModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [depositForm, setDepositForm] = useState({
@@ -46,32 +49,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     notes: "",
     attachment: "",
   });
-  const [withdrawForm, setWithdrawForm] = useState({
-    amount: "",
-    notes: "",
-    attachment: "",
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const withdrawMutation = useMutation({
-    mutationFn: async (payload) => {
-      const response = await Axios.post(API_LIST.WITHDRAW_TRANSACTION, payload);
-      return response.data;
-    },
-    onSuccess: () => {
-      toast.success("Withdrawal added successfully");
-      setWithdrawModalOpen(false);
-      // Optionally refresh player data here
-    },
-    onError: (error) => {
-      const message =
-        error?.response?.data?.message || "Failed to add withdrawal";
-      toast.error(message);
-    },
-    onSettled: () => {
-      setIsSubmitting(false);
-    },
-  });
 
   // Fetch promotions using react-query
   const { data: promotionsData, isLoading: promotionsLoading } =
@@ -90,38 +68,12 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
 
   const handleOpenWithdrawModal = (player) => {
     setSelectedPlayer(player);
-    setWithdrawForm({
-      amount: "",
-      notes: "",
-      attachment: "",
-    });
     setWithdrawModalOpen(true);
   };
 
-  const handleWithdrawSubmit = async () => {
-    if (!selectedPlayer) return;
-
-    if (!withdrawForm.amount || parseFloat(withdrawForm.amount) <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        userId: selectedPlayer.id,
-        amount: parseFloat(withdrawForm.amount),
-        currencyId: selectedPlayer.currencyId || 10, // Assuming default currencyId
-        notes: withdrawForm.notes || null,
-        attachment: withdrawForm.attachment || null,
-      };
-
-      await withdrawMutation.mutateAsync(payload);
-    } catch (error) {
-      // Error handling is done in the useMutation hook
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleWithdrawSuccess = () => {
+    // Invalidate and refetch players query to update balances
+    queryClient.invalidateQueries(["players"]);
   };
 
   const handleDepositSubmit = async () => {
@@ -482,10 +434,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       width: 150,
       align: "center",
       render: (value, row) => (
-        <ActionDropdown
-          actions={getActionsForRow(row)}
-          isLoading={withdrawMutation.isPending}
-        />
+        <ActionDropdown actions={getActionsForRow(row)} />
       ),
     },
   ];
@@ -623,62 +572,12 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       </ReusableModal>
 
       {/* Withdraw Modal */}
-      <ReusableModal
+      <WithdrawFormModal
         open={withdrawModalOpen}
         onClose={() => setWithdrawModalOpen(false)}
-        title={`Withdraw from ${selectedPlayer?.fullname || "Player"}`}
-        onSave={handleWithdrawSubmit}
-        isLoading={isSubmitting || withdrawMutation.isPending}
-        loadingText="Processing Withdrawal..."
-      >
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Player ID
-              </label>
-              <input
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-100"
-                value={selectedPlayer?.id || ""}
-                readOnly
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount *
-            </label>
-            <input
-              type="number"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Enter amount"
-              value={withdrawForm.amount}
-              onChange={(e) =>
-                setWithdrawForm({ ...withdrawForm, amount: e.target.value })
-              }
-              min="0"
-              step="0.01"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes (Optional)
-            </label>
-            <textarea
-              className="w-full border rounded px-3 py-2"
-              placeholder="Enter notes"
-              rows={3}
-              value={withdrawForm.notes}
-              onChange={(e) =>
-                setWithdrawForm({ ...withdrawForm, notes: e.target.value })
-              }
-            />
-          </div>
-        </div>
-      </ReusableModal>
+        selectedPlayer={selectedPlayer}
+        onSuccess={handleWithdrawSuccess}
+      />
     </>
   );
 };
