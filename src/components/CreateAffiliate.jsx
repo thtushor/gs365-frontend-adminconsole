@@ -34,6 +34,7 @@ const CreateAffiliate = () => {
   const handleFormSubmit = async (data) => {
     setIsLoading(true);
     setError("");
+    console.log({data,refer_code:data?.refer_code});
 
     try {
       const payload = {
