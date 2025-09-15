@@ -9,7 +9,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useGetRequest } from "../../Utils/apiClient";
 import { useAuth } from "../../hooks/useAuth";
 import { useDesignations } from "../../hooks/useDesignations";
-import { staticAdminCheck, staticAffiliatePermission } from "../../Utils/staticAffiliatePermission";
+import {
+  staticAdminCheck,
+  staticAffiliatePermission,
+} from "../../Utils/staticAffiliatePermission";
 
 // simple debounce hook
 function useDebounce(value, delay = 500) {
@@ -74,7 +77,6 @@ export function CreateAgentForm({
 
   // state for referral details
   const [refDetails, setRefDetails] = useState(null);
-  console.log(refDetails?.commission_percent);
 
   // debounce refer_code
   const debouncedRefCode = useDebounce(form.refer_code, 600);
@@ -466,7 +468,11 @@ export function CreateAgentForm({
               value={form.minTrx}
               onChange={handleChange}
               required
-              readOnly={refLoading}
+              readOnly={
+                refLoading ||
+                (refDetails &&
+                  (user?.role !== "admin" || user?.role !== "superAdmin"))
+              }
             />
             {refLoading && (
               <p className="text-blue-600 absolute bottom-[-13px] left-2 text-[12px] font-medium uppercase border border-blue-500 bg-white rounded-full px-2">

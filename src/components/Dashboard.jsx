@@ -41,8 +41,8 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  const {user} = useAuth();
-const isSuperAdmin = user?.role === "superAdmin";
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
 
   const fetchDashboardData = async (isRefresh = false) => {
@@ -119,58 +119,248 @@ const isSuperAdmin = user?.role === "superAdmin";
   const rows = [
     // Row 1 (2 cards)
     [
-      { title: "Main Balance", value: formatAmount(dashboardData?.mainBalance || 0), icon: <FaCoins />, color: "border-yellow-400", permission: "dashboard_view_overview" },
-      { title: "Total Company Profit", value: formatAmount(dashboardData?.companyProfit || 0), icon: <FaChartLine />, color: "border-green-400", permission: "dashboard_view_sales" },
+      {
+        title: "Main Balance",
+        value: formatAmount(dashboardData?.mainBalance || 0),
+        icon: <FaCoins />,
+        color: "border-yellow-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Company Profit",
+        value: formatAmount(dashboardData?.companyProfit || 0),
+        icon: <FaChartLine />,
+        color: "border-green-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total GGR Amount",
+        value: formatAmount(dashboardData?.totalGGRAmount || 0),
+        icon: <FaChartLine />,
+        color: "border-blue-400",
+        permission: "dashboard_view_sales",
+      },
     ],
     // Row 2 (3 cards)
     [
-      { title: "Total Player Deposit", value: formatAmount(dashboardData?.totalDeposit || 0), icon: <FaMoneyCheckAlt />, color: "border-green-400", permission: "dashboard_view_sales" },
-      { title: "Total Player Bonus Deposit", value: formatAmount(dashboardData?.totalBonusAmount || 0), icon: <FaCoins />, color: "border-indigo-400", permission: "dashboard_view_sales" },
-      { title: "Total Player Withdraw", value: formatAmount(dashboardData?.totalWithdraw || 0), icon: <FaWallet />, color: "border-orange-400", permission: "dashboard_view_sales" },
+      {
+        title: "Total Player Deposit",
+        value: formatAmount(dashboardData?.totalDeposit || 0),
+        icon: <FaMoneyCheckAlt />,
+        color: "border-green-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Player Bonus Deposit",
+        value: formatAmount(dashboardData?.totalBonusAmount || 0),
+        icon: <FaCoins />,
+        color: "border-indigo-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Player Withdraw",
+        value: formatAmount(dashboardData?.totalWithdraw || 0),
+        icon: <FaWallet />,
+        color: "border-orange-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Player Current Balance",
+        value: formatAmount(dashboardData?.totalPlayerCurrentBalance || 0),
+        icon: <FaWallet />,
+        color: "border-emerald-400",
+        permission: "dashboard_view_sales",
+      },
     ],
     // Row 3 (4 cards)
     [
-      { title: "Total Player", value: dashboardData?.totalPlayers?.toLocaleString() || "0", icon: <FaUserFriends />, color: "border-green-400", permission: "dashboard_view_user_activity" },
-      { title: "Total Online Player", value: dashboardData?.totalOnlinePlayers?.toLocaleString() || "0", icon: <FaRegClock />, color: "border-emerald-400", permission: "dashboard_view_user_activity" },
-      { title: "Total Player Pending Deposit", value: formatAmount(dashboardData?.pendingDeposit || 0), icon: <FaRegCheckCircle />, color: "border-yellow-400", permission: "dashboard_view_sales" },
-      { title: "Total Player Pending Withdraw", value: formatAmount(dashboardData?.pendingWithdraw || 0), icon: <FaRegTimesCircle />, color: "border-pink-400", permission: "dashboard_view_sales" },
+      {
+        title: "Total Player",
+        value: dashboardData?.totalPlayers?.toLocaleString() || "0",
+        icon: <FaUserFriends />,
+        color: "border-green-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total Online Player",
+        value: dashboardData?.totalOnlinePlayers?.toLocaleString() || "0",
+        icon: <FaRegClock />,
+        color: "border-emerald-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total Player Pending Deposit",
+        value: formatAmount(dashboardData?.pendingDeposit || 0),
+        icon: <FaRegCheckCircle />,
+        color: "border-yellow-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Player Pending Withdraw",
+        value: formatAmount(dashboardData?.pendingWithdraw || 0),
+        icon: <FaRegTimesCircle />,
+        color: "border-pink-400",
+        permission: "dashboard_view_sales",
+      },
     ],
     // Row 4 (5 cards)
     [
-      { title: "Total Player Bet Amount", value: formatAmount(dashboardData?.totalBetAmount || 0), icon: <FaTrophy />, color: "border-green-400", permission: "dashboard_view_user_activity" },
-      { title: "Total Player Win", value: formatAmount(dashboardData?.totalBetWin || 0), icon: <FaTrophy />, color: "border-green-400", permission: "dashboard_view_user_activity" },
-      {title: "Total BD Players", value: dashboardData?.totalBDUsers?.toLocaleString() || "0", icon: <FaUserFriends />, color: "border-blue-400", permission: "dashboard_view_user_activity" },
-      {title: "Total Foreign Players", value: dashboardData?.totalForeignUsers?.toLocaleString() || "0", icon: <FaUserFriends />, color: "border-blue-400", permission: "dashboard_view_user_activity" },
+      {
+        title: "Total Player Bet Amount",
+        value: formatAmount(dashboardData?.totalBetAmount || 0),
+        icon: <FaTrophy />,
+        color: "border-green-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total Player Win",
+        value: formatAmount(dashboardData?.totalBetWin || 0),
+        icon: <FaTrophy />,
+        color: "border-green-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total BD Players",
+        value: dashboardData?.totalBDUsers?.toLocaleString() || "0",
+        icon: <FaUserFriends />,
+        color: "border-blue-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total Foreign Players",
+        value: dashboardData?.totalForeignUsers?.toLocaleString() || "0",
+        icon: <FaUserFriends />,
+        color: "border-blue-400",
+        permission: "dashboard_view_user_activity",
+      },
       // { title: "Total Player Loss", value: formatAmount(dashboardData?.totalBetLost || 0), icon: <FaRegSadTear />, color: "border-red-400" },
-      
     ],
     // Row 5 (4 cards)
     [
-      { title: "Total Super Aff", value: dashboardData?.totalSuperAffiliate?.toLocaleString() || "0", icon: <FaUsers />, color: "border-purple-400", permission: "dashboard_view_user_activity" },
-      { title: "Total Sub Aff", value: dashboardData?.totalSubAffiliate?.toLocaleString() || "0", icon: <FaUsers />, color: "border-purple-400", permission: "dashboard_view_user_activity" },
-      { title: "Total Aff Withdraw", value: formatAmount(dashboardData?.totalAffiliateWithdrawal || 0), icon: <FaCoins />, color: "border-blue-400", permission: "dashboard_view_sales" },
-      { title: "Total Aff Withdraw Pending", value: formatAmount(dashboardData?.totalAffiliateWithdrawalPending || 0), icon: <FaRegClock />, color: "border-amber-400", permission: "dashboard_view_sales" },
+      {
+        title: "Total Super Aff",
+        value: dashboardData?.totalSuperAffiliate?.toLocaleString() || "0",
+        icon: <FaUsers />,
+        color: "border-purple-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total Sub Aff",
+        value: dashboardData?.totalSubAffiliate?.toLocaleString() || "0",
+        icon: <FaUsers />,
+        color: "border-purple-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total Aff Withdraw",
+        value: formatAmount(dashboardData?.totalAffiliateWithdrawal || 0),
+        icon: <FaCoins />,
+        color: "border-blue-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Aff Withdraw Pending",
+        value: formatAmount(
+          dashboardData?.totalAffiliateWithdrawalPending || 0
+        ),
+        icon: <FaRegClock />,
+        color: "border-amber-400",
+        permission: "dashboard_view_sales",
+      },
     ],
     // Row 6 (4 cards)
-      [
-        { title: "Total Parent Game Provider", value: dashboardData?.totalParentGameProviders?.toLocaleString() || "0", icon: <FaGamepad />, color: "border-indigo-400", permission: "dashboard_view_overview" },
-        { title: "Total Sub Game Provider", value: dashboardData?.totalSubGameProviders?.toLocaleString() || "0", icon: <FaGamepad />, color: "border-indigo-400", permission: "dashboard_view_overview" },
-      { title: "Total Game Provider Deposit", value: formatAmount(dashboardData?.totalGameProviderDeposit || 0), icon: <FaMoneyCheckAlt />, color: "border-green-400", permission: "dashboard_view_sales" },
-      { title: "Total Game", value: dashboardData?.totalGames?.toLocaleString() || "0", icon: <FaGamepad />, color: "border-blue-400", permission: "dashboard_view_overview" },
+    [
+      {
+        title: "Total Parent Game Provider",
+        value: dashboardData?.totalParentGameProviders?.toLocaleString() || "0",
+        icon: <FaGamepad />,
+        color: "border-indigo-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Sub Game Provider",
+        value: dashboardData?.totalSubGameProviders?.toLocaleString() || "0",
+        icon: <FaGamepad />,
+        color: "border-indigo-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Game Provider Deposit",
+        value: formatAmount(dashboardData?.totalGameProviderDeposit || 0),
+        icon: <FaMoneyCheckAlt />,
+        color: "border-green-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Game",
+        value: dashboardData?.totalGames?.toLocaleString() || "0",
+        icon: <FaGamepad />,
+        color: "border-blue-400",
+        permission: "dashboard_view_overview",
+      },
     ],
     // Row 7 (4 cards)
     [
-      { title: "Total Active Game", value: dashboardData?.totalActiveGames?.toLocaleString() || "0", icon: <FaGamepad />, color: "border-green-400", permission: "dashboard_view_overview" },
-      { title: "Total Inactive Game", value: dashboardData?.totalInactiveGames?.toLocaleString() || "0", icon: <FaGamepad />, color: "border-red-400", permission: "dashboard_view_overview" },
-      { title: "Total Player KYC Verified", value: dashboardData?.totalPlayerKycVerified?.toLocaleString() || "0", icon: <FaRegCheckCircle />, color: "border-green-500", permission: "dashboard_view_user_activity" },
-      { title: "Total Aff KYC Verified", value: dashboardData?.totalAffKycVerified?.toLocaleString() || "0", icon: <FaRegCheckCircle />, color: "border-green-500", permission: "dashboard_view_user_activity" },
+      {
+        title: "Total Active Game",
+        value: dashboardData?.totalActiveGames?.toLocaleString() || "0",
+        icon: <FaGamepad />,
+        color: "border-green-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Inactive Game",
+        value: dashboardData?.totalInactiveGames?.toLocaleString() || "0",
+        icon: <FaGamepad />,
+        color: "border-red-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Player KYC Verified",
+        value: dashboardData?.totalPlayerKycVerified?.toLocaleString() || "0",
+        icon: <FaRegCheckCircle />,
+        color: "border-green-500",
+        permission: "dashboard_view_user_activity",
+      },
+      {
+        title: "Total Aff KYC Verified",
+        value: dashboardData?.totalAffKycVerified?.toLocaleString() || "0",
+        icon: <FaRegCheckCircle />,
+        color: "border-green-500",
+        permission: "dashboard_view_user_activity",
+      },
     ],
     // Row 8 (4 cards)
     [
-      { title: "Total Parent Sports Provider", value: dashboardData?.totalParentSportsProvider?.toLocaleString() || "0", icon: <FaHeartbeat />, color: "border-orange-400", permission: "dashboard_view_overview" },
-      { title: "Total Sub Sports Provider", value: dashboardData?.totalSubSportsProvider?.toLocaleString() || "0", icon: <FaHeartbeat />, color: "border-orange-400", permission: "dashboard_view_overview" },
-      { title: "Total Sports Active Game", value: dashboardData?.totalSportsActiveGame?.toLocaleString() || "0", icon: <FaHeartbeat />, color: "border-green-400", permission: "dashboard_view_overview" },
-      { title: "Total Sports Inactive Game", value: dashboardData?.totalSportsInactiveGame?.toLocaleString() || "0", icon: <FaHeartbeat />, color: "border-red-400", permission: "dashboard_view_overview" },
+      {
+        title: "Total Parent Sports Provider",
+        value:
+          dashboardData?.totalParentSportsProvider?.toLocaleString() || "0",
+        icon: <FaHeartbeat />,
+        color: "border-orange-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Sub Sports Provider",
+        value: dashboardData?.totalSubSportsProvider?.toLocaleString() || "0",
+        icon: <FaHeartbeat />,
+        color: "border-orange-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Sports Active Game",
+        value: dashboardData?.totalSportsActiveGame?.toLocaleString() || "0",
+        icon: <FaHeartbeat />,
+        color: "border-green-400",
+        permission: "dashboard_view_overview",
+      },
+      {
+        title: "Total Sports Inactive Game",
+        value: dashboardData?.totalSportsInactiveGame?.toLocaleString() || "0",
+        icon: <FaHeartbeat />,
+        color: "border-red-400",
+        permission: "dashboard_view_overview",
+      },
     ],
   ];
 
@@ -182,23 +372,30 @@ const isSuperAdmin = user?.role === "superAdmin";
     )
     .filter((row) => row.length > 0);
 
-
-    console.log("Filtered Rows:", {filteredRows,permissions, isSuperAdmin });
+  console.log("Filtered Rows:", { filteredRows, permissions, isSuperAdmin });
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white rounded-lg shadow-md p-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Dashboard Overview</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            Dashboard Overview
+          </h1>
           <p className="text-gray-600">Real-time statistics and insights</p>
-          {lastUpdated && <p className="text-xs text-gray-400 mt-1">Last updated: {lastUpdated.toLocaleString()}</p>}
+          {lastUpdated && (
+            <p className="text-xs text-gray-400 mt-1">
+              Last updated: {lastUpdated.toLocaleString()}
+            </p>
+          )}
         </div>
         <button
           onClick={() => fetchDashboardData(true)}
           disabled={loading || refreshing}
           className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-            loading || refreshing ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+            loading || refreshing
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
         >
           {refreshing ? "Refreshing..." : "Refresh Data"}
@@ -207,7 +404,14 @@ const isSuperAdmin = user?.role === "superAdmin";
 
       {/* Rows */}
       {filteredRows.map((row, rIdx) => (
-        <div key={rIdx} className={`grid gap-6 ${row.length>0 ? `grid-cols-1 md:grid-cols-${row.length}` : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
+        <div
+          key={rIdx}
+          className={`grid gap-6 ${
+            row.length > 0
+              ? `grid-cols-1 md:grid-cols-${row.length}`
+              : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          }`}
+        >
           {row.map((card, cIdx) => (
             <DashboardCard key={cIdx} {...card} />
           ))}
