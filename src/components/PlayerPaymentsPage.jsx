@@ -66,6 +66,18 @@ const PlayerPaymentsPage = () => {
     additionalInfo: "",
   });
 
+
+  const {data: playerData} = useQuery({
+    queryKey:[API_LIST.GET_PLAYERS,{id: playerId}],
+    queryFn: async ()=>{
+      const response  = await Axios.get(`${API_LIST.GET_PLAYERS}/${playerId}`)
+
+      return response.data
+    }
+  })
+
+  console.log({playerData})
+
   // Fetch player's payment accounts
   const {
     data: accounts,
@@ -998,14 +1010,14 @@ const PlayerPaymentsPage = () => {
       <DepositFormModal
         open={depositModalOpen}
         onClose={handleCloseDepositModal}
-        selectedPlayer={playerDetails}
+        selectedPlayer={playerData?.data}
         onSuccess={refetchPlayerDetails}
       />
 
       <WithdrawFormModal
         open={withdrawModalOpen}
         onClose={handleCloseWithdrawModal}
-        selectedPlayer={playerDetails}
+        selectedPlayer={playerData?.data}
         onSuccess={refetchPlayerDetails}
       />
     </div>

@@ -21,6 +21,7 @@ export const API_LIST = {
   DELETE_ADMIN: `/api/admin/delete`,
   // players
   GET_PLAYERS: "/api/admin/players",
+  // GET_PLAYER_DETAILS:"/api/admin/player",
   GET_PLAYERS_TURNOVER: "/api/turnover",
 
   // Players
