@@ -20,6 +20,7 @@ import KycRequestButton from "../Utils/KycRequestButton";
 import PlayerPasswordChange from "./PlayerPasswordChange";
 import { useSettings } from "../hooks/useSettings";
 import { hasPermission } from "../Utils/permissions";
+import { useGetRequest } from "../Utils/apiClient";
 
 export const playerRoutes = [
   {
@@ -91,6 +92,17 @@ const PlayerProfile = () => {
     enabled: !!playerId,
   });
 
+  const getRequest = useGetRequest();
+  const { data: kycDetails, isLoading: kycLoading } = useQuery({
+    queryKey: ["kyc", { kycId: playerId }],
+    queryFn: () =>
+      getRequest({
+        url: BASE_URL + API_LIST.GET_ALL_KYC,
+        params: { kycId: playerId },
+        isPublic: false,
+      }),
+  });
+
   // Edit mutation - following PlayerListPage pattern
   const editMutation = useMutation({
     mutationFn: async ({ id, ...data }) => {
@@ -119,16 +131,40 @@ const PlayerProfile = () => {
     conversion,
   }) => {
     const colorClasses = {
-      green: "text-green-600",
-      blue: "text-blue-600",
-      red: "text-red-600",
-      orange: "text-orange-600",
-      yellow: "text-yellow-600",
-      gray: "text-gray-600",
+      green: "text-green-500",
+      blue: "text-blue-500",
+      red: "text-red-500",
+      orange: "text-orange-500",
+      yellow: "text-yellow-500",
+      gray: "text-gray-500",
+      purple: "text-purple-500",
+      cyan: "text-cyan-500",
+    };
+    const borderClasses = {
+      green: "border-green-500",
+      blue: "border-blue-500",
+      red: "border-red-500",
+      orange: "border-orange-500",
+      yellow: "border-yellow-500",
+      gray: "border-gray-500",
+      purple: "border-purple-500",
+      cyan: "border-cyan-500",
+    };
+    const bgClasses = {
+      green: "bg-green-100",
+      blue: "bg-blue-100",
+      red: "bg-red-100",
+      orange: "bg-orange-100",
+      yellow: "bg-yellow-100",
+      gray: "bg-gray-100",
+      purple: "bg-purple-100",
+      cyan: "bg-cyan-100",
     };
 
     return (
-      <div className="border-[#07122b] border text-black bg-white p-4 py-2 rounded shadow-md w-full sm:w-fit">
+      <div
+        className={` border-2 text-black p-4 py-2 rounded-lg shadow-md w-full ${bgClasses[color]} sm:w-fit ${borderClasses[color]}`}
+      >
         <div className="text-xs font-medium text-gray-600">{label}</div>
         <div
           className={`text-[20px] font-semibold truncate ${colorClasses[color]}`}
@@ -184,10 +220,23 @@ const PlayerProfile = () => {
 
   // Check if we're on the main profile page
   const isMainProfile = location.pathname === `/players/${playerId}/profile`;
+  const playerInProfitOrLoss = (isBDT = true) => {
+    const currentBalance = Number(balance.currentBalance || 0);
+    const withdrawBalance = Number(balance.totalWithdrawals || 0);
+    const depositBalance = Number(balance.totalDeposits || 0);
+    const conversion = Number(conversionRate);
 
+    const profitLossInBDT = currentBalance + withdrawBalance - depositBalance;
+    const profitLossInUSD = profitLossInBDT / conversion;
+    if (isBDT) {
+      return profitLossInBDT.toFixed(2);
+    } else {
+      return profitLossInUSD.toFixed(2);
+    }
+  };
   return (
     <div>
-      <nav className="bg-[#07122b] sticky top-[-24px] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3">
+      <nav className="bg-[#07122b] sticky top-[-24px] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3 z-10">
         <ul className="flex gap-4 flex-wrap">
           {playerRoutes.map(({ label, path }) => {
             const to = path.replace(":playerId", playerId);
@@ -263,6 +312,7 @@ const PlayerProfile = () => {
                 <KycRequestButton
                   holderId={playerDetails?.id}
                   holderType={"player"}
+                  isPending={kycDetails?.data?.status}
                 />
               )}
               {(isSuperAdmin ||
@@ -303,8 +353,28 @@ const PlayerProfile = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
-          <div className="flex gap-4 flex-wrap whitespace-nowrap">
+        <div className="flex xl:items-center justify-between flex-col gap-4 mb-5">
+          <div className="header-auth mt-[-5px] mb-3 relative">
+            <div
+              className={` ${
+                playerInProfitOrLoss() < 0 ? "signup-btn" : "signup-btn-green"
+              }`}
+            >
+              <div className="flex items-center justify-center flex-col mt-[-2px]">
+                BDT {playerInProfitOrLoss()}
+                <div className="text-[16px] opacity-80">
+                  USD {playerInProfitOrLoss(false)}
+                </div>
+              </div>
+            </div>
+            <div
+              className={` text-blue-500
+                border border-blue-500 rounded-full font-medium text-[12px] absolute bg-[#07122b] bottom-[-12px] left-1/2 -translate-x-1/2 px-2 whitespace-nowrap`}
+            >
+              {playerInProfitOrLoss() < 0 ? "Lifetime Loss" : "Lifetime Profit"}
+            </div>
+          </div>
+          <div className="flex gap-4 flex-wrap  justify-center whitespace-nowrap">
             <HighlightBox
               label="Current Balance"
               value={balance.currentBalance}
@@ -314,7 +384,13 @@ const PlayerProfile = () => {
             <HighlightBox
               label="Total Deposits"
               value={balance.totalDeposits}
-              color="blue"
+              color="yellow"
+              conversion={conversionRate}
+            />
+            <HighlightBox
+              label="Total Bonus Amount"
+              value={playerDetails?.balance.totalBonusAmount || 0}
+              color="cyan"
               conversion={conversionRate}
             />
             <HighlightBox
@@ -323,72 +399,49 @@ const PlayerProfile = () => {
               color="orange"
               conversion={conversionRate}
             />
-          </div>
-          <div className="flex gap-4 flex-wrap whitespace-nowrap">
-            <HighlightBox
-              label="Total Wins"
-              value={balance.totalWins}
-              color="green"
-              conversion={conversionRate}
-            />
-            <HighlightBox
-              label="Total Losses"
-              value={balance.totalLosses}
-              color="red"
-              conversion={conversionRate}
-            />
             <HighlightBox
               label="Win Rate"
               value={`${betResultsSummary.winRate || 0}%`}
               color="green"
             />
-          </div>
-        </div>
-
-        {/* Additional Stats */}
-        <div className="flex xl:items-center justify-between flex-col xl:flex-row gap-4 mb-5">
-          <div className="flex gap-4 flex-wrap whitespace-nowrap">
-            <HighlightBox
-              label="Pending Deposits"
-              value={balance.pendingDeposits}
-              color="yellow"
-              conversion={conversionRate}
-            />
-            <HighlightBox
-              label="Pending Withdrawals"
-              value={balance.pendingWithdrawals}
-              color="yellow"
-              conversion={conversionRate}
-            />
-            <HighlightBox
-              label="Total Transactions"
-              value={transactionSummary.totalTransactions}
-              color="blue"
-              isAmount={false}
-            />
-          </div>
-          <div className="flex gap-4 flex-wrap whitespace-nowrap">
-            <HighlightBox
-              label="Total Bonus Amount"
-              value={playerDetails?.balance.totalBonusAmount || 0}
-              color="blue"
-              conversion={conversionRate}
-            />
-            <HighlightBox
-              label="Total Bet Amount"
-              value={betResultsSummary.totalBetAmount}
-              color="orange"
-              conversion={conversionRate}
-            />
-            <HighlightBox
-              label="Last Login"
-              value={
-                playerDetails.lastLogin
-                  ? new Date(playerDetails.lastLogin).toLocaleDateString()
-                  : "Never"
-              }
-              color="gray"
-            />
+            <div className="flex gap-4 flex-wrap  justify-center whitespace-nowrap">
+              <HighlightBox
+                label="Total Bet Wins"
+                value={balance.totalWins}
+                color="cyan"
+                conversion={conversionRate}
+              />
+              <HighlightBox
+                label="Total Bet Losses"
+                value={balance.totalLosses}
+                color="red"
+                conversion={conversionRate}
+              />
+              <HighlightBox
+                label="Total Bet Amount"
+                value={betResultsSummary.totalBetAmount}
+                color="green"
+                conversion={conversionRate}
+              />
+              <HighlightBox
+                label="Pending Deposits"
+                value={balance.pendingDeposits}
+                color="orange"
+                conversion={conversionRate}
+              />
+              <HighlightBox
+                label="Pending Withdrawals"
+                value={balance.pendingWithdrawals}
+                color="yellow"
+                conversion={conversionRate}
+              />
+              <HighlightBox
+                label="Total Transactions"
+                value={transactionSummary.totalTransactions}
+                color="cyan"
+                isAmount={false}
+              />
+            </div>
           </div>
         </div>
 

@@ -132,6 +132,7 @@ const KYCVerificationPage = () => {
         <KycRequestButton
           holderId={affiliateInfo?.id}
           holderType={"affiliate"}
+          isPending={kycDetails?.data?.status}
         />
       </div>
       <div className="flex md:flex-row flex-col-reverse  gap-8 items-start">

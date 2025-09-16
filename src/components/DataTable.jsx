@@ -4,8 +4,11 @@ import autoTable from "jspdf-autotable";
 
 import { hasPermission } from "../Utils/permissions";
 import { BiDownload } from "react-icons/bi";
+import { LuSend } from "react-icons/lu";
 
 const DataTable = ({
+  customFn = false,
+  customButton = false,
   columns,
   isLoading,
   isSuperAdmin,
@@ -78,26 +81,44 @@ const DataTable = ({
   return (
     <div className="w-full overflow-x-auto">
       {/* Export Buttons */}
-      {(isSuperAdmin || (exportPermission && hasPermission(permissions, exportPermission))) && (
-        <div className="flex justify-end mb-2 gap-2">
-          <button
-            onClick={exportCSV}
-            className="px-2 bg-green-500 flex cursor-pointer hover:bg-green-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
-          >
-            CSV
-            <span className="text-[18px]">
-              <BiDownload />
-            </span>
-          </button>
-          <button
-            onClick={exportPDF}
-            className="px-2 bg-blue-500 py-[3px] cursor-pointer hover:bg-blue-600 flex items-center gap-[2px] text-[14px] font-medium text-white rounded"
-          >
-            PDF
-            <span className="text-[18px]">
-              <BiDownload />
-            </span>
-          </button>
+      {(isSuperAdmin ||
+        (exportPermission && hasPermission(permissions, exportPermission))) && (
+        <div
+          className={`flex ${
+            customButton ? "justify-between" : "justify-end"
+          } mb-2 gap-2`}
+        >
+          {customButton && (
+            <button
+              onClick={customFn}
+              className="px-2 bg-orange-500 flex cursor-pointer hover:bg-orange-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
+            >
+              Send Notification
+              <span className="text-[18px]">
+                <LuSend />
+              </span>
+            </button>
+          )}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={exportCSV}
+              className="px-2 bg-green-500 flex cursor-pointer hover:bg-green-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
+            >
+              CSV
+              <span className="text-[18px]">
+                <BiDownload />
+              </span>
+            </button>
+            <button
+              onClick={exportPDF}
+              className="px-2 bg-blue-500 py-[3px] cursor-pointer hover:bg-blue-600 flex items-center gap-[2px] text-[14px] font-medium text-white rounded"
+            >
+              PDF
+              <span className="text-[18px]">
+                <BiDownload />
+              </span>
+            </button>
+          </div>
         </div>
       )}
 

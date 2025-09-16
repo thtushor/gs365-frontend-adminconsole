@@ -192,3 +192,127 @@ body {
     transform: scale(1);
   }
 }
+.header-auth {
+  display: flex;
+  gap: 8px;
+}
+
+.header-auth .signup-btn {
+  background: linear-gradient(90deg, #ff4400, #ea511a, #ef5016, #ff4400);
+  background-size: 300% 100%;
+  color: #fff;
+  border: 3px solid #ff4400;
+  border-radius: 50px;
+  padding: 4px 30px;
+  min-width: 200px;
+  font-size: 20px;
+  cursor: default;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px #ff4400, inset 0 0 10px #ff4400;
+  animation: gradientMove 3s linear infinite;
+  padding-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-auth .signup-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: wave 3s infinite linear;
+}
+
+/* .header-auth .signup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.8),
+    inset 0 0 15px rgba(255, 215, 0, 0.6);
+  border-color: #ffb700;
+} */
+
+.header-auth .signup-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(255, 215, 0, 0.6),
+    inset 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+.header-auth .signup-btn-green {
+  background: linear-gradient(90deg, #01dc84, #08c177, #08c177, #01dc84);
+  background-size: 300% 100%;
+  color: #fff;
+  border: 3px solid #00ce7c;
+  border-radius: 50px;
+  padding: 4px 30px;
+  padding-top: 2px;
+  font-size: 20px;
+  cursor: default;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px #00ff998e, inset 0 0 10px #00ff9985;
+  animation: gradientMove 3s linear infinite;
+  min-width: 200px;
+}
+
+.header-auth .signup-btn-green::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: wave 3s infinite linear;
+}
+
+/* .header-auth .signup-btn-green:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px #00ff99, inset 0 0 15px #00ff99a7;
+  border-color: #00ff99;
+} */
+
+.header-auth .signup-btn-green:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px #00ff99a7, inset 0 0 8px #00ff99;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes wave {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

@@ -6,7 +6,7 @@ import {
   FaEllipsisV,
 } from "react-icons/fa";
 import DataTable from "./DataTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReusableModal from "./ReusableModal";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
@@ -19,6 +19,10 @@ import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
 import ActionDropdown from "./shared/ActionDropdown";
 import WithdrawFormModal from "./WithdrawFormModal";
+import BaseModal from "./shared/BaseModal";
+import ToggleButton from "../Utils/ToggleButton";
+import TextEditor from "./shared/TextEditor";
+import { IoIosCloseCircle } from "react-icons/io";
 
 // Custom hook to fetch promotions
 const usePromotions = () => {
@@ -194,10 +198,111 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     return actions;
   };
 
+  // Selected players
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Notification modal
+  const [notificationEditorOpen, setNotificationEditorOpen] = useState(false);
+  const [notificationForm, setNotificationForm] = useState({
+    isClaimable: false,
+    isLinkable: false,
+    isStatic: false,
+    title: "",
+    amount: 0,
+    promotionId: null,
+    posterImg: null,
+    link: "",
+    description: "",
+    turnoverMultiply: 0,
+  });
+  const handleTogglePlayer = (player) => {
+    setSelectedPlayers((prev) =>
+      prev.find((p) => p.id === player.id)
+        ? prev.filter((p) => p.id !== player.id)
+        : [...prev, player]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedPlayers([]);
+    } else {
+      setSelectedPlayers(players);
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleSendNotification = () => {
+    if (selectedPlayers.length === 0) return;
+    setNotificationEditorOpen(true);
+  };
+
+  const handleRemovePlayer = (id) => {
+    setSelectedPlayers((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    if (type === "file") {
+      setNotificationForm((prev) => ({ ...prev, [name]: files[0] }));
+    } else {
+      setNotificationForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleNotificationPromotionChange = (selectedOption) => {
+    setNotificationForm({
+      ...notificationForm,
+      promotionId: selectedOption ? selectedOption.value : null,
+    });
+  };
+
+  const handleSubmitNotification = (e) => {
+    e.preventDefault();
+    const selectedIds = selectedPlayers.map((p) => p.id);
+    console.log("Notification Data:", notificationForm);
+    console.log("Selected Player IDs:", selectedIds);
+    setNotificationEditorOpen(false);
+  };
+
+  useEffect(() => {
+    if (selectedPlayers?.length === 0) {
+      setSelectAll(false);
+      setNotificationEditorOpen(false);
+    }
+  }, [selectedPlayers?.length]);
+
   const columns = [
     {
+      field: "select",
+      headerName: (
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={selectAll}
+            onChange={handleSelectAll}
+          />
+        </div>
+      ),
+      width: 40,
+      render: (_, row) => (
+        <input
+          type="checkbox"
+          checked={!!selectedPlayers.find((p) => p.id === row.id)}
+          onChange={() => handleTogglePlayer(row)}
+        />
+      ),
+    },
+    {
+      field: "sl",
+      headerName: "SL",
+      width: 60,
+      render: (_, __, index) => <span>{index}</span>,
+    },
+    {
       field: "id",
-      headerName: "Player ID",
+      headerName: "ID",
       width: 100,
     },
     {
@@ -439,7 +544,6 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     },
   ];
 
-  console.log("players players", players);
   return (
     <>
       <DataTable
@@ -450,6 +554,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         isSuperAdmin={isSuperAdmin}
         permissions={permissions}
         exportPermission="player_export_player_data"
+        customButton={selectedPlayers.length > 0}
+        customFn={handleSendNotification}
       />
       <ReusableModal
         open={depositModalOpen}
@@ -578,6 +684,205 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         selectedPlayer={selectedPlayer}
         onSuccess={handleWithdrawSuccess}
       />
+
+      <BaseModal
+        open={notificationEditorOpen}
+        onClose={() => setNotificationEditorOpen(false)}
+      >
+        <form
+          className="p-4 max-h-[80vh] overflow-y-auto flex flex-col gap-3 w-full bg-white rounded-xl"
+          onSubmit={handleSubmitNotification}
+        >
+          <h3 className="text-[18px] font-semibold">
+            Write your custom notification
+          </h3>
+          {/* Selected Players */}
+          <div className="bg-white border border-green-500 px-2 py-2 relative rounded-md">
+            <h1 className="absolute top-[-10px] text-[14px] bg-white leading-4 text-green-500 font-medium uppercase">
+              Selected players
+            </h1>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {selectedPlayers.map((player) => (
+                <p
+                  key={player.id}
+                  className="bg-green-50 rounded-md flex items-center gap-1 w-fit text-[12px] px-[5px] text-green-500 border border-green-500"
+                >
+                  {player.fullname}
+                  <IoIosCloseCircle
+                    className="text-red-400 cursor-pointer"
+                    onClick={() => handleRemovePlayer(player.id)}
+                  />
+                </p>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <ToggleButton
+              title="Claimable"
+              toggleName="isClaimable"
+              form={notificationForm}
+              setForm={(prev) =>
+                setNotificationForm({
+                  ...prev,
+                  isClaimable: !notificationForm.isClaimable,
+                  isLinkable: false,
+                  isStatic: false,
+                })
+              }
+            />
+            <ToggleButton
+              title="Linkable"
+              toggleName="isLinkable"
+              form={notificationForm}
+              setForm={(prev) =>
+                setNotificationForm({
+                  ...prev,
+                  isClaimable: false,
+                  isLinkable: !notificationForm.isLinkable,
+                  isStatic: false,
+                })
+              }
+            />
+            <ToggleButton
+              title="Static"
+              toggleName="isStatic"
+              form={notificationForm}
+              setForm={(prev) =>
+                setNotificationForm({
+                  ...prev,
+                  isClaimable: false,
+                  isLinkable: false,
+                  isStatic: !notificationForm.isStatic,
+                })
+              }
+            />
+          </div>
+
+          {/* Conditional fields */}
+          {(notificationForm.isClaimable ||
+            notificationForm.isLinkable ||
+            notificationForm.isStatic) && (
+            <>
+              {(notificationForm.isClaimable ||
+                notificationForm.isLinkable ||
+                notificationForm.isStatic) && (
+                <div>
+                  <label className="block text-sm mb-1">
+                    Notification Title
+                  </label>
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="title"
+                    value={notificationForm.title}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              )}
+
+              {notificationForm.isClaimable && (
+                <div>
+                  <label className="block text-sm mb-1">Amount (BDT)</label>
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="amount"
+                    value={notificationForm.amount}
+                    onChange={handleChange}
+                    type="number"
+                  />
+                </div>
+              )}
+
+              {notificationForm.isClaimable && (
+                <div>
+                  <label className="block text-sm mb-1">
+                    Turnover Multiply (%)
+                  </label>
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="turnoverMultiply"
+                    value={notificationForm.turnoverMultiply}
+                    onChange={handleChange}
+                    type="number"
+                  />
+                </div>
+              )}
+
+              {notificationForm.isLinkable && (
+                <div>
+                  <label className="block text-sm mb-1">Promotion</label>
+                  <Select
+                    isClearable
+                    isSearchable
+                    placeholder="Select a promotion..."
+                    options={promotionOptions}
+                    value={
+                      promotionOptions.find(
+                        (option) =>
+                          option.value === notificationForm.promotionId
+                      ) || null
+                    }
+                    onChange={handleNotificationPromotionChange}
+                    isLoading={promotionsLoading}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              {/* {notificationForm.isStatic && (
+                <div>
+                  <label className="block text-sm mb-1">Link</label>
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="link"
+                    value={notificationForm.link}
+                    onChange={handleChange}
+                  />
+                </div>
+              )} */}
+
+              {(notificationForm.isClaimable ||
+                notificationForm.isLinkable ||
+                notificationForm.isStatic) && (
+                <div>
+                  <label className="block text-sm mb-1">Poster Image</label>
+                  <input
+                    className="border rounded px-3 py-2 w-full"
+                    name="posterImg"
+                    type="file"
+                    onChange={handleChange}
+                  />
+                </div>
+              )}
+
+              {(notificationForm.isClaimable ||
+                notificationForm.isLinkable ||
+                notificationForm.isStatic) && (
+                <div>
+                  <label className="block text-sm mb-1">Description</label>
+                  <TextEditor
+                    value={notificationForm.description}
+                    setValue={(val) =>
+                      setNotificationForm((prev) => ({
+                        ...prev,
+                        description: val,
+                      }))
+                    }
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          <button
+            type="submit"
+            className="bg-green-500 text-white px-4 py-[6px] font-semibold rounded-lg hover:bg-green-600 cursor-pointer"
+          >
+            Send Notification
+          </button>
+        </form>
+      </BaseModal>
     </>
   );
 };

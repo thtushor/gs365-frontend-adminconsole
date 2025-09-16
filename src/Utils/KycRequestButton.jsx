@@ -7,7 +7,7 @@ import { usePostRequest } from "../Utils/apiClient";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "./permissions";
 
-const KycRequestButton = ({ holderType, holderId }) => {
+const KycRequestButton = ({ holderType, holderId, isPending }) => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const postRequest = usePostRequest();
@@ -33,12 +33,19 @@ const KycRequestButton = ({ holderType, holderId }) => {
     },
   });
   const userPermissions = user?.designation?.permissions || [];
-  const canSendKyc = isSuperAdmin || hasPermission(userPermissions, "kyc_send_kyc_requests");
+  const canSendKyc =
+    isSuperAdmin || hasPermission(userPermissions, "kyc_send_kyc_requests");
   return (
     canSendKyc && (
       <button
         disabled={loading}
-        onClick={() => mutation.mutate()}
+        onClick={() => {
+          if (isPending === "pending") {
+            toast.error("Kyc submitted, check history first!");
+          } else {
+            mutation.mutate();
+          }
+        }}
         className={`text-base font-semibold cursor-pointer w-fit px-3 py-1 rounded-full flex items-center gap-1
         ${
           loading
