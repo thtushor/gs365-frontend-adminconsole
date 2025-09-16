@@ -181,6 +181,7 @@ import SocialList from "../components/SocialList";
 import { FaWallet } from "react-icons/fa";
 import CurrencyConversion from "../components/CurrencyConversion";
 import Faqs from "../components/Faqs";
+import SupportLayout from "../components/SupportPanel/SupportLayout";
 
 export const menu = [
   {
@@ -288,15 +289,15 @@ export const menu = [
         icon: <BiTrophy />,
         accessKey: "player_view_player_wagers",
       },
-      {
-        label: "Message/Chat Box",
-        path: "/message-chat-box",
-        component: ComingSoon,
-        icon: <BiMessage />,
-        accessKey: "player_manage_player_chat",
-      },
     ],
     // Full DB list, max winning filter, etc.
+  },
+  {
+    label: "Help Line (Support)",
+    path: "/message-chat-box",
+    component: SupportLayout,
+    icon: <BiMessage />,
+    accessKey: "player_manage_player_chat",
   },
   {
     label: "KYC Request History",
