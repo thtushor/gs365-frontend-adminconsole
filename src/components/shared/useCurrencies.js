@@ -10,7 +10,7 @@ export const useCurrencies = (filters = {}) => {
     queryKey: ["currencies", filters],
     queryFn: () =>
       getRequest({
-        url: BASE_URL + API_LIST.GET_CURRENCIES,
+        url: BASE_URL + API_LIST.GET_CURRENCIES,params: filters,
         errorMessage: "Failed to fetch currency list",
       }),
     select: (res) => res?.data || [],

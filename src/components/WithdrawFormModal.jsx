@@ -7,11 +7,13 @@ import { useMutation } from "@tanstack/react-query";
 import Select from "react-select";
 import { usePaymentMethodTypes } from "../hooks/usePaymentMethodTypes";
 import { usePaymentGateways } from "../hooks/usePaymentGateways";
+import { usePaymentMethods } from "../hooks/usePaymentMethods";
+import { useCurrencies } from "./shared/useCurrencies";
 
 const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
   const [withdrawForm, setWithdrawForm] = useState({
     amount: "",
-    currencyId: "",
+    paymentGatewayId: "",
     paymentGatewayId: "",
     notes: "",
     attachment: null,
@@ -22,7 +24,6 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     branchAddress: "",
     swiftCode: "",
     iban: "",
-    walletAddress: "",
     network: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,9 +32,11 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     useState(null);
   const [selectedPaymentGateway, setSelectedPaymentGateway] = useState(null);
 
+  console.log({selectedPlayer})
+
   const withdrawMutation = useMutation({
     mutationFn: async (payload) => {
-      const response = await Axios.post(API_LIST.WITHDRAW_TRANSACTION, payload);
+      const response = await Axios.post(API_LIST.PLAYER_WITHDRAW_TRANSACTION, payload);
       return response.data;
     },
     onSuccess: () => {
@@ -55,7 +58,6 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
         branchAddress: "",
         swiftCode: "",
         iban: "",
-        walletAddress: "",
         network: "",
       });
       setSelectedPaymentMethodType(null);
@@ -72,24 +74,28 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
   });
 
   // Fetch payment method types using the custom hook
-  const { data: paymentMethodTypesData, isLoading: paymentMethodTypesLoading } =
-    usePaymentMethodTypes("active");
+  const { data: paymentMethod, isLoading: paymentMethodTypesLoading } =
+    usePaymentMethods("active");
 
   // Fetch payment gateways using the custom hook
   const { data: paymentGatewaysData, isLoading: paymentGatewaysLoading } =
     usePaymentGateways({ status: "active" });
 
-    console.log({paymentGatewaysData,paymentMethodTypesData})
+  const { data: currenciesData, isLoading: currenciesLoading } = useCurrencies(
+    selectedPlayer?.currencyCode ? { searchKey: selectedPlayer.currencyCode } : {}
+  );
+
+  console.log({paymentMethod,paymentGatewaysData, currenciesData})
 
   const transformedPaymentTypes = useMemo(() => {
-    return paymentMethodTypesData?.data?.map((type) => ({
+    return paymentMethod?.map((type) => ({
       value: type.id,
       label: type.name,
       gateways: paymentGatewaysData?.data?.filter(
-        (gateway) => gateway.paymentMethodTypeId === type.id
+        (gateway) => gateway.methodId === type.id
       ),
     }));
-  }, [paymentMethodTypesData, paymentGatewaysData]);
+  }, [paymentMethod, paymentGatewaysData]);
 
   const paymentGatewayOptions = useMemo(() => {
     if (!selectedPaymentMethodType) return [];
@@ -100,13 +106,17 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
   }, [selectedPaymentMethodType]);
 
   useEffect(() => {
-    if (selectedPlayer) {
-      setWithdrawForm((prev) => ({
-        ...prev,
-        currencyId: selectedPlayer.currencyId,
-      }));
+    if (selectedPlayer && currenciesData && currenciesData.length > 0) {
+      const playerCurrency = currenciesData?.[0]
+      console.log({playerCurrency})
+      if (playerCurrency) {
+        setWithdrawForm((prev) => ({
+          ...prev,
+          currencyId: playerCurrency.id,
+        }));
+      }
     }
-  }, [selectedPlayer]);
+  }, [selectedPlayer, currenciesData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -129,7 +139,6 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       branchAddress: "",
       swiftCode: "",
       iban: "",
-      walletAddress: "",
       network: "",
     }));
     if (errors.paymentMethodType) {
@@ -165,12 +174,15 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       newErrors.paymentGateway = "Payment gateway is required";
     }
 
+
+    if (!withdrawForm.accountNumber) {
+      newErrors.accountNumber = "Account number is required";
+    }
+
     const paymentMethodName = selectedPaymentMethodType?.label?.toLowerCase();
 
-    // For bank transfers, validate all required fields
+    // For bank transfers, validate specific required fields
     if (paymentMethodName?.includes("bank")) {
-      if (!withdrawForm.accountNumber)
-        newErrors.accountNumber = "Account number is required";
       if (!withdrawForm.accountHolderName)
         newErrors.accountHolderName = "Account holder name is required";
       if (!withdrawForm.bankName) newErrors.bankName = "Bank name is required";
@@ -179,17 +191,13 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       // SWIFT code and IBAN are now optional.
     }
 
-    // For crypto, wallet address and network are required
+    // For crypto, network is required
     if (paymentMethodName?.includes("crypto")) {
-      if (!withdrawForm.walletAddress)
-        newErrors.walletAddress = "Wallet address is required";
       if (!withdrawForm.network) newErrors.network = "Network is required";
     }
 
-    // For wallet, wallet address and network are required
+    // For wallet, network is required
     if (paymentMethodName?.includes("wallet")) {
-      if (!withdrawForm.walletAddress)
-        newErrors.walletAddress = "Wallet address is required";
       if (!withdrawForm.network) newErrors.network = "Network is required";
     }
 
@@ -207,10 +215,14 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
 
     setIsSubmitting(true);
 
+     const playerCurrency = currenciesData?.[0]
+
+     console.log({playerCurrency})
+
     const requestData = {
-      userId: selectedPlayer.id,
+    userId: selectedPlayer.id,
       amount: Number(withdrawForm.amount),
-      currencyId: withdrawForm.currencyId,
+      currencyId: playerCurrency?.id || withdrawForm.currencyId,
       paymentGatewayId: selectedPaymentGateway?.value,
       notes: withdrawForm.notes || "",
       attachment: withdrawForm.attachment,
@@ -230,7 +242,6 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       paymentMethodName?.includes("wallet") ||
       paymentMethodName?.includes("crypto")
     ) {
-      requestData.walletAddress = withdrawForm.walletAddress;
       requestData.network = withdrawForm.network;
     }
 
@@ -242,6 +253,8 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       setIsSubmitting(false);
     }
   };
+
+  console.log({transformedPaymentTypes,paymentGatewayOptions})
 
   return (
     <ReusableModal
@@ -353,28 +366,29 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
           </div>
         )}
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Account Number *
+          </label>
+          <input
+            type="text"
+            className={`w-full border rounded px-3 py-2 ${
+              errors.accountNumber ? "border-red-500" : ""
+            }`}
+            placeholder="Enter account number"
+            name="accountNumber"
+            value={withdrawForm.accountNumber}
+            onChange={handleInputChange}
+          />
+          {errors.accountNumber && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.accountNumber}
+            </p>
+          )}
+        </div>
+
         {selectedPaymentMethodType?.label?.toLowerCase().includes("bank") && (
           <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Account Number *
-              </label>
-              <input
-                type="text"
-                className={`w-full border rounded px-3 py-2 ${
-                  errors.accountNumber ? "border-red-500" : ""
-                }`}
-                placeholder="Enter account number"
-                name="accountNumber"
-                value={withdrawForm.accountNumber}
-                onChange={handleInputChange}
-              />
-              {errors.accountNumber && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.accountNumber}
-                </p>
-              )}
-            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Account Holder Name *
@@ -477,46 +491,24 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
 
         {(selectedPaymentMethodType?.label?.toLowerCase().includes("crypto") ||
           selectedPaymentMethodType?.label?.toLowerCase().includes("wallet")) && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Wallet Address *
-              </label>
-              <input
-                type="text"
-                className={`w-full border rounded px-3 py-2 ${
-                  errors.walletAddress ? "border-red-500" : ""
-                }`}
-                placeholder="Enter wallet address"
-                name="walletAddress"
-                value={withdrawForm.walletAddress}
-                onChange={handleInputChange}
-              />
-              {errors.walletAddress && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.walletAddress}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Network *
-              </label>
-              <input
-                type="text"
-                className={`w-full border rounded px-3 py-2 ${
-                  errors.network ? "border-red-500" : ""
-                }`}
-                placeholder="Enter network (e.g., ERC20, TRC20)"
-                name="network"
-                value={withdrawForm.network}
-                onChange={handleInputChange}
-              />
-              {errors.network && (
-                <p className="text-red-500 text-xs mt-1">{errors.network}</p>
-              )}
-            </div>
-          </>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Network *
+            </label>
+            <input
+              type="text"
+              className={`w-full border rounded px-3 py-2 ${
+                errors.network ? "border-red-500" : ""
+              }`}
+              placeholder="Enter network (e.g., ERC20, TRC20)"
+              name="network"
+              value={withdrawForm.network}
+              onChange={handleInputChange}
+            />
+            {errors.network && (
+              <p className="text-red-500 text-xs mt-1">{errors.network}</p>
+            )}
+          </div>
         )}
 
         <div>
