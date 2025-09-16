@@ -25,9 +25,12 @@ Axios.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       // Optionally handle unauthorized globally
-
       window.location.href = "/login";
       localStorage.removeItem("token");
+    } else if (!error.response) {
+      // Handle network errors (e.g., server unreachable)
+      if(!window.location.pathname?.includes("/server-error"))
+      window.location.replace("/server-error");
     }
     return Promise.reject(error);
   }

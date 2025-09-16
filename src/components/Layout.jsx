@@ -13,7 +13,7 @@ const Layout = () => {
   const closeSidebar = () => setSidebarOpen(false);
   const openSidebar = () => setSidebarOpen(true);
 
-  const isAdmin = staticAdminCheck(user.role);
+  const isAdmin = staticAdminCheck(user?.role);
 
   const userType = import.meta.env.VITE_USER_TYPE;
 

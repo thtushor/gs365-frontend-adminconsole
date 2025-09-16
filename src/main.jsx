@@ -10,6 +10,7 @@ import "./index.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ImageUploadTestPage from "./components/test/ImageUploadTestPage";
+import ServerError from "./components/shared/ServerError";
 
 const queryClient = new QueryClient();
 
@@ -59,7 +60,12 @@ function Router() {
     <Routes>
       <Route path="/login" element={<Login />} />
 
+      <Route path="/server-error" element={
+        <ServerError/>
+      }/>
+
       <Route path="/test/image-upload" element={<ImageUploadTestPage />} />
+
 
       <Route
         path="/*"

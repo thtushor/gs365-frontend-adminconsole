@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import ComingSoon from "./components/ComingSoon";
 import {
@@ -21,6 +21,7 @@ import {
 import { staticAffiliatePermission } from "./Utils/staticAffiliatePermission.js";
 import UnAuthorized from "./components/UnAuthorizedAccess.jsx";
 import Loader from "./components/Loader.jsx"; // Import the Loader component
+import ServerError from "./components/shared/ServerError.jsx";
 
 // Handle normal menu routes (inside Layout)
 
@@ -144,6 +145,7 @@ function getOutsideRoutes(routes, LayoutWrapper = null, user,isAffiliate=false) 
 function App() {
   const { user, isValidating } = useAuth(); // Get isValidating from useAuth
   const userType = import.meta.env.VITE_USER_TYPE;
+  const location = useLocation();
 
   useEffect(() => {
     // Dynamically set title
@@ -170,7 +172,10 @@ function App() {
     }
   }, [userType]);
 
-  if (isValidating) {
+  console.log({location: location?.pathname})
+  
+
+  if (isValidating && !location?.pathname?.includes("server-error")) {
     return <Loader />; // Show loader while validating
   }
 

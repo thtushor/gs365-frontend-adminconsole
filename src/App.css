@@ -68,3 +68,127 @@ div.band_alert {
 body {
   background-color: black;
 }
+
+.server-error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #1a202c; /* Dark background */
+  color: #e2e8f0; /* Light text */
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.server-error-title {
+  font-size: 3rem;
+  color: #e53e3e; /* Red color for emphasis */
+  margin-bottom: 20px;
+}
+
+.server-error-message {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  max-width: 600px;
+}
+
+.server-error-home-link {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 10px 20px;
+  background-color: #4299e1; /* Blue button */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.server-error-home-link:hover {
+  background-color: #3182ce; /* Darker blue on hover */
+}
+
+.server-error-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #0f172a; /* Even darker background */
+  padding: 20px;
+}
+
+.server-error-container {
+  background-color: #1e293b; /* Slightly lighter dark background for the card */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 700px;
+  width: 100%;
+  color: #e2e8f0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  border: 1px solid #334155;
+}
+
+.server-error-icon {
+  font-size: 5rem;
+  color: #ef4444; /* A more vibrant red */
+  margin-bottom: 25px;
+  animation: bounce-in 0.8s ease-out;
+}
+
+.server-error-title {
+  font-size: 3.5rem;
+  color: #f87171; /* Lighter red for the title */
+  margin-bottom: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.server-error-message {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  max-width: 600px;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.server-error-home-link {
+  display: inline-block;
+  margin-top: 35px;
+  padding: 12px 28px;
+  background-color: #3b82f6; /* A more prominent blue */
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.server-error-home-link:hover {
+  background-color: #2563eb; /* Darker blue on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
