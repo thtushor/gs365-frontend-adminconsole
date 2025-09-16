@@ -6,6 +6,7 @@ import { API_LIST, BASE_URL } from "../api/ApiList";
 import Axios from "../api/axios";
 import {
   FaPlus,
+  FaMinus, // Added FaMinus for withdraw button
   FaEdit,
   FaTrash,
   FaCheck,
@@ -20,12 +21,23 @@ import {
 } from "react-icons/fa";
 import ReusableModal from "./ReusableModal";
 import StatusChip from "./shared/StatusChip";
+import DepositFormModal from "./DepositFormModal"; // Added DepositFormModal
+import WithdrawFormModal from "./WithdrawFormModal"; // Added WithdrawFormModal
+import { useAuth } from "../hooks/useAuth"; // Added useAuth
+import { hasPermission } from "../Utils/permissions"; // Added hasPermission
 
 const PlayerPaymentsPage = () => {
   const { playerId } = useParams();
   const queryClient = useQueryClient();
+  const { user } = useAuth(); // Get user for permissions
+  const isSuperAdmin = user?.role === "superAdmin";
+  const permissions = user?.designation?.permissions || [];
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
+  const [depositModalOpen, setDepositModalOpen] = useState(false); // State for deposit modal
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false); // State for withdraw modal
+
   const [formData, setFormData] = useState({
     holderName: "",
     provider: "bank",
@@ -57,8 +69,8 @@ const PlayerPaymentsPage = () => {
   // Fetch player's payment accounts
   const {
     data: accounts,
-    isLoading,
-    refetch,
+    isLoading: isLoadingAccounts, // Renamed to avoid conflict
+    refetch: refetchAccounts, // Renamed to avoid conflict
   } = useQuery({
     queryKey: ["playerPaymentAccounts", playerId],
     queryFn: async () => {
@@ -67,6 +79,27 @@ const PlayerPaymentsPage = () => {
       );
       if (!res.data.success)
         throw new Error("Failed to fetch payment accounts");
+      return res.data.data;
+    },
+    enabled: !!playerId,
+  });
+
+  // Fetch player details for deposit/withdraw modals
+  const {
+    data: playerDetails,
+    isLoading: isLoadingPlayerDetails,
+    isError: isErrorPlayerDetails,
+    refetch: refetchPlayerDetails,
+  } = useQuery({
+    queryKey: ["playerProfile", playerId],
+    queryFn: async () => {
+      const res = await Axios.get(
+        `${BASE_URL}${API_LIST.GET_PLAYER_PROFILE.replace(
+          ":playerID",
+          playerId
+        )}`
+      );
+      if (!res.data.status) throw new Error("Failed to fetch player profile");
       return res.data.data;
     },
     enabled: !!playerId,
@@ -100,6 +133,7 @@ const PlayerPaymentsPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["playerPaymentAccounts", playerId],
       });
+      refetchPlayerDetails(); // Refetch player details to update balance
       setModalOpen(false);
       setEditingAccount(null);
       resetForm();
@@ -128,6 +162,7 @@ const PlayerPaymentsPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["playerPaymentAccounts", playerId],
       });
+      refetchPlayerDetails(); // Refetch player details to update balance
       toast.success("Account deleted successfully!");
     },
     onError: (error) => {
@@ -152,6 +187,7 @@ const PlayerPaymentsPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["playerPaymentAccounts", playerId],
       });
+      refetchPlayerDetails(); // Refetch player details to update balance
       toast.success("Primary account updated successfully!");
     },
     onError: (error) => {
@@ -179,6 +215,7 @@ const PlayerPaymentsPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["playerPaymentAccounts", playerId],
       });
+      refetchPlayerDetails(); // Refetch player details to update balance
       toast.success("Verification status updated successfully!");
     },
     onError: (error) => {
@@ -300,13 +337,40 @@ const PlayerPaymentsPage = () => {
       default:
         return provider;
     }
+  }; // Closing brace for getProviderLabel
+  const handleOpenDepositModal = () => {
+    setDepositModalOpen(true);
   };
 
-  if (isLoading) {
+  const handleCloseDepositModal = () => {
+    setDepositModalOpen(false);
+    refetchPlayerDetails(); // Refetch player profile to update balance after deposit
+  };
+
+  const handleOpenWithdrawModal = () => {
+    setWithdrawModalOpen(true);
+  };
+
+  const handleCloseWithdrawModal = () => {
+    setWithdrawModalOpen(false);
+    refetchPlayerDetails(); // Refetch player profile to update balance after withdrawal
+  };
+
+  if (isLoadingAccounts || isLoadingPlayerDetails) {
     return (
       <div className="bg-white rounded-lg p-6">
         <div className="text-center text-gray-500 py-8">
-          Loading payment accounts...
+          Loading payment accounts and player data...
+        </div>
+      </div>
+    );
+  }
+
+  if (isErrorPlayerDetails || !playerDetails) {
+    return (
+      <div className="bg-white rounded-lg p-6">
+        <div className="text-center text-red-500 py-8">
+          Failed to load player data.
         </div>
       </div>
     );
@@ -322,13 +386,35 @@ const PlayerPaymentsPage = () => {
             Manage withdrawal payment accounts for this player
           </p>
         </div>
-        <button
-          onClick={() => handleOpenModal()}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2"
-        >
-          <FaPlus />
-          Add Account
-        </button>
+        <div className="flex gap-4">
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_approve_deposits")) && (
+            <button
+              onClick={handleOpenDepositModal}
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2"
+            >
+              <FaPlus />
+              Deposit
+            </button>
+          )}
+          {(isSuperAdmin ||
+            hasPermission(permissions, "payment_approve_withdrawals")) && (
+            <button
+              onClick={handleOpenWithdrawModal}
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition flex items-center gap-2"
+            >
+              <FaMinus />
+              Withdraw
+            </button>
+          )}
+          <button
+            onClick={() => handleOpenModal()}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
+          >
+            <FaPlus />
+            Add Account
+          </button>
+        </div>
       </div>
 
       {/* Accounts List */}
@@ -907,6 +993,21 @@ const PlayerPaymentsPage = () => {
           </div>
         </form>
       </ReusableModal>
+
+      {/* Deposit and Withdraw Modals */}
+      <DepositFormModal
+        open={depositModalOpen}
+        onClose={handleCloseDepositModal}
+        selectedPlayer={playerDetails}
+        onSuccess={refetchPlayerDetails}
+      />
+
+      <WithdrawFormModal
+        open={withdrawModalOpen}
+        onClose={handleCloseWithdrawModal}
+        selectedPlayer={playerDetails}
+        onSuccess={refetchPlayerDetails}
+      />
     </div>
   );
 };
