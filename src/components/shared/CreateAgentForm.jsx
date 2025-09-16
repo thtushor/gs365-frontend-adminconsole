@@ -102,7 +102,12 @@ export function CreateAgentForm({
   });
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (form.role && filteredDesignations.length > 0 && !form.designation && !isAffiliate) {
+    if (
+      form.role &&
+      filteredDesignations.length > 0 &&
+      !form.designation &&
+      !isAffiliate
+    ) {
       return toast.error("Designation is required.");
     }
     if (isAffiliate) {
@@ -377,20 +382,21 @@ export function CreateAgentForm({
         </div>
       )}
       {/* password */}
-      {!isEdit && (
+      {(!isEdit || !isAffiliate) && (
         <div className="flex flex-col">
           <label className="font-semibold text-xs mb-1">
-            PASSWORD <span className="text-red-500">*</span>
+            PASSWORD{" "}
+            <span className={`text-red-500 ${isEdit && "hidden"}`}>*</span>
           </label>
           <div className="relative flex items-center">
             <input
               className="border rounded px-3 py-2 pr-10 w-full"
               name="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword || isEdit ? "text" : "password"}
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
-              required
+              required={!isEdit}
             />
             <button
               type="button"

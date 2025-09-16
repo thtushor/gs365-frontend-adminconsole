@@ -20,6 +20,7 @@ import KycRequestButton from "../Utils/KycRequestButton";
 import PlayerPasswordChange from "./PlayerPasswordChange";
 import { useSettings } from "../hooks/useSettings";
 import { hasPermission } from "../Utils/permissions";
+import { useGetRequest } from "../Utils/apiClient";
 
 export const playerRoutes = [
   {
@@ -89,6 +90,17 @@ const PlayerProfile = () => {
     },
     keepPreviousData: true,
     enabled: !!playerId,
+  });
+
+  const getRequest = useGetRequest();
+  const { data: kycDetails, isLoading: kycLoading } = useQuery({
+    queryKey: ["kyc", { kycId: playerId }],
+    queryFn: () =>
+      getRequest({
+        url: BASE_URL + API_LIST.GET_ALL_KYC,
+        params: { kycId: playerId },
+        isPublic: false,
+      }),
   });
 
   // Edit mutation - following PlayerListPage pattern
@@ -217,9 +229,9 @@ const PlayerProfile = () => {
     const profitLossInBDT = currentBalance + withdrawBalance - depositBalance;
     const profitLossInUSD = profitLossInBDT / conversion;
     if (isBDT) {
-      return profitLossInBDT;
+      return profitLossInBDT.toFixed(2);
     } else {
-      return profitLossInUSD;
+      return profitLossInUSD.toFixed(2);
     }
   };
   return (
@@ -300,6 +312,7 @@ const PlayerProfile = () => {
                 <KycRequestButton
                   holderId={playerDetails?.id}
                   holderType={"player"}
+                  isPending={kycDetails?.data?.status}
                 />
               )}
               {(isSuperAdmin ||

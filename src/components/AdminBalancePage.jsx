@@ -1,94 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { useAdminBalance } from '../hooks/useAdminBalance';
-import { useAuth } from '../hooks/useAuth';
-import ReusableModal from './ReusableModal';
-import  PageHeader  from './shared/PageHeader';
-import StatCard  from './shared/StatCard';
-import LoadingState from './shared/LoadingState';
-import ErrorState from './shared/ErrorState';
-import EmptyState  from './shared/EmptyState';
-import StatusChip from './shared/StatusChip';
-import DataTable from './DataTable';
-import Pagination from './Pagination';
-import { hasPermission } from '../Utils/permissions';
-import UnAuthorizedAccess from './UnAuthorizedAccess';
+import React, { useState, useEffect } from "react";
+import { useAdminBalance } from "../hooks/useAdminBalance";
+import { useAuth } from "../hooks/useAuth";
+import ReusableModal from "./ReusableModal";
+import PageHeader from "./shared/PageHeader";
+import StatCard from "./shared/StatCard";
+import LoadingState from "./shared/LoadingState";
+import ErrorState from "./shared/ErrorState";
+import EmptyState from "./shared/EmptyState";
+import StatusChip from "./shared/StatusChip";
+import DataTable from "./DataTable";
+import Pagination from "./Pagination";
+import { hasPermission } from "../Utils/permissions";
+import UnAuthorizedAccess from "./UnAuthorizedAccess";
 
 const AdminBalancePage = () => {
-  const { adminBalanceData, loading, error, fetchAdminBalance, createAdminBalance } = useAdminBalance();
+  const {
+    adminBalanceData,
+    loading,
+    error,
+    fetchAdminBalance,
+    createAdminBalance,
+  } = useAdminBalance();
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
-  
+
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    amount: '',
-    type: 'admin_deposit',
-    notes: ''
+    amount: "",
+    type: "admin_deposit",
+    notes: "",
   });
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filters, setFilters] = useState({
-    type: '',
-    createdByAdmin: '',
-    startDate: '',
-    endDate: '',
-    search: ''
+    type: "",
+    createdByAdmin: "",
+    startDate: "",
+    endDate: "",
+    search: "",
   });
   const [pagination, setPagination] = useState({
     page: 1,
-    pageSize: 10
+    pageSize: 10,
   });
 
   const balanceTypes = [
-    { value: 'admin_deposit', label: 'Admin Deposit' },
-    { value: 'admin_withdraw', label: 'Admin Withdraw' },
-    { value: 'player_deposit', label: 'Player Deposit' },
-    { value: 'player_withdraw', label: 'Player Withdraw' },
-    { value: 'promotion', label: 'Promotion' }
+    { value: "admin_deposit", label: "Admin Deposit" },
+    { value: "admin_withdraw", label: "Admin Withdraw" },
+    { value: "player_deposit", label: "Player Deposit" },
+    { value: "player_withdraw", label: "Player Withdraw" },
+    { value: "promotion", label: "Promotion" },
   ];
 
   const columns = [
     {
-      field: 'id',
-      headerName: 'ID',
+      field: "id",
+      headerName: "ID",
       width: 80,
-      align: 'center',
-      render: (value) => `#${value}`
+      align: "center",
+      render: (value) => `#${value}`,
     },
     {
-      field: 'amount',
-      headerName: 'Amount',
+      field: "amount",
+      headerName: "Amount",
       width: 120,
-      align: 'right',
-      render: (value, row) => formatCurrency(value)
+      align: "right",
+      render: (value, row) => formatCurrency(value),
     },
     {
-      field: 'type',
-      headerName: 'Type',
+      field: "type",
+      headerName: "Type",
       width: 150,
-      align: 'center',
+      align: "center",
       render: (value) => (
-        <StatusChip
-          status={value}
-          variant={getTypeColor(value)}
-        />
-      )
+        <StatusChip status={value} variant={getTypeColor(value)} />
+      ),
     },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       width: 150,
-      align: 'center',
+      align: "center",
       render: (value) => (
-        <StatusChip
-          status={value}
-          variant={getTypeColor(value)}
-        />
-      )
+        <StatusChip status={value} variant={getTypeColor(value)} />
+      ),
     },
     {
-      field: 'createdByAdminUser',
-      headerName: 'Created By',
+      field: "createdByAdminUser",
+      headerName: "Created By",
       width: 200,
       render: (value) => {
         if (value) {
@@ -100,53 +100,53 @@ const AdminBalancePage = () => {
           );
         }
         return <span className="text-gray-400">-</span>;
-      }
+      },
     },
     {
-      field: 'notes',
-      headerName: 'Notes',
+      field: "notes",
+      headerName: "Notes",
       width: 300,
       render: (value) => (
         <div className="max-w-xs truncate" title={value}>
           {value}
         </div>
-      )
+      ),
     },
     {
-      field: 'createdAt',
-      headerName: 'Created At',
+      field: "createdAt",
+      headerName: "Created At",
       width: 180,
-      render: (value) => formatDate(value)
-    }
+      render: (value) => formatDate(value),
+    },
   ];
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      newErrors.amount = 'Amount must be greater than 0';
+      newErrors.amount = "Amount must be greater than 0";
     }
-    
+
     if (!formData.notes.trim()) {
-      newErrors.notes = 'Notes are required';
+      newErrors.notes = "Notes are required";
     }
-    
+
     setFormErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleFormInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (formErrors[name]) {
-      setFormErrors(prev => ({
+      setFormErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
@@ -157,132 +157,132 @@ const AdminBalancePage = () => {
     }
 
     setIsSubmitting(true);
-    
+
     const submitData = {
       amount: parseFloat(formData.amount),
-      type: 'admin_deposit',
+      type: "admin_deposit",
       currencyId: 1, // Default currency ID
       createdByPlayer: null,
       createdByAdmin: user?.id,
-      notes: formData.notes.trim()
+      notes: formData.notes.trim(),
     };
 
     const result = await createAdminBalance(submitData);
-    
+
     if (result.success) {
       setShowForm(false);
       setFormData({
-        amount: '',
-        type: 'admin_deposit',
-        notes: ''
+        amount: "",
+        type: "admin_deposit",
+        notes: "",
       });
       setFormErrors({});
       fetchAdminBalance({
         ...filters,
-        ...pagination
+        ...pagination,
       });
     }
-    
+
     setIsSubmitting(false);
   };
 
   const handleCloseModal = () => {
     setShowForm(false);
     setFormData({
-      amount: '',
-      type: 'admin_deposit',
-      notes: ''
+      amount: "",
+      type: "admin_deposit",
+      notes: "",
     });
     setFormErrors({});
   };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSearch = () => {
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
     fetchAdminBalance({
       ...filters,
       ...pagination,
-      page: 1
+      page: 1,
     });
   };
 
   const handleResetFilters = () => {
     setFilters({
-      type: '',
-      createdByAdmin: '',
-      startDate: '',
-      endDate: '',
-      search: ''
+      type: "",
+      createdByAdmin: "",
+      startDate: "",
+      endDate: "",
+      search: "",
     });
     setPagination({ page: 1, pageSize: 10 });
     fetchAdminBalance({ page: 1, pageSize: 10 });
   };
 
   const handlePageChange = (newPage) => {
-    setPagination(prev => ({ ...prev, page: newPage }));
+    setPagination((prev) => ({ ...prev, page: newPage }));
     fetchAdminBalance({
       ...filters,
       ...pagination,
-      page: newPage
+      page: newPage,
     });
   };
 
   const handlePageSizeChange = (newPageSize) => {
-    setPagination(prev => ({ ...prev, pageSize: newPageSize, page: 1 }));
+    setPagination((prev) => ({ ...prev, pageSize: newPageSize, page: 1 }));
     fetchAdminBalance({
       ...filters,
       pageSize: newPageSize,
-      page: 1
+      page: 1,
     });
   };
-
-
 
   const formatCurrency = (amount) => {
     return `BDT ${parseFloat(amount).toFixed(2)}`;
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'admin_deposit':
-      case 'player_deposit':
-        return 'success';
-      case 'admin_withdraw':
-      case 'player_withdraw':
-        return 'danger';
-      case 'promotion':
-        return 'warning';
+      case "admin_deposit":
+      case "player_deposit":
+        return "success";
+      case "admin_withdraw":
+      case "player_withdraw":
+        return "danger";
+      case "promotion":
+        return "warning";
       default:
-        return 'default';
+        return "default";
     }
   };
 
   useEffect(() => {
     fetchAdminBalance({
       ...filters,
-      ...pagination
+      ...pagination,
     });
   }, [pagination.page, pagination.pageSize]);
 
-  const canViewAdminBalance = isSuperAdmin || hasPermission(permissions, "finance_view_admin_balance");
-  const canManageAdminBalance = isSuperAdmin || hasPermission(permissions, "finance_manage_admin_balance");
+  const canViewAdminBalance =
+    isSuperAdmin || hasPermission(permissions, "finance_view_admin_balance");
+  const canManageAdminBalance =
+    isSuperAdmin || hasPermission(permissions, "finance_manage_admin_balance");
 
   if (!canViewAdminBalance) {
     return <UnAuthorizedAccess />;
@@ -301,19 +301,22 @@ const AdminBalancePage = () => {
       <PageHeader
         title="Admin Balance Management"
         subtitle="Manage and track admin main balance transactions"
-        actions={canManageAdminBalance ? [
-          {
-            label: 'Add Record',
-            onClick: () => setShowForm(true),
-            variant: 'primary'
-          }
-        ] : []}
+        actions={
+          canManageAdminBalance
+            ? [
+                {
+                  label: "Add Record",
+                  onClick: () => setShowForm(true),
+                  variant: "primary",
+                },
+              ]
+            : []
+        }
       />
 
       {/* Stats Cards */}
       {adminBalanceData.stats && (
         <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
-          
           <StatCard
             title="Total Admin Deposits"
             value={formatCurrency(adminBalanceData.stats.totalAdminDeposit)}
@@ -326,7 +329,7 @@ const AdminBalancePage = () => {
             icon="💎"
             color="primary"
           />
-{/*           
+          {/*           
           <StatCard
             title="Player Deposits"
             value={formatCurrency(adminBalanceData.stats.totalPlayerDeposit)}
@@ -364,7 +367,7 @@ const AdminBalancePage = () => {
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg font-semibold mb-4">Filters</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
             <select
               name="type"
@@ -379,12 +382,12 @@ const AdminBalancePage = () => {
                 </option>
               ))}
             </select>
-          </div>
-
-
+          </div> */}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Start Date
+            </label>
             <input
               type="date"
               name="startDate"
@@ -395,7 +398,9 @@ const AdminBalancePage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              End Date
+            </label>
             <input
               type="date"
               name="endDate"
@@ -406,7 +411,9 @@ const AdminBalancePage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Search
+            </label>
             <input
               type="text"
               name="search"
@@ -453,17 +460,18 @@ const AdminBalancePage = () => {
           </div>
         )}
 
-        {adminBalanceData.pagination && adminBalanceData.pagination.totalPages >= 1 && (
-          <div className="px-6 py-4 border-t border-gray-200">
-            <Pagination
-              currentPage={adminBalanceData.pagination.page}
-              totalPages={adminBalanceData.pagination.totalPages}
-              pageSize={adminBalanceData.pagination.pageSize}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-            />
-          </div>
-        )}
+        {adminBalanceData.pagination &&
+          adminBalanceData.pagination.totalPages >= 1 && (
+            <div className="px-6 py-4 border-t border-gray-200">
+              <Pagination
+                currentPage={adminBalanceData.pagination.page}
+                totalPages={adminBalanceData.pagination.totalPages}
+                pageSize={adminBalanceData.pagination.pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+              />
+            </div>
+          )}
       </div>
 
       {/* Form Modal */}
@@ -489,7 +497,7 @@ const AdminBalancePage = () => {
               step="0.01"
               min="0"
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                formErrors.amount ? 'border-red-500' : 'border-gray-300'
+                formErrors.amount ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Enter amount"
             />
@@ -497,8 +505,6 @@ const AdminBalancePage = () => {
               <p className="text-red-500 text-xs mt-1">{formErrors.amount}</p>
             )}
           </div>
-
-
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -510,7 +516,7 @@ const AdminBalancePage = () => {
               onChange={handleFormInputChange}
               rows={3}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                formErrors.notes ? 'border-red-500' : 'border-gray-300'
+                formErrors.notes ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Enter notes for this transaction"
             />
