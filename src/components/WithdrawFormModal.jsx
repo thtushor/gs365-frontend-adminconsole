@@ -32,7 +32,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     useState(null);
   const [selectedPaymentGateway, setSelectedPaymentGateway] = useState(null);
 
-  console.log({selectedPlayer})
+  console.log({ selectedPlayer })
 
   const withdrawMutation = useMutation({
     mutationFn: async (payload) => {
@@ -65,7 +65,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     },
     onError: (error) => {
       const message =
-        error?.response?.data?.message || "Failed to add withdrawal";
+        error?.response?.data?.data?.withdrawReason || error?.response?.data?.message || "Failed to add withdrawal";
       toast.error(message);
     },
     onSettled: () => {
@@ -85,7 +85,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     selectedPlayer?.currencyCode ? { searchKey: selectedPlayer.currencyCode } : {}
   );
 
-  console.log({paymentMethod,paymentGatewaysData, currenciesData})
+  console.log({ paymentMethod, paymentGatewaysData, currenciesData })
 
   const transformedPaymentTypes = useMemo(() => {
     return paymentMethod?.map((type) => ({
@@ -108,7 +108,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
   useEffect(() => {
     if (selectedPlayer && currenciesData && currenciesData.length > 0) {
       const playerCurrency = currenciesData?.[0]
-      console.log({playerCurrency})
+      console.log({ playerCurrency })
       if (playerCurrency) {
         setWithdrawForm((prev) => ({
           ...prev,
@@ -215,12 +215,12 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
 
     setIsSubmitting(true);
 
-     const playerCurrency = currenciesData?.[0]
+    const playerCurrency = currenciesData?.[0]
 
-     console.log({playerCurrency})
+    console.log({ playerCurrency })
 
     const requestData = {
-    userId: selectedPlayer.id,
+      userId: selectedPlayer.id,
       amount: Number(withdrawForm.amount),
       currencyId: playerCurrency?.id || withdrawForm.currencyId,
       paymentGatewayId: selectedPaymentGateway?.value,
@@ -254,7 +254,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     }
   };
 
-  console.log({transformedPaymentTypes,paymentGatewayOptions})
+  console.log({ transformedPaymentTypes, paymentGatewayOptions })
 
   return (
     <ReusableModal
@@ -264,6 +264,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       onSave={handleWithdrawSubmit}
       isLoading={isSubmitting || withdrawMutation.isPending}
       loadingText="Processing Withdrawal..."
+      className={"min-w-[65vw]"}
     >
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -285,231 +286,229 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
             <input
               type="text"
               className="w-full border rounded px-3 py-2 bg-gray-100"
-              value={`${selectedPlayer?.currencyCode || ""} (${
-                selectedPlayer?.currencyName || ""
-              })`}
+              value={`${selectedPlayer?.currencyCode || ""} (${selectedPlayer?.currencyName || ""
+                })`}
               readOnly
             />
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Amount *
-          </label>
-          <input
-            type="number"
-            className={`w-full border rounded px-3 py-2 ${
-              errors.amount ? "border-red-500" : ""
-            }`}
-            placeholder="Enter amount"
-            name="amount"
-            value={withdrawForm.amount}
-            onChange={handleInputChange}
-            min="0"
-            step="0.01"
-          />
-          {errors.amount && (
-            <p className="text-red-500 text-xs mt-1">{errors.amount}</p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Payment Method Type *
-          </label>
-          <Select
-            isClearable
-            isSearchable
-            placeholder="Select payment method type..."
-            options={transformedPaymentTypes}
-            value={selectedPaymentMethodType}
-            onChange={handlePaymentMethodTypeChange}
-            isLoading={paymentMethodTypesLoading}
-            className={`w-full ${
-              errors.paymentMethodType ? "border-red-500" : ""
-            }`}
-            classNamePrefix="react-select"
-            getOptionLabel={(option) => option.label}
-            getOptionValue={(option) => option.value}
-          />
-          {errors.paymentMethodType && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.paymentMethodType}
-            </p>
-          )}
-        </div>
-
-        {selectedPaymentMethodType && (
+          {/* Amount and Payment Method Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Payment Gateway *
+              Amount *
+            </label>
+            <input
+              type="number"
+              className={`w-full border rounded px-3 py-2 ${errors.amount ? "border-red-500" : ""
+                }`}
+              placeholder="Enter amount"
+              name="amount"
+              value={withdrawForm.amount}
+              onChange={handleInputChange}
+              min="0"
+              step="0.01"
+            />
+            {errors.amount && (
+              <p className="text-red-500 text-xs mt-1">{errors.amount}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Payment Method Type *
             </label>
             <Select
               isClearable
               isSearchable
-              placeholder="Select payment gateway..."
-              options={paymentGatewayOptions}
-              value={selectedPaymentGateway}
-              onChange={handlePaymentGatewayChange}
-              isLoading={paymentGatewaysLoading}
-              className={`w-full ${
-                errors.paymentGateway ? "border-red-500" : ""
-              }`}
+              placeholder="Select payment method type..."
+              options={transformedPaymentTypes}
+              value={selectedPaymentMethodType}
+              onChange={handlePaymentMethodTypeChange}
+              isLoading={paymentMethodTypesLoading}
+              className={`w-full ${errors.paymentMethodType ? "border-red-500" : ""
+                }`}
               classNamePrefix="react-select"
+              getOptionLabel={(option) => option.label}
+              getOptionValue={(option) => option.value}
             />
-            {errors.paymentGateway && (
+            {errors.paymentMethodType && (
               <p className="text-red-500 text-xs mt-1">
-                {errors.paymentGateway}
+                {errors.paymentMethodType}
               </p>
             )}
           </div>
-        )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Account Number *
-          </label>
-          <input
-            type="text"
-            className={`w-full border rounded px-3 py-2 ${
-              errors.accountNumber ? "border-red-500" : ""
-            }`}
-            placeholder="Enter account number"
-            name="accountNumber"
-            value={withdrawForm.accountNumber}
-            onChange={handleInputChange}
-          />
-          {errors.accountNumber && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.accountNumber}
-            </p>
+          {/* Payment Gateway and Account Number */}
+          {selectedPaymentMethodType && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Payment Gateway *
+              </label>
+              <Select
+                isClearable
+                isSearchable
+                placeholder="Select payment gateway..."
+                options={paymentGatewayOptions}
+                value={selectedPaymentGateway}
+                onChange={handlePaymentGatewayChange}
+                isLoading={paymentGatewaysLoading}
+                className={`w-full ${errors.paymentGateway ? "border-red-500" : ""
+                  }`}
+                classNamePrefix="react-select"
+              />
+              {errors.paymentGateway && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.paymentGateway}
+                </p>
+              )}
+            </div>
           )}
-        </div>
 
-        {selectedPaymentMethodType?.label?.toLowerCase().includes("bank") && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Account Holder Name *
-              </label>
-              <input
-                type="text"
-                className={`w-full border rounded px-3 py-2 ${
-                  errors.accountHolderName ? "border-red-500" : ""
-                }`}
-                placeholder="Enter account holder name"
-                name="accountHolderName"
-                value={withdrawForm.accountHolderName}
-                onChange={handleInputChange}
-              />
-              {errors.accountHolderName && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.accountHolderName}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Bank Name *
-              </label>
-              <input
-                type="text"
-                className={`w-full border rounded px-3 py-2 ${
-                  errors.bankName ? "border-red-500" : ""
-                }`}
-                placeholder="Enter bank name"
-                name="bankName"
-                value={withdrawForm.bankName}
-                onChange={handleInputChange}
-              />
-              {errors.bankName && (
-                <p className="text-red-500 text-xs mt-1">{errors.bankName}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Branch Name *
-              </label>
-              <input
-                type="text"
-                className={`w-full border rounded px-3 py-2 ${
-                  errors.branchName ? "border-red-500" : ""
-                }`}
-                placeholder="Enter branch name"
-                name="branchName"
-                value={withdrawForm.branchName}
-                onChange={handleInputChange}
-              />
-              {errors.branchName && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.branchName}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Branch Address (Optional)
-              </label>
-              <input
-                type="text"
-                className="w-full border rounded px-3 py-2"
-                placeholder="Enter branch address"
-                name="branchAddress"
-                value={withdrawForm.branchAddress}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                SWIFT Code (Optional)
-              </label>
-              <input
-                type="text"
-                className="w-full border rounded px-3 py-2"
-                placeholder="Enter SWIFT code"
-                name="swiftCode"
-                value={withdrawForm.swiftCode}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                IBAN (Optional)
-              </label>
-              <input
-                type="text"
-                className="w-full border rounded px-3 py-2"
-                placeholder="Enter IBAN"
-                name="iban"
-                value={withdrawForm.iban}
-                onChange={handleInputChange}
-              />
-            </div>
-          </>
-        )}
-
-        {(selectedPaymentMethodType?.label?.toLowerCase().includes("crypto") ||
-          selectedPaymentMethodType?.label?.toLowerCase().includes("wallet")) && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Network *
+              Account Number *
             </label>
             <input
               type="text"
-              className={`w-full border rounded px-3 py-2 ${
-                errors.network ? "border-red-500" : ""
-              }`}
-              placeholder="Enter network (e.g., ERC20, TRC20)"
-              name="network"
-              value={withdrawForm.network}
+              className={`w-full border rounded px-3 py-2 ${errors.accountNumber ? "border-red-500" : ""
+                }`}
+              placeholder="Enter account number"
+              name="accountNumber"
+              value={withdrawForm.accountNumber}
               onChange={handleInputChange}
             />
-            {errors.network && (
-              <p className="text-red-500 text-xs mt-1">{errors.network}</p>
+            {errors.accountNumber && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.accountNumber}
+              </p>
             )}
           </div>
-        )}
+
+          {selectedPaymentMethodType?.label?.toLowerCase().includes("bank") && (
+            <>
+              {/* Account Holder Name and Bank Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Account Holder Name *
+                </label>
+                <input
+                  type="text"
+                  className={`w-full border rounded px-3 py-2 ${errors.accountHolderName ? "border-red-500" : ""
+                    }`}
+                  placeholder="Enter account holder name"
+                  name="accountHolderName"
+                  value={withdrawForm.accountHolderName}
+                  onChange={handleInputChange}
+                />
+                {errors.accountHolderName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.accountHolderName}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Bank Name *
+                </label>
+                <input
+                  type="text"
+                  className={`w-full border rounded px-3 py-2 ${errors.bankName ? "border-red-500" : ""
+                    }`}
+                  placeholder="Enter bank name"
+                  name="bankName"
+                  value={withdrawForm.bankName}
+                  onChange={handleInputChange}
+                />
+                {errors.bankName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.bankName}</p>
+                )}
+              </div>
+
+              {/* Branch Name and Branch Address */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Branch Name *
+                </label>
+                <input
+                  type="text"
+                  className={`w-full border rounded px-3 py-2 ${errors.branchName ? "border-red-500" : ""
+                    }`}
+                  placeholder="Enter branch name"
+                  name="branchName"
+                  value={withdrawForm.branchName}
+                  onChange={handleInputChange}
+                />
+                {errors.branchName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.branchName}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Branch Address (Optional)
+                </label>
+                <input
+                  type="text"
+                  className="w-full border rounded px-3 py-2"
+                  placeholder="Enter branch address"
+                  name="branchAddress"
+                  value={withdrawForm.branchAddress}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              {/* SWIFT Code and IBAN */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  SWIFT Code (Optional)
+                </label>
+                <input
+                  type="text"
+                  className="w-full border rounded px-3 py-2"
+                  placeholder="Enter SWIFT code"
+                  name="swiftCode"
+                  value={withdrawForm.swiftCode}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  IBAN (Optional)
+                </label>
+                <input
+                  type="text"
+                  className="w-full border rounded px-3 py-2"
+                  placeholder="Enter IBAN"
+                  name="iban"
+                  value={withdrawForm.iban}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </>
+          )}
+
+          {(selectedPaymentMethodType?.label?.toLowerCase().includes("crypto") ||
+            selectedPaymentMethodType?.label?.toLowerCase().includes("wallet")) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Network *
+                </label>
+                <input
+                  type="text"
+                  className={`w-full border rounded px-3 py-2 ${errors.network ? "border-red-500" : ""
+                    }`}
+                  placeholder="Enter network (e.g., ERC20, TRC20)"
+                  name="network"
+                  value={withdrawForm.network}
+                  onChange={handleInputChange}
+                />
+                {errors.network && (
+                  <p className="text-red-500 text-xs mt-1">{errors.network}</p>
+                )}
+              </div>
+            )}
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

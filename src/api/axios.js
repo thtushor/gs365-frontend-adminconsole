@@ -28,9 +28,11 @@ Axios.interceptors.response.use(
       window.location.href = "/login";
       localStorage.removeItem("token");
     } else if (!error.response) {
+
+      console.log({error})
       // Handle network errors (e.g., server unreachable)
-      if(!window.location.pathname?.includes("/server-error"))
-      window.location.replace("/server-error");
+      // if(!window.location.pathname?.includes("/server-error"))
+      // window.location.replace("/server-error");
     }
     return Promise.reject(error);
   }
