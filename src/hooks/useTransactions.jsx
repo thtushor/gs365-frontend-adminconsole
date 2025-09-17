@@ -3,7 +3,7 @@ import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
 
-const QUERY_KEYS = {
+export const QUERY_KEYS = {
   TRANSACTIONS: "transactions",
 };
 

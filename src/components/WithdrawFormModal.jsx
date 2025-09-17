@@ -27,6 +27,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     iban: "",
     network: "",
   });
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [selectedPaymentMethodType, setSelectedPaymentMethodType] =
@@ -42,8 +43,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     },
     onSuccess: () => {
       toast.success("Withdrawal added successfully");
-      onClose();
-      const queryClient = useQueryClient();
+      
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRANSACTIONS] });
       onSuccess(); // Callback to refresh player data in parent
       setErrors({});
@@ -65,10 +65,13 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       });
       setSelectedPaymentMethodType(null);
       setSelectedPaymentGateway(null);
+      onClose();
     },
     onError: (error) => {
       const message =
         error?.response?.data?.data?.withdrawReason || error?.response?.data?.message || "Failed to add withdrawal";
+
+        console.log({message})
       toast.error(message);
     },
     onSettled: () => {
@@ -248,13 +251,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       requestData.network = withdrawForm.network;
     }
 
-    try {
-      await withdrawMutation.mutateAsync(requestData);
-    } catch (error) {
-      // Error handling is done in the useMutation hook
-    } finally {
-      setIsSubmitting(false);
-    }
+    await withdrawMutation.mutateAsync(requestData);
   };
 
   console.log({ transformedPaymentTypes, paymentGatewayOptions })
