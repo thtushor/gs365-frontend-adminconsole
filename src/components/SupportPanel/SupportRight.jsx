@@ -2,8 +2,10 @@ import React from "react";
 import ChatAvatar from "../../assets/chat-avatar.png";
 import { LuSend } from "react-icons/lu";
 import { TiAttachment } from "react-icons/ti";
+import { useAuth } from "../../hooks/useAuth";
 
-const SupportRight = () => {
+const SupportRight = ({ isAffiliate }) => {
+  const { user } = useAuth();
   return (
     <div className="text-[#07122b] w-full relative ">
       {/* top */}
@@ -17,7 +19,13 @@ const SupportRight = () => {
           <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
             John Smith{" "}
             <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 block rounded-full">
-              Player
+              {isAffiliate
+                ? user?.role === "affiliate"
+                  ? "Affiliate"
+                  : user?.role === "superAffiliate"
+                  ? "Super Affiliate"
+                  : "Player"
+                : "Player"}
             </span>
           </h1>
           <p className="text-[12px] mt-[-3px] text-white/80">
