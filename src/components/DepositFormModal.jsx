@@ -4,6 +4,7 @@ import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "../hooks/useTransactions";
 import Select from "react-select";
 import { formatAmount } from "./BettingWagerPage"; // Assuming this utility is available
 
@@ -93,6 +94,7 @@ const DepositFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
       });
       // Invalidate and refetch player profile to update balances
       queryClient.invalidateQueries({ queryKey: ["playerProfile", selectedPlayer.id] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRANSACTIONS] });
       if (onSuccess) {
         onSuccess();
       }

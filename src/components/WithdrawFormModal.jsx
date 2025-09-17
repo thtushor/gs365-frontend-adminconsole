@@ -3,7 +3,8 @@ import ReusableModal from "./ReusableModal";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "../hooks/useTransactions";
 import Select from "react-select";
 import { usePaymentMethodTypes } from "../hooks/usePaymentMethodTypes";
 import { usePaymentGateways } from "../hooks/usePaymentGateways";
@@ -42,6 +43,8 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
     onSuccess: () => {
       toast.success("Withdrawal added successfully");
       onClose();
+      const queryClient = useQueryClient();
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TRANSACTIONS] });
       onSuccess(); // Callback to refresh player data in parent
       setErrors({});
       // Reset form fields
