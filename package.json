@@ -27,6 +27,7 @@
     "react-select": "^5.10.2",
     "react-text-editor-kit": "^2.0.1",
     "react-toastify": "^11.0.5",
+    "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.8"
   },
   "devDependencies": {
