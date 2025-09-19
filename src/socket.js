@@ -3,36 +3,22 @@ import io from 'socket.io-client';
 
 const SOCKET_URL = import.meta.env.VITE_APP_SOCKET_URL || 'http://localhost:3000'; // Your backend Socket.IO URL
 
-export const useSocket = (chatId) => {
+export const useSocket = () => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // Initialize socket connection
+    // Initialize socket connection only once
     socketRef.current = io(SOCKET_URL, {
-      query: { chatId }, // Pass chatId or other relevant info
       transports: ['websocket', 'polling'],
     });
 
     // Event listeners
     socketRef.current.on('connect', () => {
       console.log('Socket connected:', socketRef.current.id);
-      if (chatId) {
-        socketRef.current.emit('joinChat', chatId); // Join a specific chat room
-      }
     });
 
     socketRef.current.on('disconnect', () => {
       console.log('Socket disconnected');
-    });
-
-    socketRef.current.on('newMessage', (message) => {
-      console.log('New message received:', message);
-      // Handle new message, e.g., update React Query cache or state
-    });
-
-    socketRef.current.on('chatUpdated', (chatUpdate) => {
-      console.log('Chat updated:', chatUpdate);
-      // Handle chat updates
     });
 
     // Clean up on component unmount
@@ -42,8 +28,9 @@ export const useSocket = (chatId) => {
         socketRef.current = null;
       }
     };
-  }, [chatId]); // Reconnect if chatId changes
+  }, []); // Empty dependency array means this effect runs once on mount
 
+  // This function handles emitting events
   const emitEvent = (eventName, data) => {
     if (socketRef.current && socketRef.current.connected) {
       socketRef.current.emit(eventName, data);
@@ -52,5 +39,19 @@ export const useSocket = (chatId) => {
     }
   };
 
-  return { socket: socketRef.current, emitEvent };
+  // Functions to join/leave chat rooms
+  const joinChat = (id) => {
+    if (socketRef.current && socketRef.current.connected && id) {
+      socketRef.current.emit('joinChat', id);
+    }
+  };
+
+  const leaveChat = (id) => {
+    if (socketRef.current && socketRef.current.connected && id) {
+      socketRef.current.emit('leaveChat', id);
+    }
+  };
+
+  // Return socket instance and functions to join/leave/emit
+  return { socket: socketRef.current, emitEvent, joinChat, leaveChat };
 };

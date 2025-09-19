@@ -24,20 +24,36 @@ export const ChatProvider = ({ children }) => {
   const [selectedChatUser, setSelectedChatUser] = useState(null); // This will hold the selected user object with its chats array
   const [activeConversation, setActiveConversation] = useState(null); // This will hold the specific active chat conversation
 
-  const { socket, emitEvent } = useSocket(activeConversation?.id); // Initialize socket
+  const { socket, emitEvent, joinChat, leaveChat } = useSocket(); // Initialize socket without chatId
 
-  // Effect to determine the active conversation when selectedChatUser changes
+  // Effect to determine the active conversation when selectedChatUser changes and handle joining/leaving chat rooms
   useEffect(() => {
+    let previousChatId = null;
+    if (activeConversation?.id) {
+      previousChatId = activeConversation.id;
+    }
+
     if (selectedChatUser && selectedChatUser.chats && selectedChatUser.chats.length > 0) {
-      // Find the chat with the largest ID
       const latestChat = selectedChatUser.chats.reduce((prev, current) =>
         (prev.id > current.id) ? prev : current
       );
       setActiveConversation(latestChat);
+      if (latestChat.id && latestChat.id !== previousChatId) {
+        joinChat(latestChat.id);
+      }
     } else {
       setActiveConversation(null);
+      if (previousChatId) {
+        leaveChat(previousChatId);
+      }
     }
-  }, [selectedChatUser]);
+
+    return () => {
+      if (previousChatId) {
+        leaveChat(previousChatId);
+      }
+    };
+  }, [selectedChatUser, joinChat, leaveChat]); // Add joinChat and leaveChat to dependencies
 
   // Fetch messages using useQuery
   const {
@@ -135,12 +151,12 @@ export const ChatProvider = ({ children }) => {
   const lastReadChatIdRef = useRef(null);
 
   // Effect to mark messages as read when activeConversation changes
-  // useEffect(() => {
-  //   if (activeConversation?.id && activeConversation.id !== lastReadChatIdRef.current) {
-  //     readMessagesMutation.mutate(activeConversation.id);
-  //     lastReadChatIdRef.current = activeConversation.id; // Update the ref after mutation
-  //   }
-  // }, [activeConversation, readMessagesMutation]);
+  useEffect(() => {
+    if (activeConversation?.id && activeConversation.id !== lastReadChatIdRef.current) {
+      readMessagesMutation.mutate(activeConversation.id);
+      lastReadChatIdRef.current = activeConversation.id; // Update the ref after mutation
+    }
+  }, [activeConversation, readMessagesMutation]);
 
   // Effect to handle socket events
   useEffect(() => {
