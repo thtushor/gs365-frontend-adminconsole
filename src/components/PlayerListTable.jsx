@@ -159,7 +159,10 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const getActionsForRow = (row) => {
     const actions = [];
 
-    if (isSuperAdmin || hasPermission(permissions, "payment_approve_deposits")) {
+    if (
+      isSuperAdmin ||
+      hasPermission(permissions, "payment_approve_deposits")
+    ) {
       actions.push({
         label: "Add Deposit",
         icon: <FaDollarSign size={14} />,
@@ -168,7 +171,11 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       });
     }
 
-    if (isSuperAdmin || hasPermission(permissions, "payment_approve_withdrawals")) { // Assuming a permission for withdrawals
+    if (
+      isSuperAdmin ||
+      hasPermission(permissions, "payment_approve_withdrawals")
+    ) {
+      // Assuming a permission for withdrawals
       actions.push({
         label: "Withdraw",
         icon: <FaMoneyBillWave size={14} />,
@@ -302,7 +309,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     },
     {
       field: "id",
-      headerName: "ID",
+      headerName: "USER ID",
       width: 100,
     },
     {
