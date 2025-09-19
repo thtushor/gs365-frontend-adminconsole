@@ -9,8 +9,10 @@ import { useAuth } from "../../hooks/useAuth";
 
 const SupportRight = () => {
   const { user } = useAuth();
-  const { selectedChat, messages, loading, sendMessage, createChat } = useChat();
+  const { selectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
   const [messageInput, setMessageInput] = useState("");
+  const [attachmentFile, setAttachmentFile] = useState(null);
+  const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -21,17 +23,44 @@ const SupportRight = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (messageInput.trim() === "") return;
+  const handleAttachmentClick = () => {
+    fileInputRef.current?.click();
+  };
 
-    if (!selectedChat) {
-      // If no chat is selected, create a new one
-      const newChat = await createChat(messageInput);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAttachmentFile(file);
+      // Optionally, you can immediately upload the file here or wait for send message
+      // For now, let's upload it when sending the message
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (messageInput.trim() === "" && !attachmentFile) return;
+
+    let attachmentUrl = null;
+    if (attachmentFile) {
+      try {
+        attachmentUrl = await uploadAttachment(attachmentFile);
+        setAttachmentFile(null); // Clear the selected file after upload
+      } catch (error) {
+        console.error("Failed to upload attachment:", error);
+        // Handle error (e.g., show a toast notification)
+        return; // Stop sending message if attachment upload fails
+      }
+    }
+
+    if (!activeConversation) {
+      const newChat = await createChat({
+        initialMessageContent: messageInput,
+        targetUserId: selectedChat.id,
+      });
       if (newChat) {
-        await sendMessage(newChat.id, messageInput);
+        await sendMessage({ chatId: newChat.id, content: messageInput, attachmentUrl });
       }
     } else {
-      await sendMessage(selectedChat.id, messageInput);
+      await sendMessage({ chatId: activeConversation.id, content: messageInput, attachmentUrl });
     }
     setMessageInput("");
   };
@@ -52,7 +81,7 @@ const SupportRight = () => {
     return "Unknown";
   };
 
-  if (!selectedChat) {
+  if (!activeConversation) {
     return (
       <div className="text-[#07122b] w-full relative flex items-center justify-center h-full">
         <p className="text-white/70">Select a chat to start messaging</p>
@@ -60,7 +89,7 @@ const SupportRight = () => {
     );
   }
 
-  console.log({selectedChat})
+  console.log({activeConversation})
 
   return (
     <div className="text-[#07122b] w-full relative flex flex-col h-full">
@@ -73,13 +102,13 @@ const SupportRight = () => {
         />
         <div>
           <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
-            {selectedChat.participantDetails?.fullname || selectedChat.participantDetails?.username || "N/A"}{" "}
+            {selectedChat.fullname || selectedChat.username || "N/A"}{" "}
             <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 block rounded-full">
-              {selectedChat.type === "user" ? "Player" : "Admin"}
+              {activeConversation.type === "user" ? "Player" : "Admin"}
             </span>
           </h1>
           <p className="text-[12px] mt-[-3px] text-white/80">
-            {selectedChat.participantDetails?.email || "N/A"}
+            {selectedChat.email || "N/A"}
           </p>
         </div>
       </div>
@@ -88,8 +117,9 @@ const SupportRight = () => {
       <div className="p-4 py-2 flex-1 overflow-y-auto space-y-1">
         {loading && <p className="text-white text-center">Loading messages...</p>}
         {messages.map((message) => {
-          const isCurrentUser = user.id === message.senderId;
+          const isCurrentUser = user.id === message.senderAdmin?.id && user.role === message.senderAdmin?.role && message?.senderType==="admin";
           const senderName = getSenderName(message);
+          console.log({isCurrentUser,senderName,user,message})
           return (
             <div
               key={message.id}
@@ -104,7 +134,10 @@ const SupportRight = () => {
                     : "bg-gray-200 text-black"
                 } px-4 py-2 rounded-lg max-w-xs md:max-w-sm relative group`}
               >
-                {message.content}
+                {message.content && <p>{message.content}</p>}
+                {message.attachmentUrl && (
+                  <img src={message.attachmentUrl} alt="Attachment" className="max-w-full h-auto rounded-md mt-2" />
+                )}
                 <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                   {senderName}
                 </span>
@@ -124,8 +157,17 @@ const SupportRight = () => {
 
       {/* bottom */}
       <div className="p-2 py-2 flex items-center gap-2 w-full bg-[#07122b] border-t-2 border-[#01dc84] flex-shrink-0">
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
         <div className="header-auth">
-          <div className="signup-btn-green !cursor-pointer !text-[27px] !min-w-[40px] !max-w-[40px] !p-0 flex items-center justify-center !border-[2px] !max-h-[40px] !min-h-[40px]">
+          <div
+            className="signup-btn-green !cursor-pointer !text-[27px] !min-w-[40px] !max-w-[40px] !p-0 flex items-center justify-center !border-[2px] !max-h-[40px] !min-h-[40px]"
+            onClick={handleAttachmentClick}
+          >
             <TiAttachment />
           </div>
         </div>
