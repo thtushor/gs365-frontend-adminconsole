@@ -146,7 +146,7 @@ const SupportRight = () => {
                   isCurrentUser ? "text-gray-400" : "text-gray-500"
                 }`}
               >
-                {moment(message.createdAt).format("hh:mm A")}
+                {moment(new Date(message.createdAt)).format("hh:mm A")}
               </span>
             </div>
           );
