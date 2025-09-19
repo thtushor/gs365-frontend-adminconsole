@@ -199,6 +199,7 @@ export const API_LIST = {
   GET_ACCOUNT_STATISTICS: "/api/withdrawal-payment-accounts/stats",
   // Permission
   PERMISSION: "/api/designations",
+  CHATS: "/api/chats",
 };
 
 export const DROPDOWN_ID = {
