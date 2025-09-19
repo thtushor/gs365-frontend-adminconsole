@@ -3,7 +3,7 @@ import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
 
 const getChats = async (chatUserType, searchKey) => {
-  const response = await Axios.get(API_LIST.CHATS, {
+  const response = await Axios.get(API_LIST.CREATE_CHAT, {
     params: { chatUserType, searchKey },
   });
   return response.data.data;

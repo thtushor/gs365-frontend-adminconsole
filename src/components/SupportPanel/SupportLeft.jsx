@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import ChatAvatar from "../../assets/chat-avatar.png";
 import ChatCard from "../ChatCard/ChatCard";
 import { useChats } from "../../hooks/useChats"; // Import the custom hook
+import { useChat } from "../../hooks/useChat";
 
 const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
   const [activeChat, setActiveChat] = useState(0);
   const [searchKey, setSearchKey] = useState("");
+
+  const {setSelectedChat,selectedChat}= useChat()
 
   const { data: chatData, isLoading, isError } = useChats(chatUserType, searchKey);
 
@@ -38,6 +41,8 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
   if (isError) {
     return <div className="p-4 text-red-500">Error loading chats.</div>;
   }
+
+  console.log({setSelectedChat,selectedChat})
 
   return (
     <div className="bg-[#07122b] overflow-y-auto min-w-[300px] border-r-[3px] border-[#01dc84]">
@@ -76,7 +81,7 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
                 avatar={ChatAvatar}
                 isActive={activeChat === index}
                 isUserActive={isLoggedIn}
-                onClick={() => setActiveChat(index)}
+                onClick={() => setSelectedChat(chat)}
               />
             );
           })
