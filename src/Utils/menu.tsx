@@ -182,6 +182,7 @@ import { FaWallet } from "react-icons/fa";
 import CurrencyConversion from "../components/CurrencyConversion";
 import Faqs from "../components/Faqs";
 import SupportLayout from "../components/SupportPanel/SupportLayout";
+import AffiliateSupportLayout from "../components/SupportPanel/AffiliateSupportLayout";
 
 export const menu = [
   {
@@ -923,6 +924,12 @@ export const affiliateOutsideRoute = [
     path: "/affiliate-list/:affiliateId/kyc-verification",
     component: KYCVerificationPage,
     accessKey: "affiliate_manage_kyc_verification",
+  },
+  {
+    label: "Support",
+    path: "/affiliate-list/:affiliateId/support",
+    accessKey: "affiliate_support",
+    component: AffiliateSupportLayout,
   },
 ];
 export const gameProviderOutsideRoute = [
