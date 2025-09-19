@@ -13,6 +13,7 @@ import { API_LIST, SINGLE_IMAGE_UPLOAD_URL } from "../api/ApiList";
 import Axios from "../api/axios";
 import { useAuth } from "./useAuth";
 import axios from "axios";
+import { useSocket } from "../socket"; // Import useSocket
 
 const ChatContext = createContext();
 
@@ -22,6 +23,8 @@ export const ChatProvider = ({ children }) => {
 
   const [selectedChatUser, setSelectedChatUser] = useState(null); // This will hold the selected user object with its chats array
   const [activeConversation, setActiveConversation] = useState(null); // This will hold the specific active chat conversation
+
+  const { socket, emitEvent } = useSocket(activeConversation?.id); // Initialize socket
 
   // Effect to determine the active conversation when selectedChatUser changes
   useEffect(() => {
@@ -98,7 +101,6 @@ export const ChatProvider = ({ children }) => {
       console.error("Error sending message:", err);
     },
   });
-
   // Read messages using useMutation
   const readMessagesMutation = useMutation({
     mutationFn: async (chatId) => {
@@ -133,12 +135,43 @@ export const ChatProvider = ({ children }) => {
   const lastReadChatIdRef = useRef(null);
 
   // Effect to mark messages as read when activeConversation changes
+  // useEffect(() => {
+  //   if (activeConversation?.id && activeConversation.id !== lastReadChatIdRef.current) {
+  //     readMessagesMutation.mutate(activeConversation.id);
+  //     lastReadChatIdRef.current = activeConversation.id; // Update the ref after mutation
+  //   }
+  // }, [activeConversation, readMessagesMutation]);
+
+  // Effect to handle socket events
   useEffect(() => {
-    if (activeConversation?.id && activeConversation.id !== lastReadChatIdRef.current) {
-      readMessagesMutation.mutate(activeConversation.id);
-      lastReadChatIdRef.current = activeConversation.id; // Update the ref after mutation
-    }
-  }, [activeConversation, readMessagesMutation]);
+    if (!socket) return;
+
+    const handleNewMessage = (message) => {
+      console.log("New message received via socket:", message);
+      // Invalidate queries to refetch messages for the active conversation
+      queryClient.invalidateQueries({ queryKey: ["chatMessages", activeConversation?.id] });
+      // Optionally, if the new message is for the active conversation, mark it as read
+      if (activeConversation?.id === message.chatId) {
+        readMessagesMutation.mutate(activeConversation.id);
+      }
+    };
+
+    const handleChatUpdated = (chatUpdate) => {
+      console.log("Chat updated via socket:", chatUpdate);
+      // Invalidate queries that list chats or specific chat details
+      queryClient.invalidateQueries({ queryKey: ["userChats"] }); // Assuming a query key for all user chats
+      queryClient.invalidateQueries({ queryKey: ["chatMessages", chatUpdate.id] }); // Invalidate messages for the updated chat
+    };
+
+    socket.on("newMessage", handleNewMessage);
+    socket.on("chatUpdated", handleChatUpdated);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.off("chatUpdated", handleChatUpdated);
+    };
+  }, [socket, activeConversation?.id, queryClient, readMessagesMutation]);
+
 
   const value = {
     selectedChat: selectedChatUser,
