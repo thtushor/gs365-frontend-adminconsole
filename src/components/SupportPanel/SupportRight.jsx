@@ -119,7 +119,6 @@ const SupportRight = () => {
         {messages.map((message) => {
           const isCurrentUser = user.id === message.senderAdmin?.id && user.role === message.senderAdmin?.role && message?.senderType==="admin";
           const senderName = getSenderName(message);
-          console.log({isCurrentUser,senderName,user,message})
           return (
             <div
               key={message.id}
