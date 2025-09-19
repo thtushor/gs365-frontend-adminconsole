@@ -15,7 +15,7 @@ const WithdrawFormModal = ({ open, onClose, selectedPlayer, onSuccess }) => {
   const [withdrawForm, setWithdrawForm] = useState({
     amount: "",
     paymentGatewayId: "",
-    paymentGatewayId: "",
+    // paymentGatewayId: "",
     notes: "",
     attachment: null,
     accountNumber: "",

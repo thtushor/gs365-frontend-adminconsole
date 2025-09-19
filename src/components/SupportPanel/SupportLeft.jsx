@@ -1,7 +1,140 @@
-import React from "react";
+import React, { useState } from "react";
 import ChatAvatar from "../../assets/chat-avatar.png";
+import ChatCard from "../ChatCard/ChatCard"; // Import the new ChatCard component
 
 const SupportLeft = () => {
+  const [activeChat, setActiveChat] = useState(0); // State to manage active chat
+
+  // Helper function to format time
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - past) / (1000 * 60));
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} min ago`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+    } else {
+      return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+    }
+  };
+
+  // Sample data for chat cards based on the provided structure
+  const chatData = [
+    {
+      id: 1,
+      userId: 1,
+      adminUserId: null,
+      status: "open",
+      type: "user",
+      createdAt: "2025-09-19T00:49:43.000Z",
+      updatedAt: "2025-09-19T00:49:43.000Z",
+      user: {
+        id: 1,
+        username: "alice123",
+        fullname: "Alice Smith",
+        phone: "1234567890",
+        email: "alice@example.com",
+        password: "hashedpassword1",
+        currency_id: 1,
+        country_id: null,
+        refer_code: "REFALICE",
+        created_by: null,
+        status: "active",
+        isAgreeWithTerms: true,
+        isLoggedIn: true,
+        isVerified: true,
+        lastIp: "127.0.0.1",
+        lastLogin: "2025-09-18T18:42:02.000Z",
+        tokenVersion: 1,
+        device_type: "Desktop",
+        device_name: "Unknown",
+        os_version: "Unknown",
+        browser: "Unknown",
+        browser_version: "Unknown",
+        ip_address: "192.168.1.10",
+        device_token: "token-alice-123",
+        referred_by: null,
+        referred_by_admin_user: null,
+        created_at: "2025-09-14T20:35:12.000Z",
+        kyc_status: "unverified",
+      },
+      adminUser: null,
+      messages: [
+        {
+          id: 1,
+          chatId: 1,
+          senderId: 1,
+          senderType: "user",
+          messageType: "text",
+          content: "hello world",
+          attachmentUrl: null,
+          isRead: false,
+          createdAt: "2025-09-19T00:49:43.000Z",
+          updatedAt: "2025-09-19T00:49:43.000Z",
+        },
+      ],
+    },
+    {
+      id: 2,
+      userId: 1,
+      adminUserId: null,
+      status: "open",
+      type: "user",
+      createdAt: "2025-09-19T01:01:04.000Z",
+      updatedAt: "2025-09-19T01:01:04.000Z",
+      user: {
+        id: 1,
+        username: "alice123",
+        fullname: "Alice Smith",
+        phone: "1234567890",
+        email: "alice@example.com",
+        password: "hashedpassword1",
+        currency_id: 1,
+        country_id: null,
+        refer_code: "REFALICE",
+        created_by: null,
+        status: "active",
+        isAgreeWithTerms: true,
+        isLoggedIn: false,
+        isVerified: true,
+        lastIp: "127.0.0.1",
+        lastLogin: "2025-09-18T18:42:02.000Z",
+        tokenVersion: 1,
+        device_type: "Desktop",
+        device_name: "Unknown",
+        os_version: "Unknown",
+        browser: "Unknown",
+        browser_version: "Unknown",
+        ip_address: "192.168.1.10",
+        device_token: "token-alice-123",
+        referred_by: null,
+        referred_by_admin_user: null,
+        created_at: "2025-09-14T20:35:12.000Z",
+        kyc_status: "unverified",
+      },
+      adminUser: null,
+      messages: [
+        {
+          id: 2,
+          chatId: 2,
+          senderId: 1,
+          senderType: "user",
+          messageType: "text",
+          content: "hello world from Jane",
+          attachmentUrl: null,
+          isRead: false,
+          createdAt: "2025-09-19T01:01:04.000Z",
+          updatedAt: "2025-09-19T01:01:04.000Z",
+        },
+      ],
+    },
+    // Add more chat data here following the same structure
+  ];
+
   return (
     <div className="bg-[#07122b] overflow-y-auto min-w-[300px] border-r-[3px] border-[#01dc84]">
       <div className="p-[10px] py-2 border-b bg-[#07122b] z-[5] border-[#01dc844e] sticky top-0">
@@ -17,270 +150,18 @@ const SupportLeft = () => {
 
       {/* all conversation highlight here */}
       <div>
-        <div className="flex relative items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-[#01dc84]"
+        {chatData.map((chat, index) => (
+          <ChatCard
+            key={chat.id}
+            name={chat.user.fullname}
+            message={chat.messages.length > 0 ? chat.messages[0].content : "No messages"}
+            time={formatTimeAgo(chat.createdAt)}
+            avatar={ChatAvatar}
+            isActive={activeChat === index}
+            isUserActive={chat.user.isLoggedIn} // Assuming isLoggedIn indicates user activity
+            onClick={() => setActiveChat(index)}
           />
-          <div>
-            <p className="text-[#01dc84] font-medium">John Smith</p>
-            <div className="mt-[-2px] relative pr-[65px] text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-
-          <div className="w-[10px] h-[10px] rounded-full bg-[#01dc84] absolute right-3" />
-        </div>
-
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex relative items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-[#01dc84]"
-          />
-          <div>
-            <p className="text-[#01dc84] font-medium">John Smith</p>
-            <div className="mt-[-2px] relative pr-[65px] text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-
-          <div className="w-[10px] h-[10px] rounded-full bg-[#01dc84] absolute right-3" />
-        </div>
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center hover:bg-[#01dc8423] duration-150 cursor-pointer gap-2 p-[10px] py-2 border-b border-[#01dc844e]">
-          <img
-            src={ChatAvatar}
-            alt=""
-            className="w-[40px] h-[40px] border-2 rounded-full border-white/80"
-          />
-          <div>
-            <p className="text-white/80 font-medium">John Smith</p>
-            <div className="mt-[-2px] pr-[65px] relative text-[14px] block truncate font-normal max-w-[220px]">
-              <span className="text-white/70">
-                Something we need for more information to the shops
-              </span>
-              <div className="text-[12px] text-white/90 italic absolute right-1 top-[2px]">
-                (9 min ago)
-              </div>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
