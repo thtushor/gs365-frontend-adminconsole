@@ -76,12 +76,12 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
 
             return (
               <ChatCard
-                key={chat.id}
+                key={index}
                 name={displayName}
                 message={lastMessageContent}
                 time={timeToDisplay}
                 avatar={ChatAvatar}
-                isActive={activeChat === index}
+                isActive={chat.id === selectedChat.id}
                 isUserActive={isLoggedIn}
                 hasAttachment={hasAttachment} // Pass hasAttachment prop
                 onClick={() => setSelectedChat(chat)}

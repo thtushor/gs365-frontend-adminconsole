@@ -30,7 +30,7 @@ const ChatCard = ({ name, message, time, avatar, isActive, isUserActive, hasAtta
             </div>
           )}
         </div>
-        <div className="mt-[-2px] text-[14px] block truncate font-normal max-w-[220px] flex items-center gap-1">
+        <div className="mt-[-2px] text-[14px] truncate font-normal max-w-[220px] flex items-center gap-1">
           {hasAttachment && <FaPaperclip className={`${isActive ? "text-white" : "text-white/70"} text-xs`} />}
           <span className={`${isActive ? "text-white" : "text-white/70"}`}>{displayMessage}</span>
         </div>
