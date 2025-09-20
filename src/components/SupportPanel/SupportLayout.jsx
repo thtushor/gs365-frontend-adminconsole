@@ -10,7 +10,7 @@ const SupportLayout = () => {
 
   return (
     <ChatProvider>
-      <div className="h-[82vh] pb-10 flex flex-col">
+      <div className="h-[88vh] pb-10 flex flex-col">
         <div className="bg-[#07122b] mb-2 rounded-full py-1 px-1 w-fit flex gap-1 mx-auto md:mx-0">
           <Link
             className={`${
