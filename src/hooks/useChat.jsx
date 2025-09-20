@@ -75,12 +75,13 @@ export const ChatProvider = ({ children }) => {
 
   // Create chat using useMutation
   const createChatMutation = useMutation({
-    mutationFn: async ({ initialMessageContent, targetUserId, targetAdminId, attachmentUrl, senderType }) => {
+    mutationFn: async ({ initialMessageContent, targetUserId, targetAdminId, targetAffiliateId,attachmentUrl, senderType }) => {
       const payload = { initialMessageContent, attachmentUrl, senderType };
       if (targetUserId) payload.userId = targetUserId;
       if (targetAdminId) payload.adminUserId = targetAdminId;
+      if (targetAdminId) payload.adminUserId = targetAdminId;
+      if(targetAffiliateId) payload.targetAffiliateId = targetAffiliateId;
 
-      console.log({payload})
       const response = await Axios.post(API_LIST.CREATE_CHAT, payload);
       return response.data.data;
     },

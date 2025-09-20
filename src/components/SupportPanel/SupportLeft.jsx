@@ -100,7 +100,7 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
               ? lastChat.messages[lastChat.messages.length - 1]
               : null;
 
-            const lastMessageContent = lastMessageObj?.content || "No messages";
+            const lastMessageContent = lastMessageObj?.content;
             const hasAttachment = !!lastMessageObj?.attachmentUrl;
             const chatCreatedAt = lastMessageObj?.createdAt || chat?.created_at;
             const isLoggedIn = chatUserType === "admin" ? (chat?.isLoggedIn ?? false) : (chat?.isLoggedIn ?? false);

@@ -66,9 +66,11 @@ const SupportRight = () => {
     const senderType = ["superAdmin", "admin", "superAgent", "agent", "superAffiliate", "affiliate"].includes(user.role) ? "admin" : "user";
 
     if (!activeConversation) {
+      const isSelectedAdminChat = Boolean(selectedChat?.role)
       await createChat({
         initialMessageContent: messageInput,
-        targetUserId: selectedChat.id,
+        targetUserId: !isSelectedAdminChat? selectedChat.id: undefined,
+        targetAffiliateId: isSelectedAdminChat? selectedChat?.id: undefined,
         targetAdminId: user.id,
         attachmentUrl,
         senderType,
@@ -117,8 +119,8 @@ const SupportRight = () => {
         <div>
           <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
             {selectedChat.fullname || selectedChat.username || "N/A"}{" "}
-            <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 block rounded-full">
-              {activeConversation?.type === "user" ? "Player" : "Admin"}
+            <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 capitalize block rounded-full">
+              {selectedChat?.role ? selectedChat?.role : "Player"}
             </span>
           </h1>
           <p className="text-[12px] mt-[-3px] text-white/80">

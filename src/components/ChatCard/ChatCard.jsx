@@ -1,7 +1,7 @@
 import React from "react";
 import { FaPaperclip } from "react-icons/fa"; // Import paperclip icon
 
-const ChatCard = ({ name, message, time, avatar, isActive, isUserActive, hasAttachment, onClick }) => {
+const ChatCard = ({ name, message="", time, avatar, isActive, isUserActive, hasAttachment, onClick }) => {
   const displayMessage = message.length > 50 ? message.substring(0, 47) + "..." : message;
 
   return (
@@ -24,7 +24,7 @@ const ChatCard = ({ name, message, time, avatar, isActive, isUserActive, hasAtta
               <div className="w-[10px] h-[10px] rounded-full bg-[#01dc84]" />
             )}
           </div>
-          {time && ( // Only show time if it exists
+          {time && message && ( // Only show time if it exists
             <div className="text-[12px] text-white/90 italic">
               ({time})
             </div>
@@ -32,7 +32,7 @@ const ChatCard = ({ name, message, time, avatar, isActive, isUserActive, hasAtta
         </div>
         <div className="mt-[-2px] text-[14px] truncate font-normal max-w-[220px] flex items-center gap-1">
           {hasAttachment && <FaPaperclip className={`${isActive ? "text-white" : "text-white/70"} text-xs`} />}
-          <span className={`${isActive ? "text-white" : "text-white/70"}`}>{displayMessage}</span>
+          <span className={`${isActive ? "text-white" : "text-white/70"}`}>{displayMessage||"No conversations"}</span>
         </div>
       </div>
 
