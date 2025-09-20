@@ -65,9 +65,11 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
           chatData.map((chat, index) => {
             const displayName = chatUserType === "admin" ? chat.fullname : chat.username;
             const lastChat = chat.chats && chat.chats.length > 0 ? chat.chats[chat.chats.length - 1] : null;
-            const lastMessage = lastChat && lastChat.messages.length > 0 
-              ? lastChat.messages[lastChat.messages.length - 1].content
-              : "No messages";
+            const lastMessageObj = lastChat && lastChat.messages.length > 0 
+              ? lastChat.messages[lastChat.messages.length - 1]
+              : null;
+            const lastMessageContent = lastMessageObj ? lastMessageObj.content : "No messages";
+            const hasAttachment = lastMessageObj ? !!lastMessageObj.attachmentUrl : false; // Check if attachmentUrl exists
             const chatCreatedAt = lastChat ? lastChat.createdAt : chat.created_at;
             const isLoggedIn = chatUserType === "admin" ? chat.isLoggedIn : chat.isLoggedIn; // Assuming isLoggedIn is consistent
             const timeToDisplay = lastChat ? formatTimeAgo(chatCreatedAt) : null; // Pass null if no chat exists
@@ -76,11 +78,12 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
               <ChatCard
                 key={chat.id}
                 name={displayName}
-                message={lastMessage}
+                message={lastMessageContent}
                 time={timeToDisplay}
                 avatar={ChatAvatar}
                 isActive={activeChat === index}
                 isUserActive={isLoggedIn}
+                hasAttachment={hasAttachment} // Pass hasAttachment prop
                 onClick={() => setSelectedChat(chat)}
               />
             );
