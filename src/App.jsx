@@ -13,6 +13,7 @@ import GameProviderLayout from "./components/GameProviderLayout.jsx";
 import SportsProviderLayout from "./components/SportProviderInner/SportsProviderLayout.jsx";
 import { use, useEffect } from "react";
 import { useAuth } from "./hooks/useAuth.jsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Import QueryClient and QueryClientProvider
 import {
   checkHasCategoryPermission,
   getPermissionsByCategory,
@@ -142,6 +143,8 @@ function getOutsideRoutes(routes, LayoutWrapper = null, user,isAffiliate=false) 
   });
 }
 
+const queryClient = new QueryClient(); // Create a client
+
 function App() {
   const { user, isValidating } = useAuth(); // Get isValidating from useAuth
   const userType = import.meta.env.VITE_USER_TYPE;
@@ -180,19 +183,21 @@ function App() {
   }
 
   return (
-    <Routes>
-      {/* Routes inside the layout */}
-      <Route path="/" element={<Layout />}>
-        {getRoutes(menu, user)}
-        {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout, user,true)}
-        {getOutsideRoutes(gameProviderOutsideRoute, GameProviderLayout, user)}
-        {getOutsideRoutes(
-          sportProviderOutsideRoute,
-          SportsProviderLayout,
-          user
-        )}
-      </Route>
-    </Routes>
+    <QueryClientProvider client={queryClient}> {/* Wrap the application with QueryClientProvider */}
+      <Routes>
+        {/* Routes inside the layout */}
+        <Route path="/" element={<Layout />}>
+          {getRoutes(menu, user)}
+          {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout, user,true)}
+          {getOutsideRoutes(gameProviderOutsideRoute, GameProviderLayout, user)}
+          {getOutsideRoutes(
+            sportProviderOutsideRoute,
+            SportsProviderLayout,
+            user
+          )}
+        </Route>
+      </Routes>
+    </QueryClientProvider>
   );
 }
 

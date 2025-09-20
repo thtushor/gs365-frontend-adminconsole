@@ -199,6 +199,10 @@ export const API_LIST = {
   GET_ACCOUNT_STATISTICS: "/api/withdrawal-payment-accounts/stats",
   // Permission
   PERMISSION: "/api/designations",
+  CREATE_CHAT: "/api/chats",
+  GET_MESSAGES: "/api/messages/chat", // Will append chatId
+  SEND_MESSAGE: "/api/messages/send-message",
+  READ_MESSAGES: "/api/messages/read", // Will append chatId
 };
 
 export const DROPDOWN_ID = {
