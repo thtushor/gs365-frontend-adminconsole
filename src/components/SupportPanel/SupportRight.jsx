@@ -56,9 +56,9 @@ const SupportRight = () => {
         initialMessageContent: messageInput,
         targetUserId: selectedChat.id,
       });
-      if (newChat) {
-        await sendMessage({ chatId: newChat.id, content: messageInput, attachmentUrl });
-      }
+      // if (newChat) {
+      //   await sendMessage({ chatId: newChat.id, content: messageInput, attachmentUrl });
+      // }
     } else {
       await sendMessage({ chatId: activeConversation.id, content: messageInput, attachmentUrl });
     }
@@ -81,7 +81,7 @@ const SupportRight = () => {
     return "Unknown";
   };
 
-  if (!activeConversation) {
+  if (!selectedChat) {
     return (
       <div className="text-[#07122b] w-full relative flex items-center justify-center h-full">
         <p className="text-white/70">Select a chat to start messaging</p>
@@ -89,7 +89,7 @@ const SupportRight = () => {
     );
   }
 
-  console.log({activeConversation})
+  console.log({activeConversation,selectedChat})
 
   return (
     <div className="text-[#07122b] w-full relative flex flex-col h-full">
@@ -104,7 +104,7 @@ const SupportRight = () => {
           <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
             {selectedChat.fullname || selectedChat.username || "N/A"}{" "}
             <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 block rounded-full">
-              {activeConversation.type === "user" ? "Player" : "Admin"}
+              {activeConversation?.type === "user" ? "Player" : "Admin"}
             </span>
           </h1>
           <p className="text-[12px] mt-[-3px] text-white/80">
@@ -116,7 +116,12 @@ const SupportRight = () => {
       {/* center */}
       <div className="p-4 py-2 flex-1 overflow-y-auto space-y-1">
         {loading && <p className="text-white text-center">Loading messages...</p>}
-        {messages.map((message) => {
+        {!activeConversation && !loading && (
+          <div className="text-white/70 text-center h-full flex items-center justify-center">
+            <p>Start a conversation with {selectedChat.fullname || selectedChat.username}!</p>
+          </div>
+        )}
+        {activeConversation && messages.map((message) => {
           const isCurrentUser = user.id === message.senderAdmin?.id && user.role === message.senderAdmin?.role && message?.senderType==="admin";
           const senderName = getSenderName(message);
           return (
