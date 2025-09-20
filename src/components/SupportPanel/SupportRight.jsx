@@ -9,10 +9,12 @@ import { IoCloseCircle } from "react-icons/io5"; // Import close icon
 import moment from "moment";
 import { useAuth } from "../../hooks/useAuth";
 import { useChat } from "../../hooks/useChat";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile }) => {
   const { user } = useAuth();
   const { selectedChat,setSelectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const [messageInput, setMessageInput] = useState("");
   const [attachmentFile, setAttachmentFile] = useState(null); // Stores the actual file object
@@ -130,21 +132,36 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
             &larr;
           </button>
         )}
-        <img
-          src={ChatAvatar}
-          alt=""
-          className="w-[35px] h-[35px] border rounded-md bg-white border-white"
-        />
-        <div>
-          <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
-            {selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
-            <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 capitalize block rounded-full">
-              {selectedChat?.role ? selectedChat?.role : "Admin"}
-            </span>
-          </h1>
-          <p className="text-[12px] mt-[-3px] text-white/80">
-            {selectedChat?.email && selectedChat?.email}
-          </p>
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={() => {
+            if (selectedChat) {
+              if (selectedChat.role) {
+                // It's an affiliate
+                navigate(`/affiliate-list/${selectedChat.id}`);
+              } else {
+                // It's a player
+                navigate(`/players/${selectedChat.id}/profile`);
+              }
+            }
+          }}
+        >
+          <img
+            src={ChatAvatar}
+            alt=""
+            className="w-[35px] h-[35px] border rounded-md bg-white border-white"
+          />
+          <div>
+            <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
+              {selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
+              <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 capitalize block rounded-full">
+                {selectedChat?.role ? selectedChat?.role : "Admin"}
+              </span>
+            </h1>
+            <p className="text-[12px] mt-[-3px] text-white/80">
+              {selectedChat?.email && selectedChat?.email}
+            </p>
+          </div>
         </div>
       </div>
 
