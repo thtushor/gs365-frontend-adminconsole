@@ -11,17 +11,15 @@ import { useAuth } from "../../hooks/useAuth";
 import { useChat } from "../../hooks/useChat";
 
 const SupportRight = ({ isAffiliate }) => {
-
-  
   const { user } = useAuth();
   const { selectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
+
   const [messageInput, setMessageInput] = useState("");
   const [attachmentFile, setAttachmentFile] = useState(null); // Stores the actual file object
   const [attachmentPreview, setAttachmentPreview] = useState(null); // Stores URL for image preview or file details
+  const [sendingMessage, setSendingMessage] = useState(false); // New state for send button loading
   const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
-
-  console.log({isAffiliate,user})
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
@@ -53,40 +51,42 @@ const SupportRight = ({ isAffiliate }) => {
 
   const handleSendMessage = async () => {
     if (messageInput.trim() === "" && !attachmentFile) return;
+    setSendingMessage(true); // Start loading
 
     let attachmentUrl = null;
-    if (attachmentFile) {
-      try {
+    try {
+      if (attachmentFile) {
         attachmentUrl = await uploadAttachment(attachmentFile);
         setAttachmentFile(null); // Clear the selected file after upload
         setAttachmentPreview(null); // Clear the preview after upload
-      } catch (error) {
-        console.error("Failed to upload attachment:", error);
-        // Handle error (e.g., show a toast notification)
-        return; // Stop sending message if attachment upload fails
       }
+
+      const senderType = ["superAdmin", "admin", "superAgent", "agent", "superAffiliate", "affiliate"].includes(user.role) ? "admin" : "user";
+
+      const hasMessage = Boolean(messages?.length)
+
+      const chatid = activeConversation?.id ? activeConversation?.id: hasMessage ? messages[messages.length-1].chatId:undefined
+
+      if (!chatid) {
+        const isSelectedAdminChat = Boolean(selectedChat?.role)
+        await createChat({
+          initialMessageContent: messageInput,
+          targetUserId: !isSelectedAdminChat? selectedChat.id: undefined,
+          targetAffiliateId: isSelectedAdminChat? selectedChat?.id: undefined,
+          targetAdminId: user.id,
+          attachmentUrl,
+          senderType,
+        });
+      } else {
+        await sendMessage({ chatId: chatid, content: messageInput, attachmentUrl });
+      }
+      setMessageInput("");
+    } catch (error) {
+      console.error("Failed to send message or upload attachment:", error);
+      // Handle error (e.g., show a toast notification)
+    } finally {
+      setSendingMessage(false); // End loading
     }
-
-    const senderType = ["superAdmin", "admin", "superAgent", "agent", "superAffiliate", "affiliate"].includes(user.role) ? "admin" : "user";
-
-    const hasMessage = Boolean(messages?.length)
-
-    const chatid = activeConversation?.id ? activeConversation?.id: hasMessage ? messages[messages.length-1].chatId:undefined
-
-    if (!chatid) {
-      const isSelectedAdminChat = Boolean(selectedChat?.role)
-      await createChat({
-        initialMessageContent: messageInput,
-        targetUserId: !isSelectedAdminChat? selectedChat.id: undefined,
-        targetAffiliateId: isSelectedAdminChat? selectedChat?.id: undefined,
-        targetAdminId: user.id,
-        attachmentUrl,
-        senderType,
-      });
-    } else {
-      await sendMessage({ chatId: chatid, content: messageInput, attachmentUrl });
-    }
-    setMessageInput("");
   };
 
   const handleKeyPress = (e) => {
@@ -223,14 +223,20 @@ const SupportRight = ({ isAffiliate }) => {
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
             onKeyPress={handleKeyPress}
+            disabled={sendingMessage} // Disable input while sending
           />
           <div className="header-auth">
-            <div
-              className="signup-btn-green  !cursor-pointer !min-w-[40px] !rounded-l-none !rounded-md !max-w-[40px] !p-0 flex items-center justify-center !border-[2px] !max-h-[40px] !min-h-[40px]"
+            <button
+              className="signup-btn-green !cursor-pointer !min-w-[40px] !rounded-l-none !rounded-md !max-w-[40px] !p-0 flex items-center justify-center !border-[2px] !max-h-[40px] !min-h-[40px]"
               onClick={handleSendMessage}
+              disabled={sendingMessage} // Disable button while sending
             >
-              <LuSend />
-            </div>
+              {sendingMessage ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> // Spinner
+              ) : (
+                <LuSend />
+              )}
+            </button>
           </div>
         </div>
       </div>
