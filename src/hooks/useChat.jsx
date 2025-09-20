@@ -71,12 +71,10 @@ export const ChatProvider = ({ children }) => {
       const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser.id}/${isSelectedAdminChat ? "admin":"user"}`
       // const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.GET_MESSAGES}/${activeConversation.id}`
       if (!activeConversation?.id  && !isAffiliate) return [];
-      const response = await Axios.get(
-        url
-      );
+      const response = await Axios.get(url);
       return response.data.data;
     },
-    enabled: !!activeConversation?.id, // Only run query if activeConversation.id exists
+    enabled: isAffiliate ? !!user.id: !!activeConversation?.id , // Only run query if activeConversation.id exists
   });
 
   // Create chat using useMutation

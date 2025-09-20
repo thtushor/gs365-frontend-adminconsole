@@ -69,7 +69,11 @@ const SupportRight = ({ isAffiliate }) => {
 
     const senderType = ["superAdmin", "admin", "superAgent", "agent", "superAffiliate", "affiliate"].includes(user.role) ? "admin" : "user";
 
-    if (!activeConversation) {
+    const hasMessage = Boolean(messages?.length)
+
+    const chatid = activeConversation?.id ? activeConversation?.id: hasMessage ? messages[messages.length-1].chatId:undefined
+
+    if (!chatid) {
       const isSelectedAdminChat = Boolean(selectedChat?.role)
       await createChat({
         initialMessageContent: messageInput,
@@ -80,7 +84,7 @@ const SupportRight = ({ isAffiliate }) => {
         senderType,
       });
     } else {
-      await sendMessage({ chatId: activeConversation.id, content: messageInput, attachmentUrl });
+      await sendMessage({ chatId: chatid, content: messageInput, attachmentUrl });
     }
     setMessageInput("");
   };
@@ -101,7 +105,7 @@ const SupportRight = ({ isAffiliate }) => {
     return "Unknown";
   };
 
-  if (!selectedChat || !isAffiliate) {
+  if (!selectedChat && !isAffiliate) {
     return (
       <div className="text-[#07122b] w-full relative flex items-center justify-center h-full">
         <p className="text-white/70">Select a chat to start messaging</p>
@@ -109,7 +113,7 @@ const SupportRight = ({ isAffiliate }) => {
     );
   }
 
-  console.log({activeConversation,selectedChat})
+  console.log({activeConversation,selectedChat,messages})
 
   return (
     <div className="text-[#07122b] w-full relative flex flex-col h-full">
@@ -122,31 +126,27 @@ const SupportRight = ({ isAffiliate }) => {
         />
         <div>
           <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
-            {selectedChat.fullname || selectedChat.username || "N/A"}{" "}
+            {selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
             <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 capitalize block rounded-full">
-              {selectedChat?.role ? selectedChat?.role : "Player"}
+              {selectedChat?.role ? selectedChat?.role : "Admin"}
             </span>
           </h1>
           <p className="text-[12px] mt-[-3px] text-white/80">
-            {selectedChat.email || "N/A"}
+            {selectedChat?.email && selectedChat?.email}
           </p>
         </div>
       </div>
 
       {/* center */}
       <div className="p-4 py-2 flex-1 overflow-y-auto space-y-1">
-        {loading && <p className="text-white text-center">Loading messages...</p>}
-        {!activeConversation && !loading && (
-          <div className="text-white/70 text-center h-full flex items-center justify-center">
-            <p>Start a conversation with {selectedChat.fullname || selectedChat.username}!</p>
-          </div>
-        )}
-        {activeConversation && messages.map((message) => {
-          const isCurrentUser = user.id === message.senderAdmin?.id && user.role === message.senderAdmin?.role && message?.senderType==="admin";
+        {loading && <p className="text-green-500 text-center">Loading messages...</p>}
+        
+        {messages.map((message) => {
+          const isCurrentUser = user.id === message?.senderAdmin?.id && user?.role === message?.senderAdmin?.role && message?.senderType==="admin";
           const senderName = getSenderName(message);
           return (
             <div
-              key={message.id}
+              key={message?.id}
               className={`flex flex-col ${
                 isCurrentUser ? "items-end" : "items-start"
               }`}
@@ -158,9 +158,9 @@ const SupportRight = ({ isAffiliate }) => {
                     : "bg-gray-200 text-black"
                 } px-4 py-2 rounded-lg max-w-xs md:max-w-sm relative group`}
               >
-                {message.content && <p>{message.content}</p>}
-                {message.attachmentUrl && (
-                  <img src={message.attachmentUrl} alt="Attachment" className="max-w-full h-auto rounded-md mt-2" />
+                {message?.content && <p>{message?.content}</p>}
+                {message?.attachmentUrl && (
+                  <img src={message?.attachmentUrl} alt="Attachment" className="max-w-full h-auto rounded-md mt-2" />
                 )}
                 <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-black text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                   {senderName}
@@ -171,7 +171,7 @@ const SupportRight = ({ isAffiliate }) => {
                   isCurrentUser ? "text-gray-400" : "text-gray-500"
                 }`}
               >
-                {moment(message.createdAt?.replace("Z","")).calendar()}
+                {moment(message?.createdAt?.replace("Z","")).calendar()}
                 {/* moment(chatCreatedAt.replace('Z', '')).fromNow() */}
               </span>
             </div>
