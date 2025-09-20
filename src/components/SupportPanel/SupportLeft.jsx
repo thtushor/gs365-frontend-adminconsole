@@ -4,9 +4,9 @@ import ChatCard from "../ChatCard/ChatCard";
 import { useChats } from "../../hooks/useChats"; // Import the custom hook
 import { useChat } from "../../hooks/useChat";
 import Loader from "../Loader"; // Import the Loader component
+import moment from "moment";
 
 const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
-  const [activeChat, setActiveChat] = useState(0); // This state seems unused for actual chat selection, as selectedChat from context is used.
   const [searchKey, setSearchKey] = useState("");
 
   const { setSelectedChat, selectedChat } = useChat();
@@ -15,16 +15,17 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
 
   // Reset active chat when chatUserType changes
   useEffect(() => {
-    setActiveChat(0); // This might not be necessary if selectedChat from context is the source of truth
     setSelectedChat(null); // Clear selected chat when user type changes
   }, [chatUserType, setSelectedChat]);
 
   // Effect to handle selectedChat when chatData changes (e.g., after a search)
   useEffect(() => {
     if (chatData && selectedChat) {
-      const isSelectedChatStillPresent = chatData.some(chat => chat.id === selectedChat.id);
-      if (!isSelectedChatStillPresent) {
-        setSelectedChat(chatData.length > 0 ? chatData[0] : null); // Select first chat or null
+      const updatedSelectedChat = chatData.find(chat => chat.id === selectedChat.id);
+      if (updatedSelectedChat) {
+        setSelectedChat(updatedSelectedChat); // Update selectedChat with the latest data
+      } else {
+        setSelectedChat(chatData.length > 0 ? chatData[0] : null); // Select first chat or null if not found
       }
     } else if (chatData && chatData.length > 0 && !selectedChat) {
       setSelectedChat(chatData[0]); // Automatically select the first chat if none is selected
@@ -80,7 +81,7 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
       {/* all conversation highlight here */}
       <div>
         {isLoading ? (
-          <div className="flex justify-center items-center h-32">
+          <div className="flex w-full justify-center h-32">
             <Loader />
           </div>
         ) : isError ? (
@@ -101,9 +102,11 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
 
             const lastMessageContent = lastMessageObj?.content || "No messages";
             const hasAttachment = !!lastMessageObj?.attachmentUrl;
-            const chatCreatedAt = lastChat?.createdAt || chat?.created_at;
+            const chatCreatedAt = lastMessageObj?.createdAt || chat?.created_at;
             const isLoggedIn = chatUserType === "admin" ? (chat?.isLoggedIn ?? false) : (chat?.isLoggedIn ?? false);
-            const timeToDisplay = chatCreatedAt ? formatTimeAgo(chatCreatedAt) : "N/A";
+            // The user confirmed that the 'Z' suffix is incorrect and 15:50:53 should be treated as BDT time.
+            // We remove the 'Z' to ensure moment parses it as local time directly.
+            const timeToDisplay = chatCreatedAt ? moment(chatCreatedAt.replace('Z', '')).calendar() : "N/A";
 
             return (
               <ChatCard

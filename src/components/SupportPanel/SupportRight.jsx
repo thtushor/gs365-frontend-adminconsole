@@ -20,7 +20,7 @@ const SupportRight = () => {
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ block: "start",behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -63,14 +63,16 @@ const SupportRight = () => {
       }
     }
 
+    const senderType = ["superAdmin", "admin", "superAgent", "agent", "superAffiliate", "affiliate"].includes(user.role) ? "admin" : "user";
+
     if (!activeConversation) {
-      const newChat = await createChat({
+      await createChat({
         initialMessageContent: messageInput,
         targetUserId: selectedChat.id,
+        targetAdminId: user.id,
+        attachmentUrl,
+        senderType,
       });
-      // if (newChat) {
-      //   await sendMessage({ chatId: newChat.id, content: messageInput, attachmentUrl });
-      // }
     } else {
       await sendMessage({ chatId: activeConversation.id, content: messageInput, attachmentUrl });
     }
@@ -163,7 +165,8 @@ const SupportRight = () => {
                   isCurrentUser ? "text-gray-400" : "text-gray-500"
                 }`}
               >
-                {moment(new Date(message.createdAt)).format("hh:mm A")}
+                {moment(message.createdAt?.replace("Z","")).calendar()}
+                {/* moment(chatCreatedAt.replace('Z', '')).fromNow() */}
               </span>
             </div>
           );

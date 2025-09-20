@@ -75,18 +75,20 @@ export const ChatProvider = ({ children }) => {
 
   // Create chat using useMutation
   const createChatMutation = useMutation({
-    mutationFn: async ({ initialMessageContent, targetUserId, targetAdminId }) => {
-      const payload = { initialMessageContent };
+    mutationFn: async ({ initialMessageContent, targetUserId, targetAdminId, attachmentUrl, senderType }) => {
+      const payload = { initialMessageContent, attachmentUrl, senderType };
       if (targetUserId) payload.userId = targetUserId;
       if (targetAdminId) payload.adminUserId = targetAdminId;
+
+      console.log({payload})
       const response = await Axios.post(API_LIST.CREATE_CHAT, payload);
       return response.data.data;
     },
     onSuccess: (newChat) => {
       setActiveConversation(newChat);
       queryClient.invalidateQueries({ queryKey: ["chatMessages", newChat.id] });
-      // Optionally update the selectedChatUser's chats array if needed
-      // queryClient.invalidateQueries(["userChats", selectedChatUser.id]);
+      queryClient.invalidateQueries({ queryKey: ["userChats"] }); // Invalidate all user chats to reflect new chat
+      queryClient.invalidateQueries({queryKey: ["chats"]})
     },
     onError: (err) => {
       console.error("Error creating chat:", err);
@@ -112,6 +114,7 @@ export const ChatProvider = ({ children }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["chatMessages", activeConversation?.id] });
+      queryClient.invalidateQueries({queryKey: ["chats"]})
     },
     onError: (err) => {
       console.error("Error sending message:", err);
@@ -166,6 +169,7 @@ export const ChatProvider = ({ children }) => {
       console.log("New message received via socket:", message);
       // Invalidate queries to refetch messages for the active conversation
       queryClient.invalidateQueries({ queryKey: ["chatMessages", activeConversation?.id] });
+      queryClient.invalidateQueries({queryKey: ["chats"]})
       // Optionally, if the new message is for the active conversation, mark it as read
       if (activeConversation?.id === message.chatId) {
         readMessagesMutation.mutate(activeConversation.id);
@@ -177,6 +181,7 @@ export const ChatProvider = ({ children }) => {
       // Invalidate queries that list chats or specific chat details
       queryClient.invalidateQueries({ queryKey: ["userChats"] }); // Assuming a query key for all user chats
       queryClient.invalidateQueries({ queryKey: ["chatMessages", chatUpdate.id] }); // Invalidate messages for the updated chat
+      queryClient.invalidateQueries({queryKey: ["chats"]})
     };
 
     socket.on("newMessage", handleNewMessage);
