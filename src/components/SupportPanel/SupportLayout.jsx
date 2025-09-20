@@ -9,7 +9,7 @@ const SupportLayout = () => {
 
   return (
     <ChatProvider>
-      <div className="h-[82vh] pb-5">
+      <div className="h-[82vh] pb-10">
         <div className="bg-[#07122b] mb-2 rounded-full py-1 px-1 w-fit flex gap-1">
           <Link
             className={`${

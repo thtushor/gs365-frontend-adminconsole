@@ -24,7 +24,7 @@ const SupportRight = ({ isAffiliate }) => {
   console.log({isAffiliate,user})
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ block: "start",behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
   };
 
   useEffect(() => {
