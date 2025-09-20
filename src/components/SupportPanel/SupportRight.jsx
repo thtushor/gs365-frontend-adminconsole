@@ -12,7 +12,6 @@ import { useChat } from "../../hooks/useChat";
 
 const SupportRight = ({ isAffiliate }) => {
 
-  console.log({isAffiliate})
   
   const { user } = useAuth();
   const { selectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
@@ -21,6 +20,8 @@ const SupportRight = ({ isAffiliate }) => {
   const [attachmentPreview, setAttachmentPreview] = useState(null); // Stores URL for image preview or file details
   const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  console.log({isAffiliate,user})
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ block: "start",behavior: "smooth" });
@@ -100,7 +101,7 @@ const SupportRight = ({ isAffiliate }) => {
     return "Unknown";
   };
 
-  if (!selectedChat) {
+  if (!selectedChat || !isAffiliate) {
     return (
       <div className="text-[#07122b] w-full relative flex items-center justify-center h-full">
         <p className="text-white/70">Select a chat to start messaging</p>

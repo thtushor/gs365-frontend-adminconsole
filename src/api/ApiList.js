@@ -203,6 +203,7 @@ export const API_LIST = {
   GET_MESSAGES: "/api/messages/chat", // Will append chatId
   SEND_MESSAGE: "/api/messages/send-message",
   READ_MESSAGES: "/api/messages/read", // Will append chatId
+  ADMIN_USER_MESSAGES: "/api/messages/user-admin"
 };
 
 export const DROPDOWN_ID = {

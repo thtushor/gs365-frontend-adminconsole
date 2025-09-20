@@ -12,7 +12,7 @@ const AffiliateSupportLayout = () => {
     <ChatProvider>
     <div className="h-[60vh]">
       <div className="bg-green-50 h-full text-white flex border-[3px] border-[#01dc84] rounded-xl overflow-hidden">
-        <SupportLeft chatUserType={"admin"} />
+        {/* <SupportLeft chatUserType={"admin"} /> */}
         <SupportRight isAffiliate={isAffiliate} />
       </div>
     </div>

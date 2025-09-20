@@ -21,6 +21,9 @@ export const ChatProvider = ({ children }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  const isAffiliate = ["superAffiliate",
+    "affiliate"].includes(user.role)
+
   const [selectedChatUser, setSelectedChatUser] = useState(null); // This will hold the selected user object with its chats array
   const [activeConversation, setActiveConversation] = useState(null); // This will hold the specific active chat conversation
 
@@ -64,9 +67,12 @@ export const ChatProvider = ({ children }) => {
   } = useQuery({
     queryKey: ["chatMessages", activeConversation?.id],
     queryFn: async () => {
-      if (!activeConversation?.id) return [];
+      const isSelectedAdminChat = Boolean(selectedChatUser?.role)
+      const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser.id}/${isSelectedAdminChat ? "admin":"user"}`
+      // const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.GET_MESSAGES}/${activeConversation.id}`
+      if (!activeConversation?.id  && !isAffiliate) return [];
       const response = await Axios.get(
-        `${API_LIST.GET_MESSAGES}/${activeConversation.id}`
+        url
       );
       return response.data.data;
     },
@@ -75,12 +81,12 @@ export const ChatProvider = ({ children }) => {
 
   // Create chat using useMutation
   const createChatMutation = useMutation({
-    mutationFn: async ({ initialMessageContent, targetUserId, targetAdminId, targetAffiliateId,attachmentUrl, senderType }) => {
+    mutationFn: async ({ initialMessageContent, targetUserId, targetAdminId, targetAffiliateId, attachmentUrl, senderType }) => {
       const payload = { initialMessageContent, attachmentUrl, senderType };
       if (targetUserId) payload.userId = targetUserId;
       if (targetAdminId) payload.adminUserId = targetAdminId;
       if (targetAdminId) payload.adminUserId = targetAdminId;
-      if(targetAffiliateId) payload.targetAffiliateId = targetAffiliateId;
+      if (targetAffiliateId) payload.targetAffiliateId = targetAffiliateId;
 
       const response = await Axios.post(API_LIST.CREATE_CHAT, payload);
       return response.data.data;
@@ -89,7 +95,7 @@ export const ChatProvider = ({ children }) => {
       setActiveConversation(newChat);
       queryClient.invalidateQueries({ queryKey: ["chatMessages", newChat.id] });
       queryClient.invalidateQueries({ queryKey: ["userChats"] }); // Invalidate all user chats to reflect new chat
-      queryClient.invalidateQueries({queryKey: ["chats"]})
+      queryClient.invalidateQueries({ queryKey: ["chats"] })
     },
     onError: (err) => {
       console.error("Error creating chat:", err);
@@ -115,7 +121,7 @@ export const ChatProvider = ({ children }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["chatMessages", activeConversation?.id] });
-      queryClient.invalidateQueries({queryKey: ["chats"]})
+      queryClient.invalidateQueries({ queryKey: ["chats"] })
     },
     onError: (err) => {
       console.error("Error sending message:", err);
@@ -170,7 +176,7 @@ export const ChatProvider = ({ children }) => {
       console.log("New message received via socket:", message);
       // Invalidate queries to refetch messages for the active conversation
       queryClient.invalidateQueries({ queryKey: ["chatMessages", activeConversation?.id] });
-      queryClient.invalidateQueries({queryKey: ["chats"]})
+      queryClient.invalidateQueries({ queryKey: ["chats"] })
       // Optionally, if the new message is for the active conversation, mark it as read
       if (activeConversation?.id === message.chatId) {
         readMessagesMutation.mutate(activeConversation.id);
@@ -182,7 +188,7 @@ export const ChatProvider = ({ children }) => {
       // Invalidate queries that list chats or specific chat details
       queryClient.invalidateQueries({ queryKey: ["userChats"] }); // Assuming a query key for all user chats
       queryClient.invalidateQueries({ queryKey: ["chatMessages", chatUpdate.id] }); // Invalidate messages for the updated chat
-      queryClient.invalidateQueries({queryKey: ["chats"]})
+      queryClient.invalidateQueries({ queryKey: ["chats"] })
     };
 
     socket.on("newMessage", handleNewMessage);
