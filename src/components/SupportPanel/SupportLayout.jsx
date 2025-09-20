@@ -17,7 +17,7 @@ const SupportLayout = () => {
             } px-4 font-semibold py-1 text-[14px] rounded-full`}
             onClick={() => setChatUserType("user")}
           >
-            Player Conversation
+            Player
           </Link>
           <Link
             className={`${
@@ -25,7 +25,7 @@ const SupportLayout = () => {
             } px-4 font-semibold py-1 text-[14px] rounded-full`}
             onClick={() => setChatUserType("admin")}
           >
-            Affiliate Conversation
+            Affiliate
           </Link>
         </div>
         <div className="bg-green-50 h-full text-white flex border border-[#07122b] rounded-xl overflow-hidden">
