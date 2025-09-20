@@ -11,6 +11,9 @@ import { useAuth } from "../../hooks/useAuth";
 import { useChat } from "../../hooks/useChat";
 
 const SupportRight = ({ isAffiliate }) => {
+
+  console.log({isAffiliate})
+  
   const { user } = useAuth();
   const { selectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
   const [messageInput, setMessageInput] = useState("");

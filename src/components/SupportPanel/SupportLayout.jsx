@@ -30,7 +30,7 @@ const SupportLayout = () => {
         </div>
         <div className="bg-green-50 h-full text-white flex border border-[#07122b] rounded-xl overflow-hidden">
           <SupportLeft chatUserType={chatUserType} />
-          <SupportRight />
+          <SupportRight isAffiliate={true} />
         </div>
       </div>
     </ChatProvider>
