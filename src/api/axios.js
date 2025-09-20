@@ -31,8 +31,8 @@ Axios.interceptors.response.use(
 
       // console.log({error})
       // Handle network errors (e.g., server unreachable)
-      if(!window.location.pathname?.includes("/server-error"))
-      window.location.replace("/server-error");
+      // if(!window.location.pathname?.includes("/server-error"))
+      // window.location.replace("/server-error");
     }
     return Promise.reject(error);
   }

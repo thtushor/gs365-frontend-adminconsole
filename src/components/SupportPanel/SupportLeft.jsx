@@ -3,22 +3,40 @@ import ChatAvatar from "../../assets/chat-avatar.png";
 import ChatCard from "../ChatCard/ChatCard";
 import { useChats } from "../../hooks/useChats"; // Import the custom hook
 import { useChat } from "../../hooks/useChat";
+import Loader from "../Loader"; // Import the Loader component
 
 const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
-  const [activeChat, setActiveChat] = useState(0);
+  const [activeChat, setActiveChat] = useState(0); // This state seems unused for actual chat selection, as selectedChat from context is used.
   const [searchKey, setSearchKey] = useState("");
 
-  const {setSelectedChat,selectedChat}= useChat()
+  const { setSelectedChat, selectedChat } = useChat();
 
   const { data: chatData, isLoading, isError } = useChats(chatUserType, searchKey);
 
   // Reset active chat when chatUserType changes
   useEffect(() => {
-    setActiveChat(0);
-  }, [chatUserType]);
+    setActiveChat(0); // This might not be necessary if selectedChat from context is the source of truth
+    setSelectedChat(null); // Clear selected chat when user type changes
+  }, [chatUserType, setSelectedChat]);
+
+  // Effect to handle selectedChat when chatData changes (e.g., after a search)
+  useEffect(() => {
+    if (chatData && selectedChat) {
+      const isSelectedChatStillPresent = chatData.some(chat => chat.id === selectedChat.id);
+      if (!isSelectedChatStillPresent) {
+        setSelectedChat(chatData.length > 0 ? chatData[0] : null); // Select first chat or null
+      }
+    } else if (chatData && chatData.length > 0 && !selectedChat) {
+      setSelectedChat(chatData[0]); // Automatically select the first chat if none is selected
+    } else if (!chatData || chatData.length === 0) {
+      setSelectedChat(null); // Clear selected chat if no chats are available
+    }
+  }, [chatData, selectedChat, setSelectedChat]);
+
 
   // Helper function to format time
   const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return "N/A"; // Handle null or undefined timestamp
     const now = new Date();
     const past = new Date(timestamp);
     const diffInMinutes = Math.floor((now - past) / (1000 * 60));
@@ -34,13 +52,13 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
     }
   };
 
-  if (isLoading) {
-    return <div className="p-4 text-white">Loading chats...</div>;
-  }
+  // if (isLoading) {
+  //   return <div className="p-4 text-white">Loading chats...</div>;
+  // }
 
-  if (isError) {
-    return <div className="p-4 text-red-500">Error loading chats.</div>;
-  }
+  // if (isError) {
+  //   return <div className="p-4 text-red-500">Error loading chats.</div>;
+  // }
 
   console.log({setSelectedChat,selectedChat})
 
@@ -61,29 +79,42 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
 
       {/* all conversation highlight here */}
       <div>
-        {chatData && chatData.length > 0 ? (
-          chatData.map((chat, index) => {
-            const displayName = chatUserType === "admin" ? chat.fullname : chat.username;
-            const lastChat = chat.chats && chat.chats.length > 0 ? chat.chats[chat.chats.length - 1] : null;
-            const lastMessageObj = lastChat && lastChat.messages.length > 0 
+        {isLoading ? (
+          <div className="flex justify-center items-center h-32">
+            <Loader />
+          </div>
+        ) : isError ? (
+          <div className="p-4 text-red-500 text-center">Error loading chats.</div>
+        ) : chatData && chatData.length > 0 ? (
+          chatData.map((chat) => {
+            const displayName = chatUserType === "admin"
+              ? (chat?.fullname || "Unknown Admin")
+              : (chat?.username || "Unknown User");
+
+            const lastChat = chat?.chats && chat.chats.length > 0
+              ? chat.chats[chat.chats.length - 1]
+              : null;
+
+            const lastMessageObj = lastChat?.messages && lastChat.messages.length > 0
               ? lastChat.messages[lastChat.messages.length - 1]
               : null;
-            const lastMessageContent = lastMessageObj ? lastMessageObj.content : "No messages";
-            const hasAttachment = lastMessageObj ? !!lastMessageObj.attachmentUrl : false; // Check if attachmentUrl exists
-            const chatCreatedAt = lastChat ? lastChat.createdAt : chat.created_at;
-            const isLoggedIn = chatUserType === "admin" ? chat.isLoggedIn : chat.isLoggedIn; // Assuming isLoggedIn is consistent
-            const timeToDisplay = lastChat ? formatTimeAgo(chatCreatedAt) : null; // Pass null if no chat exists
+
+            const lastMessageContent = lastMessageObj?.content || "No messages";
+            const hasAttachment = !!lastMessageObj?.attachmentUrl;
+            const chatCreatedAt = lastChat?.createdAt || chat?.created_at;
+            const isLoggedIn = chatUserType === "admin" ? (chat?.isLoggedIn ?? false) : (chat?.isLoggedIn ?? false);
+            const timeToDisplay = chatCreatedAt ? formatTimeAgo(chatCreatedAt) : "N/A";
 
             return (
               <ChatCard
-                key={index}
+                key={chat?.id || `chat-${Math.random()}`} // Fallback key
                 name={displayName}
                 message={lastMessageContent}
                 time={timeToDisplay}
                 avatar={ChatAvatar}
-                isActive={chat.id === selectedChat.id}
+                isActive={chat?.id === selectedChat?.id}
                 isUserActive={isLoggedIn}
-                hasAttachment={hasAttachment} // Pass hasAttachment prop
+                hasAttachment={hasAttachment}
                 onClick={() => setSelectedChat(chat)}
               />
             );
