@@ -108,7 +108,7 @@ const TransactionsPage = ({
   const columns = useMemo(
     () => [
       { field: "sl", headerName: "#", width: 60, align: "center" },
-      { field: "id", headerName: "User ID", width: 60, align: "center" },
+      { field: "id", headerName: "T-ID", width: 60, align: "center" },
       {
         field: "customTransactionId",
         headerName: "Transaction ID",

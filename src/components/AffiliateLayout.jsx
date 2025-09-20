@@ -46,6 +46,11 @@ export const affiliateRoutes = [
     path: "/affiliate-list/:affiliateId/kyc-verification",
     requiredPermission: "affiliate_manage_kyc_verification",
   },
+  {
+    label: "Support",
+    path: "/affiliate-list/:affiliateId/support",
+    requiredPermission: "affiliate_support",
+  },
 ];
 
 const AffiliateLayout = () => {
@@ -145,8 +150,21 @@ const AffiliateLayout = () => {
       return false;
     }
 
+    if (route.label === "Support") {
+      console.log("role", role);
+      if (user?.role !== "affiliate" && user?.role !== "superAffiliate") {
+        return false;
+      }
+    }
     // Check if the user has the required permission for the route
-    if (route.requiredPermission && !staticAffiliatePermission(user?.role, permissions, route.requiredPermission)) {
+    if (
+      route.requiredPermission &&
+      !staticAffiliatePermission(
+        user?.role,
+        permissions,
+        route.requiredPermission
+      )
+    ) {
       return false;
     }
 
@@ -343,8 +361,8 @@ const AffiliateLayout = () => {
                     Number(affiliateDetails?.data?.remainingBalance) +
                     Math.abs(
                       Number(
-                        affiliateCommissionDetails?.data
-                          ?.totalLossCommission || 0
+                        affiliateCommissionDetails?.data?.totalLossCommission ||
+                          0
                       )
                     )
                   ).toFixed(2)}

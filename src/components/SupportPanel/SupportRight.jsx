@@ -10,7 +10,7 @@ import moment from "moment";
 import { useAuth } from "../../hooks/useAuth";
 import { useChat } from "../../hooks/useChat";
 
-const SupportRight = () => {
+const SupportRight = ({ isAffiliate }) => {
   const { user } = useAuth();
   const { selectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
   const [messageInput, setMessageInput] = useState("");

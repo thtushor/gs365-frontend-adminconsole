@@ -6,7 +6,7 @@ import {
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
 import ReusableModal from "./ReusableModal";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatAmount } from "./BettingWagerPage";
 import { formatDate } from "../Utils/dateUtils";
 import { API_LIST } from "../api/ApiList";
@@ -79,7 +79,14 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
         width: 150,
         render: (value, row) => {
           const name = row.userFullname || row.affiliateName || "-";
-          return <div className=" font-medium cursor-pointer ">{name}</div>;
+          return (
+            <Link
+              to={`/affiliate-list/${row?.affiliateId}`}
+              className=" font-medium cursor-pointer text-green-500"
+            >
+              {name}
+            </Link>
+          );
         },
       },
       { field: "type", headerName: "Type", width: 120 },
@@ -132,7 +139,10 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
         render: (value, row) => (
           <div className="flex gap-2">
             {(isSuperAdmin ||
-              hasPermission(permissions, "affiliate_view_affiliate_withdraw_history")) && (
+              hasPermission(
+                permissions,
+                "affiliate_view_affiliate_withdraw_history"
+              )) && (
               <button
                 className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
                 onClick={() => handleViewTransaction(row)}
@@ -143,7 +153,10 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
 
             {row?.status === "pending" &&
               (isSuperAdmin ||
-                hasPermission(permissions, "affiliate_approve_withdraw_requests")) && (
+                hasPermission(
+                  permissions,
+                  "affiliate_approve_withdraw_requests"
+                )) && (
                 <button
                   className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
                   onClick={() => handleOpenModal(row)}
