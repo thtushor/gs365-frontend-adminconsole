@@ -33,7 +33,7 @@ export const API_LIST = {
   // Agent list
   CREATE_AGENT: "/api/admin/create-agent",
   AGENT_LIST: "/api/admin/agents",
-  AFFILIATE_LIST: "w/api/admin/affiliates",
+  AFFILIATE_LIST: "/api/admin/affiliates",
   AFFILIATE_COMMISSION_LIST: "/api/commissions",
   GET_TOTAL_COMMISSION: "/api/commissions/total-commission",
   CREATE_AFFILIATE_WITHDRAW: "/api/transactions/affiliate-withdraw",
