@@ -187,6 +187,7 @@ const SupportRight = ({ isAffiliate }) => {
           ref={fileInputRef}
           style={{ display: "none" }}
           onChange={handleFileChange}
+          accept="image/*" // Accept only image files
         />
         <div className="header-auth">
           <div
