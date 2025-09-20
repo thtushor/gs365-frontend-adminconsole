@@ -45,7 +45,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Player ID"
           value={localFilters.playerId}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <input
           type="text"
@@ -53,13 +53,13 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Mobile Number"
           value={localFilters.phone}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <select
           name="status"
           value={localFilters.status}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -69,7 +69,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           name="userType"
           value={localFilters.userType}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         >
           <option value="all">All Users</option>
           <option value="player">Player</option>
@@ -82,7 +82,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Created By"
           value={localFilters.createdBy}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <input
           type="text"
@@ -90,7 +90,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Referred By"
           value={localFilters.referred_by}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <input
           type="text"
@@ -98,7 +98,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Referred By Admin"
           value={localFilters.referred_by_admin_user}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <input
           type="text"
@@ -106,7 +106,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Currency ID"
           value={localFilters.currencyId}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <input
           type="date"
@@ -114,7 +114,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Date From"
           value={localFilters.dateFrom}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <input
           type="date"
@@ -122,7 +122,7 @@ const PlayerListFilter = ({ filters, onChange }) => {
           placeholder="Date To"
           value={localFilters.dateTo}
           onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <input
           type="text"

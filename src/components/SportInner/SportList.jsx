@@ -16,12 +16,19 @@ const SportList = ({ providerId }) => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const userPermissions = user?.designation?.permissions || [];
-  const canCreateSport = isSuperAdmin || hasPermission(userPermissions, "live_sports_create_sport");
-  const canViewSportList = isSuperAdmin || hasPermission(userPermissions, "live_sports_view_sport_list");
+  const canCreateSport =
+    isSuperAdmin || hasPermission(userPermissions, "live_sports_create_sport");
+  const canViewSportList =
+    isSuperAdmin ||
+    hasPermission(userPermissions, "live_sports_view_sport_list");
 
   // Check if the user has permission to view the sport list at all
   if (!canViewSportList) {
-    return <div className="text-center text-red-500 py-8">You do not have permission to view sports.</div>;
+    return (
+      <div className="text-center text-red-500 py-8">
+        You do not have permission to view sports.
+      </div>
+    );
   }
 
   const getRequest = useGetRequest();
@@ -190,7 +197,7 @@ const SportList = ({ providerId }) => {
       field: "action",
       headerName: "Action",
       width: 80,
-      render: (_, row) => (
+      render: (_, row) =>
         canCreateSport && ( // Assuming create permission also allows editing
           <button
             onClick={() => navigate(`/add-sport?sportId=${row.id}`)}
@@ -198,8 +205,7 @@ const SportList = ({ providerId }) => {
           >
             <FaRegEdit size={22} />
           </button>
-        )
-      ),
+        ),
     },
   ];
 
@@ -244,13 +250,13 @@ const SportList = ({ providerId }) => {
           placeholder="Search by Name"
           value={filters.name}
           onChange={handleFilterChange}
-          className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+          className="border px-3 py-2 rounded text-sm sm:w-48 w-full focus:ring-2 focus:ring-green-200"
         />
         <select
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
-          className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+          className="border px-3 py-2 rounded text-sm sm:w-48 w-full focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>

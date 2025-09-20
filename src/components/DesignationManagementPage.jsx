@@ -5,7 +5,11 @@ import {
   useUpdateDesignation,
   useDeleteDesignation,
 } from "../hooks/useDesignations";
-import { PERMISSION_CATEGORIES, ADMIN_USER_TYPES, removeFirstUnderScoreWord } from "../Utils/permissions";
+import {
+  PERMISSION_CATEGORIES,
+  ADMIN_USER_TYPES,
+  removeFirstUnderScoreWord,
+} from "../Utils/permissions";
 import {
   FaPlus,
   FaEdit,
@@ -235,7 +239,7 @@ const DesignationManagementPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-10">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -249,7 +253,7 @@ const DesignationManagementPage = () => {
         {canManageDesignations && (
           <button
             onClick={handleCreate}
-            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="mt-4 sm:mt-0 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <FaPlus className="w-4 h-4 mr-2" />
             Create Designation

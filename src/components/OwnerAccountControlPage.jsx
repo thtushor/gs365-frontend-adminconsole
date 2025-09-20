@@ -365,7 +365,7 @@ const OwnerAccountControlPage = () => {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Owner / Admin Accounts</h2>
             <button
               className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
@@ -375,123 +375,125 @@ const OwnerAccountControlPage = () => {
             </button>
           </div>
 
-      {/* Filter Bar */}
-      <form
-        className="flex flex-wrap gap-2 items-center mb-4"
-        onSubmit={(e) => e.preventDefault()}
-      >
-        <input
-          type="text"
-          name="keyword"
-          placeholder="Name/Email"
-          value={filters.keyword}
-          onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
-        <select
-          name="role"
-          value={filters.role}
-          onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
-        >
-          {roles.map((role) => (
-            <option key={role.value} value={role.value}>
-              {role.label}
-            </option>
-          ))}
-        </select>
-        <select
-          name="status"
-          value={filters.status}
-          onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
-        >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </form>
-
-      <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col">
-        {isLoading ? (
-          <div className="text-center text-gray-500 py-8">
-            Loading owners...
-          </div>
-        ) : isError ? (
-          <div className="text-center text-red-500 py-8">
-            Failed to load owners: {error?.message || "Unknown error"}
-          </div>
-        ) : owners.length === 0 ? (
-          <div className="text-center text-gray-500 py-8">No owners found.</div>
-        ) : (
-          <>
-            <DataTable columns={columns} data={owners} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              pageSizeOptions={[10, 20, 50, 100]}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
+          {/* Filter Bar */}
+          <form
+            className="flex flex-wrap gap-2 items-center mb-4"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <input
+              type="text"
+              name="keyword"
+              placeholder="Name/Email"
+              value={filters.keyword}
+              onChange={handleFilterChange}
+              className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
             />
-          </>
-        )}
-      </div>
+            <select
+              name="role"
+              value={filters.role}
+              onChange={handleFilterChange}
+              className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
+            >
+              {roles.map((role) => (
+                <option key={role.value} value={role.value}>
+                  {role.label}
+                </option>
+              ))}
+            </select>
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleFilterChange}
+              className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
+            >
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </form>
 
-      {/* Create Modal */}
-      <ReusableModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Create Owner"
-        className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
-      >
-        <CreateAgentForm
-          onSubmit={handleCreateFormSubmit}
-          initialValues={defaultForm}
-          isLoading={createMutation.isLoading}
-          isEdit={false}
-          roles={roles}
-          isAffiliate={false}
-          isRefVisible={false}
-          isOwner={true}
-        />
-      </ReusableModal>
+          <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col">
+            {isLoading ? (
+              <div className="text-center text-gray-500 py-8">
+                Loading owners...
+              </div>
+            ) : isError ? (
+              <div className="text-center text-red-500 py-8">
+                Failed to load owners: {error?.message || "Unknown error"}
+              </div>
+            ) : owners.length === 0 ? (
+              <div className="text-center text-gray-500 py-8">
+                No owners found.
+              </div>
+            ) : (
+              <>
+                <DataTable columns={columns} data={owners} />
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  pageSizeOptions={[10, 20, 50, 100]}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                />
+              </>
+            )}
+          </div>
 
-      {/* Edit Modal */}
-      <ReusableModal
-        open={editModalOpen}
-        className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
-        onClose={() => setEditModalOpen(false)}
-        title="Edit Owner"
-      >
-        <CreateAgentForm
-          onSubmit={handleEditFormSubmit}
-          initialValues={editForm}
-          isLoading={updateMutation.isLoading}
-          isEdit={true}
-          roles={roles}
-          isAffiliate={false}
-          isRefVisible={false}
-        />
-      </ReusableModal>
+          {/* Create Modal */}
+          <ReusableModal
+            open={modalOpen}
+            onClose={() => setModalOpen(false)}
+            title="Create Owner"
+            className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
+          >
+            <CreateAgentForm
+              onSubmit={handleCreateFormSubmit}
+              initialValues={defaultForm}
+              isLoading={createMutation.isLoading}
+              isEdit={false}
+              roles={roles}
+              isAffiliate={false}
+              isRefVisible={false}
+              isOwner={true}
+            />
+          </ReusableModal>
 
-      {/* Delete Modal */}
-      <ReusableModal
-        open={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        title="Delete Owner"
-        onSave={handleDelete}
-      >
-        <div>
-          <p>
-            Are you sure you want to <b>delete</b> owner{" "}
-            <b>{selectedOwner?.fullname}</b>?
-          </p>
-          <p className="text-xs text-red-500 mt-2">
-            This action cannot be undone.
-          </p>
-        </div>
-      </ReusableModal>
+          {/* Edit Modal */}
+          <ReusableModal
+            open={editModalOpen}
+            className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
+            onClose={() => setEditModalOpen(false)}
+            title="Edit Owner"
+          >
+            <CreateAgentForm
+              onSubmit={handleEditFormSubmit}
+              initialValues={editForm}
+              isLoading={updateMutation.isLoading}
+              isEdit={true}
+              roles={roles}
+              isAffiliate={false}
+              isRefVisible={false}
+            />
+          </ReusableModal>
+
+          {/* Delete Modal */}
+          <ReusableModal
+            open={deleteModalOpen}
+            onClose={() => setDeleteModalOpen(false)}
+            title="Delete Owner"
+            onSave={handleDelete}
+          >
+            <div>
+              <p>
+                Are you sure you want to <b>delete</b> owner{" "}
+                <b>{selectedOwner?.fullname}</b>?
+              </p>
+              <p className="text-xs text-red-500 mt-2">
+                This action cannot be undone.
+              </p>
+            </div>
+          </ReusableModal>
         </>
       )}
     </div>

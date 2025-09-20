@@ -25,8 +25,12 @@ const SportProvidersList = () => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const userPermissions = user?.designation?.permissions || [];
-  const canManageSportProviders = isSuperAdmin || hasPermission(userPermissions, "sports_manage_sports_providers");
-  const canViewSportProviderList = isSuperAdmin || hasPermission(userPermissions, "sports_view_sports_provider_list");
+  const canManageSportProviders =
+    isSuperAdmin ||
+    hasPermission(userPermissions, "sports_manage_sports_providers");
+  const canViewSportProviderList =
+    isSuperAdmin ||
+    hasPermission(userPermissions, "sports_view_sports_provider_list");
 
   // Check if the user has permission to view the sport provider list at all
   if (!canViewSportProviderList) {
@@ -196,7 +200,7 @@ const SportProvidersList = () => {
       field: "action",
       headerName: "Action",
       width: 80,
-      render: (_, row) => (
+      render: (_, row) =>
         canManageSportProviders && (
           <button
             onClick={() =>
@@ -210,8 +214,7 @@ const SportProvidersList = () => {
           >
             <FaRegEdit size={22} />
           </button>
-        )
-      ),
+        ),
     },
   ];
 
@@ -230,7 +233,7 @@ const SportProvidersList = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-4 mt-6 w-full">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Sport Provider List</h2>
         {canManageSportProviders && (
           <button
@@ -249,13 +252,13 @@ const SportProvidersList = () => {
           placeholder="Search by Name"
           value={filters.name}
           onChange={handleFilterChange}
-          className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+          className="border px-3 py-2 rounded text-sm sm:w-48 w-full focus:ring-2 focus:ring-green-200"
         />
         <select
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
-          className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+          className="border px-3 py-2 rounded text-sm sm:w-48 w-full focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
@@ -266,7 +269,7 @@ const SportProvidersList = () => {
         {parentProviderList.length > 0 && (
           <div className={`flex flex-col `}>
             <select
-              className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+              className="border px-3 py-2 rounded text-sm sm:w-48 w-full focus:ring-2 focus:ring-green-200"
               name="parentId"
               value={filters.parentId}
               onChange={handleFilterChange}

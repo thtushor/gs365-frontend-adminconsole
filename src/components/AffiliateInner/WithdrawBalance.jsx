@@ -91,6 +91,17 @@ const WithdrawBalance = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
+
+    if (value === "crypto") {
+      const usdCurrency =
+        currencyOptions?.length > 0
+          ? currencyOptions.find(
+              (option) => option?.label === "US Dollar (USD)"
+            )
+          : null;
+
+      setForm((prev) => ({ ...prev, currencyId: usdCurrency?.value }));
+    }
   };
 
   const mutation = useMutation({
@@ -111,9 +122,26 @@ const WithdrawBalance = () => {
     setResponse(null);
     setLoading(true);
 
+    if (!form.currencyId) {
+      toast.error("Please select a currency");
+      setLoading(false);
+      return;
+    }
+    if (!form.amount) {
+      toast.error("Please enter an amount");
+      setLoading(false);
+      return;
+    }
+
+    const isUSD = currencyOptions?.find((c) => c.value === form.currencyId);
+    const bdtConversionAmount =
+      isUSD?.label === "US Dollar (USD)"
+        ? Number(form.amount || 0) *
+          Number(settingsData?.data[0]?.conversionRate || 1)
+        : form.amount;
     if (
-      Number(form.amount) < affiliateInfo?.minTrx ||
-      Number(form.amount) > affiliateInfo?.maxTrx
+      Number(bdtConversionAmount) < affiliateInfo?.minTrx ||
+      Number(bdtConversionAmount) > affiliateInfo?.maxTrx
     ) {
       setResponse({
         status: false,
@@ -127,15 +155,24 @@ const WithdrawBalance = () => {
     }
 
     try {
+      if (bdtConversionAmount > withdrawAbleBalance()) {
+        toast.error(
+          `Your USD amount after conversion is ${bdtConversionAmount.toFixed(
+            2
+          )} BDT, (You have only ${withdrawAbleBalance()} BDT balance to withdraw)!`
+        );
+        setLoading(false);
+        return;
+      }
       const payload = {
         affiliateId: affiliateInfo?.id,
-        amount: Number(form.amount),
-        currencyId: form.withdrawMethod === "crypto" ? null : form.currencyId,
+        amount: Number(bdtConversionAmount),
+        currencyId: form.currencyId || 0,
         type: "withdraw",
         status: "pending",
         notes: form.notes,
         withdrawMethod: form.withdrawMethod,
-        remainingBalance: withdrawAbleBalance() - Number(form.amount),
+        remainingBalance: withdrawAbleBalance() - Number(bdtConversionAmount),
         ...(form.withdrawMethod === "bank"
           ? {
               accountNumber: form.accountNumber,
@@ -151,7 +188,6 @@ const WithdrawBalance = () => {
               network: form.network,
             }),
       };
-
       mutation.mutate(payload, {
         onSuccess: () => {
           setResponse({ status: true, message: "Withdraw request submitted!" });
@@ -189,6 +225,8 @@ const WithdrawBalance = () => {
         status: false,
         message: err.message || "Something went wrong",
       });
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   };
@@ -331,7 +369,7 @@ const WithdrawBalance = () => {
                 defaultValue={form.amount || withdrawAbleBalance()}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
-                required
+                step="0.01"
               />
             </div>
 
