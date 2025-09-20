@@ -10,9 +10,9 @@ import moment from "moment";
 import { useAuth } from "../../hooks/useAuth";
 import { useChat } from "../../hooks/useChat";
 
-const SupportRight = ({ isAffiliate }) => {
+const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile }) => {
   const { user } = useAuth();
-  const { selectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
+  const { selectedChat,setSelectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
 
   const [messageInput, setMessageInput] = useState("");
   const [attachmentFile, setAttachmentFile] = useState(null); // Stores the actual file object
@@ -113,12 +113,23 @@ const SupportRight = ({ isAffiliate }) => {
     );
   }
 
-  console.log({activeConversation,selectedChat,messages})
+  // console.log({activeConversation,selectedChat,messages})
 
   return (
-    <div className="text-[#07122b] w-full relative flex flex-col h-full">
+    <div className={`text-[#07122b] w-full relative flex flex-col h-full ${showLeftPanelMobile ? "hidden md:flex" : "block"}`}>
       {/* top */}
       <div className="p-4 py-[9.5px] flex items-center gap-2 border-b-2 border-[#01dc84] text-white bg-[#07122b] flex-shrink-0">
+        {!showLeftPanelMobile && (
+          <button
+            className="md:hidden text-white text-2xl mr-2"
+            onClick={() => {
+              setSelectedChat(null);
+              setShowLeftPanelMobile(true); // Show left panel when going back
+            }}
+          >
+            &larr;
+          </button>
+        )}
         <img
           src={ChatAvatar}
           alt=""
@@ -156,7 +167,7 @@ const SupportRight = ({ isAffiliate }) => {
                   isCurrentUser
                     ? "bg-[#01dc84] text-white"
                     : "bg-gray-200 text-black"
-                } px-4 py-2 rounded-lg max-w-xs md:max-w-sm relative group`}
+                } px-4 py-2 rounded-lg max-w-[80%] md:max-w-sm relative group`}
               >
                 {message?.content && <p>{message?.content}</p>}
                 {message?.attachmentUrl && (

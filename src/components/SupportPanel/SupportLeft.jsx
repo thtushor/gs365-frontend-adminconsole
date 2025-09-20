@@ -6,7 +6,7 @@ import { useChat } from "../../hooks/useChat";
 import Loader from "../Loader"; // Import the Loader component
 import moment from "moment";
 
-const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
+const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile }) => { // Accept chatUserType as a prop
   const [searchKey, setSearchKey] = useState("");
 
   const { setSelectedChat, selectedChat } = useChat();
@@ -64,7 +64,7 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
   console.log({setSelectedChat,selectedChat})
 
   return (
-    <div className="bg-[#07122b] overflow-y-auto min-w-[300px] border-r-[3px] border-[#01dc84]">
+    <div className={`bg-[#07122b] overflow-y-auto w-full md:min-w-[300px] md:w-auto border-r-[3px] border-[#01dc84] ${showLeftPanelMobile ? "block" : "hidden md:block"}`}>
       <div className="p-[10px] py-2 border-b bg-[#07122b] z-[5] border-[#01dc844e] sticky top-0">
         {/* search bar  */}
         <div className="border border-[#01dc84] rounded-md bg-[#01dc8423]">
@@ -118,7 +118,10 @@ const SupportLeft = ({ chatUserType }) => { // Accept chatUserType as a prop
                 isActive={chat?.id === selectedChat?.id}
                 isUserActive={isLoggedIn}
                 hasAttachment={hasAttachment}
-                onClick={() => setSelectedChat(chat)}
+                onClick={() => {
+                  setSelectedChat(chat);
+                  setShowLeftPanelMobile(false); // Hide left panel when a chat is selected on mobile
+                }}
               />
             );
           })
