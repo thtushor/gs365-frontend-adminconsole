@@ -14,6 +14,17 @@ const SupportLayout = () => {
         <div className="bg-[#07122b] mb-2 rounded-full py-1 px-1 w-fit flex gap-1 mx-auto md:mx-0">
           <Link
             className={`${
+              chatUserType === "guest" ? "bg-[#01dc84] text-black" : "text-white"
+            } px-4 font-semibold py-1 text-[14px] rounded-full`}
+            onClick={() => {
+              setChatUserType("guest");
+              setShowLeftPanelMobile(true); // Always show left panel when changing chat type
+            }}
+          >
+            Guest
+          </Link>
+          <Link
+            className={`${
               chatUserType === "user" ? "bg-[#01dc84] text-black" : "text-white"
             } px-4 font-semibold py-1 text-[14px] rounded-full`}
             onClick={() => {

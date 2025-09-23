@@ -75,6 +75,7 @@ export const ChatProvider = ({ children }) => {
       return response.data.data;
     },
     enabled: isAffiliate ? !!user.id: !!activeConversation?.id , // Only run query if activeConversation.id exists
+    refetchInterval:2*1000,
   });
 
   // Create chat using useMutation
