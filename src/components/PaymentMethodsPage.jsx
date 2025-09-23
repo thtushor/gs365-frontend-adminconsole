@@ -169,12 +169,12 @@ const PaymentMethodsPage = () => {
 
   return (
     <div className="bg-[#f5f5f5] min-h-full p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex sm:flex-row flex-col sm:items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Payment Methods</h2>
         {(isSuperAdmin ||
           hasPermission(permissions, "payment_manage_payment_methods")) && (
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition text-sm font-medium flex items-center space-x-2"
+            className="bg-green-500 justify-center text-white px-4 py-2 rounded hover:bg-green-600 transition text-sm font-medium flex items-center space-x-2"
             onClick={handleCreate}
           >
             <FaPlus size={14} />

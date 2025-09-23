@@ -11,6 +11,7 @@ import { formatAmount } from "./BettingWagerPage";
 import { formatDate } from "../Utils/dateUtils";
 import { API_LIST } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
+import { useSettings } from "../hooks/useSettings";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -32,6 +33,7 @@ const defaultFilters = {
 };
 
 const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
+  const { data: settingsData } = useSettings();
   const { affiliateInfo } = useAuth();
   console.log(affiliateInfo);
   const [filters, setFilters] = useState({
@@ -93,13 +95,32 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
       { field: "type", headerName: "Type", width: 120 },
       {
         field: "amount",
-        headerName: "Amount",
+        headerName: "Amount (BDT)",
         width: 140,
+        align: "center",
         render: (value, row) => (
-          <span className="font-medium">
+          <span className="font-medium text-purple-500">
             {value != null ? `${formatAmount(value)}` : "-"}
           </span>
         ),
+      },
+      {
+        headerName: "Amount (USD)",
+        width: 140,
+        align: "center",
+        render: (value, row) => {
+          const usdConversion =
+            Number(row.amount || 0) /
+            Number(settingsData?.data[0]?.conversionRate || 1);
+
+          return (
+            <span className="font-medium text-orange-500">
+              {usdConversion != null
+                ? `${Number(usdConversion).toFixed(2) || 0} USD`
+                : "-"}
+            </span>
+          );
+        },
       },
       // { field: "givenTransactionId", headerName: "Trx Number", width: 150 },
       {

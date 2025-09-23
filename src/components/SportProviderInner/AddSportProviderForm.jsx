@@ -229,12 +229,6 @@ const AddSportProviderForm = ({
             ? "Edit Sport Provider"
             : "Add Sport Provider"}
         </h2>
-        <button
-          className="border border-green-400 text-green-600 px-4 py-1 rounded hover:bg-green-50 print:hidden"
-          onClick={() => window.print()}
-        >
-          Print
-        </button>
       </div>
 
       <div className="border border-green-400 rounded-md bg-white p-6">

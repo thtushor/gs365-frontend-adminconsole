@@ -235,18 +235,12 @@ const AddGameProviderForm = ({
         <h2 className="text-lg font-semibold uppercase">
           {isParentProvider
             ? providerId
-              ? "Edit Parent Provider"
-              : "Add Parent Provider"
+              ? "Edit Game Parent Provider"
+              : "Add Game Parent Provider"
             : providerId
-            ? "Edit Sub Provider"
-            : "Add Sub Provider"}
+            ? "Edit Game Sub Provider"
+            : "Add Game Sub Provider"}
         </h2>
-        <button
-          className="border border-green-400 text-green-600 px-4 py-1 rounded hover:bg-green-50 print:hidden"
-          onClick={() => window.print()}
-        >
-          Print
-        </button>
       </div>
 
       <div className="border border-green-400 rounded-md bg-white p-6">
@@ -505,7 +499,7 @@ const AddGameProviderForm = ({
           )}
 
           {/* Submit Button */}
-          <div className="md:col-span-2 flex justify-end mt-2">
+          <div className="md:col-span-2 text-[14px] flex justify-center sm:justify-end mt-2">
             {!isParentProvider && parentProviderList.length < 1 ? (
               <button
                 type="submit"

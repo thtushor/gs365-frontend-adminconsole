@@ -4,6 +4,8 @@ import { API_LIST } from "../api/ApiList";
 import Axios from "../api/axios";
 import { toast } from "react-toastify";
 import { formatAmount } from "./BettingWagerPage";
+import { RiRefreshLine } from "react-icons/ri";
+
 import {
   FaUserFriends,
   FaMoneyCheckAlt,
@@ -392,13 +394,18 @@ const Dashboard = () => {
         <button
           onClick={() => fetchDashboardData(true)}
           disabled={loading || refreshing}
-          className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+          className={`sm:px-4 px-2 py-2 rounded-lg font-medium transition-all duration-200 ${
             loading || refreshing
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
         >
-          {refreshing ? "Refreshing..." : "Refresh Data"}
+          <span className="sm:flex hidden">
+            {refreshing ? "Refreshing..." : "Refresh Data"}
+          </span>
+          <span className="sm:hidden flex">
+            <RiRefreshLine />
+          </span>
         </button>
       </div>
 

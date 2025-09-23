@@ -253,7 +253,7 @@ const CreatePromotion = () => {
         className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 pt-4 border border-green-400 rounded"
         onSubmit={handleSubmit}
       >
-        <div className="flex items-center justify-between col-span-full w-full">
+        <div className="flex items-start flex-col sm:flex-row sm:items-center justify-between col-span-full w-full">
           <h2 className="text-lg font-semibold">
             {promotionId ? "Edit Promotion" : "Create Promotion"}
           </h2>
@@ -396,21 +396,26 @@ const CreatePromotion = () => {
           </div>
         </div>
 
-        {promotionId && (isSuperAdmin||hasPermission(permissions,"promotion_manage_promotion_status")) && (
-          <div className="w-full">
-            <label className="block text-sm mb-1">Status</label>
-            <select
-              name="status"
-              className="border rounded px-3 py-2 w-full"
-              value={form.status}
-              onChange={handleChange}
-              required
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
-        )}
+        {promotionId &&
+          (isSuperAdmin ||
+            hasPermission(
+              permissions,
+              "promotion_manage_promotion_status"
+            )) && (
+            <div className="w-full">
+              <label className="block text-sm mb-1">Status</label>
+              <select
+                name="status"
+                className="border rounded px-3 py-2 w-full"
+                value={form.status}
+                onChange={handleChange}
+                required
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          )}
 
         <div className="col-span-full sm:col-span-1">
           <label className="block text-sm mb-1">Is Recommended?</label>

@@ -19,7 +19,7 @@ const Pagination = ({
 
   return (
     <div className="flex flex-wrap items-center gap-4 justify-between w-full mt-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-[14px]">
         <button
           className="px-3 py-1 border rounded disabled:opacity-50"
           onClick={() => handlePageChange(currentPage - 1)}

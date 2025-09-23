@@ -212,17 +212,18 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   // Notification modal
   const [notificationEditorOpen, setNotificationEditorOpen] = useState(false);
   const [notificationForm, setNotificationForm] = useState({
-    isClaimable: false,
-    isLinkable: false,
-    isStatic: false,
+    notificationType: "", // "claimable" | "linkable" | "static"
     title: "",
     amount: 0,
-    promotionId: null,
-    posterImg: null,
-    link: "",
-    description: "",
     turnoverMultiply: 0,
+    startDate: "",
+    endDate: "",
+    promotionId: null,
+    link: "",
+    posterImg: null,
+    description: "",
   });
+
   const handleTogglePlayer = (player) => {
     setSelectedPlayers((prev) =>
       prev.find((p) => p.id === player.id)
@@ -703,6 +704,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
           <h3 className="text-[18px] font-semibold">
             Write your custom notification
           </h3>
+
           {/* Selected Players */}
           <div className="bg-white border border-green-500 px-2 py-2 relative rounded-md">
             <h1 className="absolute top-[-10px] text-[14px] bg-white leading-4 text-green-500 font-medium uppercase">
@@ -724,99 +726,134 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
             </div>
           </div>
 
+          {/* Notification Type Toggle */}
           <div className="flex items-center gap-3">
             <ToggleButton
               title="Claimable"
-              toggleName="isClaimable"
-              form={notificationForm}
-              setForm={(prev) =>
-                setNotificationForm({
+              toggleName="isActiveClaimable" // dummy boolean for toggle button
+              form={{
+                isActiveClaimable:
+                  notificationForm.notificationType === "claimable",
+              }}
+              setForm={() =>
+                setNotificationForm((prev) => ({
                   ...prev,
-                  isClaimable: !notificationForm.isClaimable,
-                  isLinkable: false,
-                  isStatic: false,
-                })
+                  notificationType:
+                    prev.notificationType === "claimable" ? "" : "claimable",
+                }))
               }
             />
+
             <ToggleButton
               title="Linkable"
-              toggleName="isLinkable"
-              form={notificationForm}
-              setForm={(prev) =>
-                setNotificationForm({
+              toggleName="isActiveLinkable"
+              form={{
+                isActiveLinkable:
+                  notificationForm.notificationType === "linkable",
+              }}
+              setForm={() =>
+                setNotificationForm((prev) => ({
                   ...prev,
-                  isClaimable: false,
-                  isLinkable: !notificationForm.isLinkable,
-                  isStatic: false,
-                })
+                  notificationType:
+                    prev.notificationType === "linkable" ? "" : "linkable",
+                }))
               }
             />
+
             <ToggleButton
               title="Static"
-              toggleName="isStatic"
-              form={notificationForm}
-              setForm={(prev) =>
-                setNotificationForm({
+              toggleName="isActiveStatic"
+              form={{
+                isActiveStatic: notificationForm.notificationType === "static",
+              }}
+              setForm={() =>
+                setNotificationForm((prev) => ({
                   ...prev,
-                  isClaimable: false,
-                  isLinkable: false,
-                  isStatic: !notificationForm.isStatic,
-                })
+                  notificationType:
+                    prev.notificationType === "static" ? "" : "static",
+                }))
               }
             />
           </div>
 
-          {/* Conditional fields */}
-          {(notificationForm.isClaimable ||
-            notificationForm.isLinkable ||
-            notificationForm.isStatic) && (
+          {/* Conditional Fields */}
+          {notificationForm.notificationType && (
             <>
-              {(notificationForm.isClaimable ||
-                notificationForm.isLinkable ||
-                notificationForm.isStatic) && (
-                <div>
-                  <label className="block text-sm mb-1">
-                    Notification Title
-                  </label>
-                  <input
-                    className="border rounded px-3 py-2 w-full"
-                    name="title"
-                    value={notificationForm.title}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+              {/* Title - Always Required */}
+              <div>
+                <label className="block text-sm mb-1">Notification Title</label>
+                <input
+                  className="border rounded px-3 py-2 w-full"
+                  name="title"
+                  value={notificationForm.title}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter notification title"
+                />
+              </div>
+
+              {/* Claimable Fields */}
+              {notificationForm.notificationType === "claimable" && (
+                <>
+                  <div>
+                    <label className="block text-sm mb-1">Amount (BDT)</label>
+                    <input
+                      className="border rounded px-3 py-2 w-full"
+                      name="amount"
+                      value={notificationForm.amount}
+                      onChange={handleChange}
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      required
+                      placeholder="Enter amount"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm mb-1">
+                      Turnover Multiply (%)
+                    </label>
+                    <input
+                      className="border rounded px-3 py-2 w-full"
+                      name="turnoverMultiply"
+                      value={notificationForm.turnoverMultiply}
+                      onChange={handleChange}
+                      type="number"
+                      min="1"
+                      required
+                      placeholder="Turnover multiply"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm mb-1">Start Date</label>
+                    <input
+                      className="border rounded px-3 py-2 w-full"
+                      name="startDate"
+                      value={notificationForm.startDate}
+                      onChange={handleChange}
+                      type="date"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm mb-1">End Date</label>
+                    <input
+                      className="border rounded px-3 py-2 w-full"
+                      name="endDate"
+                      value={notificationForm.endDate}
+                      onChange={handleChange}
+                      type="date"
+                      required
+                    />
+                  </div>
+                </>
               )}
 
-              {notificationForm.isClaimable && (
-                <div>
-                  <label className="block text-sm mb-1">Amount (BDT)</label>
-                  <input
-                    className="border rounded px-3 py-2 w-full"
-                    name="amount"
-                    value={notificationForm.amount}
-                    onChange={handleChange}
-                    type="number"
-                  />
-                </div>
-              )}
-
-              {notificationForm.isClaimable && (
-                <div>
-                  <label className="block text-sm mb-1">
-                    Turnover Multiply (%)
-                  </label>
-                  <input
-                    className="border rounded px-3 py-2 w-full"
-                    name="turnoverMultiply"
-                    value={notificationForm.turnoverMultiply}
-                    onChange={handleChange}
-                    type="number"
-                  />
-                </div>
-              )}
-
-              {notificationForm.isLinkable && (
+              {/* Linkable Fields */}
+              {notificationForm.notificationType === "linkable" && (
                 <div>
                   <label className="block text-sm mb-1">Promotion</label>
                   <Select
@@ -837,7 +874,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                 </div>
               )}
 
-              {/* {notificationForm.isStatic && (
+              {/* Static Fields */}
+              {notificationForm.notificationType === "static" && (
                 <div>
                   <label className="block text-sm mb-1">Link</label>
                   <input
@@ -845,40 +883,36 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                     name="link"
                     value={notificationForm.link}
                     onChange={handleChange}
-                  />
-                </div>
-              )} */}
-
-              {(notificationForm.isClaimable ||
-                notificationForm.isLinkable ||
-                notificationForm.isStatic) && (
-                <div>
-                  <label className="block text-sm mb-1">Poster Image</label>
-                  <input
-                    className="border rounded px-3 py-2 w-full"
-                    name="posterImg"
-                    type="file"
-                    onChange={handleChange}
+                    type="text"
+                    required
+                    placeholder="Enter link"
                   />
                 </div>
               )}
 
-              {(notificationForm.isClaimable ||
-                notificationForm.isLinkable ||
-                notificationForm.isStatic) && (
-                <div>
-                  <label className="block text-sm mb-1">Description</label>
-                  <TextEditor
-                    value={notificationForm.description}
-                    setValue={(val) =>
-                      setNotificationForm((prev) => ({
-                        ...prev,
-                        description: val,
-                      }))
-                    }
-                  />
-                </div>
-              )}
+              {/* Common Optional Fields */}
+              <div>
+                <label className="block text-sm mb-1">Poster Image</label>
+                <input
+                  className="border rounded px-3 py-2 w-full"
+                  name="posterImg"
+                  type="file"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Description</label>
+                <TextEditor
+                  value={notificationForm.description}
+                  setValue={(val) =>
+                    setNotificationForm((prev) => ({
+                      ...prev,
+                      description: val,
+                    }))
+                  }
+                />
+              </div>
             </>
           )}
 

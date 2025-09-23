@@ -5,7 +5,7 @@ const AddGameProvider = () => {
   return (
     <div>
       <AddGameProviderForm
-        sectionTitle="ADD PARENT PROVIDER"
+        sectionTitle="ADD GAME PARENT PROVIDER"
         isParentProvider={false}
       />
     </div>
