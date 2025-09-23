@@ -7,16 +7,15 @@ import { useAuth } from "../hooks/useAuth"; // Import useAuth hook
 import { hasPermission } from "../Utils/permissions";
 
 const SystemSettingsPage = () => {
-  const { user } = useAuth(); // Get user from auth context
+  const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
 
-  // Helper function to check if user has a specific permission
-  const hasAccess = (permission) => {
-    return isSuperAdmin || hasPermission(permissions,permission);
-  };
-  
-  const [editingId, setEditingId] = useState(null);
+  const hasAccess = (permission) =>
+    isSuperAdmin || hasPermission(permissions, permission);
+
+  // State to track which setting and field is being edited
+  const [editingField, setEditingField] = useState(null); // { id, field }
   const [editValue, setEditValue] = useState({
     defaultTurnover: 0,
     adminBalance: 0,
@@ -30,8 +29,8 @@ const SystemSettingsPage = () => {
 
   const settings = settingsData?.data || [];
 
-  const handleEdit = (setting) => {
-    setEditingId(setting.id);
+  const handleEdit = (setting, field) => {
+    setEditingField({ id: setting.id, field });
     setEditValue({
       defaultTurnover: setting.defaultTurnover,
       adminBalance: setting.adminBalance,
@@ -46,22 +45,21 @@ const SystemSettingsPage = () => {
   };
 
   const handleSave = async (settingId) => {
-    if (!editValue.defaultTurnover || editValue.defaultTurnover < 1) {
-      toast.error("Please enter a valid turnover value (minimum 1)");
-      return;
-    }
-
-    if (!editValue.adminBalance || editValue.adminBalance < 1) {
-      toast.error("Please enter a valid adminBalance value (minimum 1)");
-      return;
-    }
-
-    if (!editValue.conversionRate || editValue.conversionRate < 0) {
-      toast.error("Please enter a valid conversion rate");
-      return;
-    }
-
     try {
+      // Validation only on save
+      if (editValue.defaultTurnover < 0) {
+        toast.error("Please enter a valid turnover value (minimum 0)");
+        return;
+      }
+      if (editValue.adminBalance < 0) {
+        toast.error("Please enter a valid adminBalance value (minimum 0)");
+        return;
+      }
+      if (!editValue.conversionRate || editValue.conversionRate < 0) {
+        toast.error("Please enter a valid conversion rate");
+        return;
+      }
+
       await updateSettingsMutation.mutateAsync({
         id: settingId,
         data: {
@@ -72,35 +70,21 @@ const SystemSettingsPage = () => {
           affiliateWithdrawTime: editValue.affiliateWithdrawTime,
         },
       });
-      setEditingId(null);
-      setEditValue({
-        defaultTurnover: 0,
-        adminBalance: 0,
-        minWithdrawableBalance: 0,
-        conversionRate: 0,
-        affiliateWithdrawTime: [],
-      });
+
+      setEditingField(null);
     } catch (error) {
       console.error("Failed to update setting:", error);
     }
   };
 
   const handleCancel = () => {
-    setEditingId(null);
-    setEditValue({
-      defaultTurnover: 0,
-      adminBalance: 0,
-      minWithdrawableBalance: 0,
-      conversionRate: 0,
-    });
+    setEditingField(null);
   };
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
+      <div className="p-6 flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -150,7 +134,7 @@ const SystemSettingsPage = () => {
           </p>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 space-y-4">
           {settings.length === 0 ? (
             <div className="text-center py-8">
               <FaCogs className="mx-auto h-12 w-12 text-gray-400" />
@@ -162,362 +146,208 @@ const SystemSettingsPage = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {settings.map((setting) => (
-                <React.Fragment key={setting.id}>
-                  {/* Default Turnover */}
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">
-                        Default Turnover Settings
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Current value: {setting.defaultTurnover || 0} times
-                      </p>
-                    </div>
+            settings.map((setting) => (
+              <React.Fragment key={setting.id}>
+                {/* Default Turnover */}
+                <SettingRow
+                  label="Default Turnover Settings"
+                  description={`Current value: ${
+                    setting.defaultTurnover || 0
+                  } times`}
+                  field="defaultTurnover"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                />
 
-                    <div className="flex items-center gap-3">
-                      {editingId === setting.id ? (
-                        <>
-                          <input
-                            type="number"
-                            min="1"
-                            value={editValue.defaultTurnover}
-                            onChange={(e) =>
-                              setEditValue((prev) => ({
-                                ...prev,
-                                defaultTurnover: e.target.value,
-                              }))
-                            }
-                            className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Enter value"
-                          />
-                          <button
-                            onClick={() => handleSave(setting.id)}
-                            disabled={
-                              updateSettingsMutation.isLoading ||
-                              !hasAccess("settings_update_system_settings")
-                            }
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                          >
-                            <FaSave className="mr-2" />
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaTimes className="mr-2" />
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        hasAccess("settings_update_system_settings") && (
-                          <button
-                            onClick={() => handleEdit(setting)}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaEdit className="mr-2" />
-                            Edit
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
+                {/* Admin Balance */}
+                <SettingRow
+                  label="Admin Balance"
+                  description={`Current value: ${formatAmount(
+                    setting.adminBalance || 0
+                  )}`}
+                  field="adminBalance"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                />
 
-                  {/* Admin Balance */}
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">
-                        Admin Balance
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Current value: {formatAmount(setting.adminBalance || 0)}
-                      </p>
-                    </div>
+                {/* Minimum Withdrawable Balance */}
+                <SettingRow
+                  label="Minimum Balance to Access Withdraw Button"
+                  description={`Current value: ${formatAmount(
+                    setting.minWithdrawableBalance || 0
+                  )}`}
+                  field="minWithdrawableBalance"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                />
 
-                    <div className="flex items-center gap-3">
-                      {editingId === setting.id ? (
-                        <>
-                          <input
-                            type="number"
-                            min="1"
-                            value={editValue.adminBalance}
-                            onChange={(e) =>
-                              setEditValue((prev) => ({
-                                ...prev,
-                                adminBalance: e.target.value,
-                              }))
-                            }
-                            className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Enter value"
-                          />
-                          <button
-                            onClick={() => handleSave(setting.id)}
-                            disabled={
-                              updateSettingsMutation.isLoading ||
-                              !hasAccess("settings_update_system_settings")
-                            }
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                          >
-                            <FaSave className="mr-2" />
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaTimes className="mr-2" />
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        hasAccess("settings_update_system_settings") && (
-                          <button
-                            onClick={() => handleEdit(setting)}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaEdit className="mr-2" />
-                            Edit
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
+                {/* Conversion Rate */}
+                <SettingRow
+                  label="Conversion Rate"
+                  description={`Current value: 1 USD = ${
+                    setting.conversionRate || 0
+                  } BDT`}
+                  field="conversionRate"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                  step="0.01"
+                  min="0"
+                />
 
-                  {/* Minimum Withdrawable Balance */}
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">
-                        Minimum Balance to Access Withdraw Button
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Current value:{" "}
-                        {formatAmount(setting.minWithdrawableBalance || 0)}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {editingId === setting.id ? (
-                        <>
-                          <input
-                            type="number"
-                            min="1"
-                            value={editValue.minWithdrawableBalance}
-                            onChange={(e) =>
-                              setEditValue((prev) => ({
-                                ...prev,
-                                minWithdrawableBalance: e.target.value,
-                              }))
-                            }
-                            className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Enter value"
-                          />
-                          <button
-                            onClick={() => handleSave(setting.id)}
-                            disabled={
-                              updateSettingsMutation.isLoading ||
-                              !hasAccess("settings_update_system_settings")
-                            }
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                          >
-                            <FaSave className="mr-2" />
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaTimes className="mr-2" />
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        hasAccess("settings_update_system_settings") && (
-                          <button
-                            onClick={() => handleEdit(setting)}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaEdit className="mr-2" />
-                            Edit
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Conversion Rate */}
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">
-                        Conversion Rate
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Current value: 1 USD = {setting.conversionRate || 0} BDT
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {editingId === setting.id ? (
-                        <>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={editValue.conversionRate}
-                            onChange={(e) =>
-                              setEditValue((prev) => ({
-                                ...prev,
-                                conversionRate: e.target.value,
-                              }))
-                            }
-                            className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Enter value"
-                          />
-                          <button
-                            onClick={() => handleSave(setting.id)}
-                            disabled={
-                              updateSettingsMutation.isLoading ||
-                              !hasAccess("settings_update_system_settings")
-                            }
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                          >
-                            <FaSave className="mr-2" />
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaTimes className="mr-2" />
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => handleEdit(setting)}
-                          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                        >
-                          <FaEdit className="mr-2" />
-                          Edit
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Affiliate Withdraw Days */}
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">
-                        Affiliate Withdraw Days
-                      </h3>
-                      <p className="text-sm text-gray-600 capitalize">
-                        Current value:{" "}
-                        {Array.isArray(setting.affiliateWithdrawTime)
-                          ? setting.affiliateWithdrawTime.join(", ")
-                          : setting.affiliateWithdrawTime || "Any Time"}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {editingId === setting.id ? (
-                        <>
-                          <select
-                            multiple
-                            value={editValue.affiliateWithdrawTime}
-                            onChange={(e) =>
-                              setEditValue((prev) => ({
-                                ...prev,
-                                affiliateWithdrawTime: Array.from(
-                                  e.target.selectedOptions,
-                                  (option) => option.value
-                                ),
-                              }))
-                            }
-                            className="w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          >
-                            {daysOptions.map((day) => (
-                              <option key={day} value={day}>
-                                {day.charAt(0).toUpperCase() + day.slice(1)}
-                              </option>
-                            ))}
-                          </select>
-
-                          <button
-                            onClick={() => handleSave(setting.id)}
-                            disabled={
-                              updateSettingsMutation.isLoading ||
-                              !hasAccess("settings_update_system_settings")
-                            }
-                            className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                          >
-                            <FaSave className="mr-2" />
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaTimes className="mr-2" />
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        hasAccess("settings_update_system_settings") && (
-                          <button
-                            onClick={() => handleEdit(setting)}
-                            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                          >
-                            <FaEdit className="mr-2" />
-                            Edit
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
-                </React.Fragment>
-              ))}
-            </div>
+                {/* Affiliate Withdraw Days */}
+                <SettingRow
+                  label="Affiliate Withdraw Days"
+                  description={`Current value: ${
+                    Array.isArray(setting.affiliateWithdrawTime)
+                      ? setting.affiliateWithdrawTime.join(", ")
+                      : setting.affiliateWithdrawTime || "Any Time"
+                  }`}
+                  field="affiliateWithdrawTime"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                  options={daysOptions}
+                />
+              </React.Fragment>
+            ))
           )}
         </div>
       </div>
+    </div>
+  );
+};
 
-      {/* Placeholder for Future Settings */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Additional Settings
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            More configuration options will be added here
-          </p>
-        </div>
+const SettingRow = ({
+  label,
+  description,
+  field,
+  setting,
+  editingField,
+  editValue,
+  setEditValue,
+  handleEdit,
+  handleSave,
+  handleCancel,
+  hasAccess,
+  updateSettingsMutation,
+  step = "1",
+  min = "1",
+  options,
+}) => {
+  const isEditing =
+    editingField?.id === setting.id && editingField?.field === field;
 
-        <div className="p-6">
-          <div className="text-center py-8">
-            <div className="mx-auto h-12 w-12 text-gray-400">
-              <svg
-                className="h-full w-full"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+  return (
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="flex-1">
+        <h3 className="font-medium text-gray-900">{label}</h3>
+        <p className="text-sm text-gray-600">{description}</p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        {isEditing ? (
+          <>
+            {options ? (
+              <select
+                multiple
+                value={editValue[field]}
+                onChange={(e) =>
+                  setEditValue((prev) => ({
+                    ...prev,
+                    [field]: Array.from(
+                      e.target.selectedOptions,
+                      (option) => option.value
+                    ),
+                  }))
+                }
+                className="w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-            </div>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
-              More settings coming soon
-            </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Additional configuration options will be available here.
-            </p>
-          </div>
-        </div>
+                {options.map((day) => (
+                  <option key={day} value={day}>
+                    {day.charAt(0).toUpperCase() + day.slice(1)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="number"
+                min={min}
+                step={step}
+                value={editValue[field]}
+                onChange={(e) =>
+                  setEditValue((prev) => ({
+                    ...prev,
+                    [field]: e.target.value,
+                  }))
+                }
+                className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            )}
+
+            <button
+              onClick={() => handleSave(setting.id)}
+              disabled={
+                updateSettingsMutation.isLoading ||
+                !hasAccess("settings_update_system_settings")
+              }
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            >
+              <FaSave className="mr-2" />
+              Save
+            </button>
+            <button
+              onClick={handleCancel}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <FaTimes className="mr-2" />
+              Cancel
+            </button>
+          </>
+        ) : (
+          hasAccess("settings_update_system_settings") && (
+            <button
+              onClick={() => handleEdit(setting, field)}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <FaEdit className="mr-2" />
+              Edit
+            </button>
+          )
+        )}
       </div>
     </div>
   );

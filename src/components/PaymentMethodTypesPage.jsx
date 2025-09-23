@@ -146,7 +146,10 @@ const PaymentMethodTypesPage = () => {
       render: (value, row) => (
         <div className="flex items-center justify-center space-x-2">
           {(isSuperAdmin ||
-            hasPermission(permissions, "payment_manage_payment_method_types")) && (
+            hasPermission(
+              permissions,
+              "payment_manage_payment_method_types"
+            )) && (
             <button
               className="inline-flex items-center justify-center text-blue-500 hover:bg-blue-100 rounded-full p-2 transition"
               title="Edit"
@@ -156,7 +159,10 @@ const PaymentMethodTypesPage = () => {
             </button>
           )}
           {(isSuperAdmin ||
-            hasPermission(permissions, "payment_manage_payment_method_types")) && (
+            hasPermission(
+              permissions,
+              "payment_manage_payment_method_types"
+            )) && (
             <button
               className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
               title="Delete"
@@ -197,12 +203,15 @@ const PaymentMethodTypesPage = () => {
 
   return (
     <div className="bg-[#f5f5f5] min-h-full p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Payment Method Types</h2>
         {(isSuperAdmin ||
-          hasPermission(permissions, "payment_manage_payment_method_types")) && (
+          hasPermission(
+            permissions,
+            "payment_manage_payment_method_types"
+          )) && (
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition text-sm font-medium flex items-center space-x-2"
+            className="bg-green-500 text-white  px-4 py-2 rounded hover:bg-green-600 transition text-sm font-medium flex items-center justify-center space-x-2"
             onClick={handleCreate}
           >
             <FaPlus size={14} />

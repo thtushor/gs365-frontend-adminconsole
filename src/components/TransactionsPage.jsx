@@ -127,14 +127,29 @@ const TransactionsPage = ({
           </button>
         ),
       },
-      { field: "type", headerName: "Type", width: 120 },
+      {
+        field: "type",
+        headerName: "Type",
+        width: 120,
+        render: (value, row) => (
+          <div
+            className={`capitalize text-[12px] ${
+              value === "deposit"
+                ? "text-green-500 bg-green-50 border rounded-full px-2 border-green-500"
+                : "text-red-500 bg-red-50 border rounded-full px-2 border-red-500"
+            }`}
+          >
+            {value}
+          </div>
+        ),
+      },
       {
         field: "amount",
         headerName: "BDT Amount",
         width: 140,
         align: "center",
         render: (value, row) => (
-          <span className="font-medium text-center">
+          <span className="font-medium text-center text-purple-500">
             {value != null ? `${formatAmount(value)}` : "-"}
           </span>
         ),
@@ -145,7 +160,7 @@ const TransactionsPage = ({
         width: 140,
         align: "center",
         render: (value, row) => (
-          <span className="font-medium text-center">
+          <span className="font-medium text-center text-orange-500">
             {formatUSD(row.amount, conversionRate)}
           </span>
         ),

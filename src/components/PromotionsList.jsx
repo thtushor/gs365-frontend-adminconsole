@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { BASE_URL, API_LIST } from "../api/ApiList";
 import { useGetRequest } from "../Utils/apiClient";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
-import { MdEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
 import { useAuth } from "../hooks/useAuth";
@@ -193,12 +192,12 @@ const PromotionsList = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-4 mt-6 w-full">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Promotion List</h2>
         {(isSuperAdmin ||
           hasPermission(permissions, "promotion_create_promotion")) && (
           <button
-            className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+            className="bg-green-500 text-white text-center px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
             onClick={() => navigate("/create-promotion")}
           >
             Create Promotion
@@ -213,13 +212,13 @@ const PromotionsList = () => {
           placeholder="Promotion name"
           value={filters.name}
           onChange={handleFilterChange}
-          className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+          className="border px-3 py-2 rounded text-sm sm:w-48 w-full focus:ring-2 focus:ring-green-200"
         />
         <select
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
-          className="border px-3 py-2 rounded text-sm w-48 focus:ring-2 focus:ring-green-200"
+          className="border px-3 py-2 rounded text-sm sm:w-48 w-full focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>

@@ -247,7 +247,10 @@ const PaymentProvidersPage = () => {
         render: (value, row) => (
           <div className="flex space-x-2">
             {(isSuperAdmin ||
-              hasPermission(permissions, "payment_manage_payment_providers")) && (
+              hasPermission(
+                permissions,
+                "payment_manage_payment_providers"
+              )) && (
               <button
                 onClick={() => handleEdit(row)}
                 className="p-2 text-blue-600 hover:bg-blue-50 rounded"
@@ -257,7 +260,10 @@ const PaymentProvidersPage = () => {
               </button>
             )}
             {(isSuperAdmin ||
-              hasPermission(permissions, "payment_manage_payment_providers")) && (
+              hasPermission(
+                permissions,
+                "payment_manage_payment_providers"
+              )) && (
               <button
                 onClick={() => handleDelete(row)}
                 className="p-2 text-red-600 hover:bg-red-50 rounded"
@@ -286,7 +292,7 @@ const PaymentProvidersPage = () => {
 
     return (
       <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-900">
             Payment Providers
           </h1>

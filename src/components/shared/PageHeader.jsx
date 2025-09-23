@@ -1,4 +1,3 @@
-import React from "react";
 import { FaArrowLeft } from "react-icons/fa";
 
 const PageHeader = ({
@@ -47,9 +46,9 @@ const PageHeader = ({
                     key={index}
                     onClick={action.onClick}
                     className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                      action.variant === 'primary'
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      action.variant === "primary"
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                   >
                     {action.label}

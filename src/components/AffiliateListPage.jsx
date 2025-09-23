@@ -368,12 +368,12 @@ const AffiliateListPage = () => {
   ];
   return (
     <div className="bg-[#f5f5f5] w-full min-h-full p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Affiliate List</h2>
         {(isSuperAdmin ||
           hasPermission(permissions, "affiliate_create_affiliate")) && (
           <button
-            className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+            className="bg-green-500 text-center text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
             onClick={() => navigate("/create-affiliate")}
           >
             Create Affiliate
@@ -388,13 +388,13 @@ const AffiliateListPage = () => {
           placeholder="Name/Email"
           value={filters.keyword}
           onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />
         <select
           name="role"
           value={filters.role}
           onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Roles</option>
           <option value="superAffiliate">Super Affiliate</option>
@@ -404,7 +404,7 @@ const AffiliateListPage = () => {
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
-          className="border rounded px-3 py-2 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-green-200"
+          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>

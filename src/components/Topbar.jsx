@@ -57,7 +57,7 @@ const Topbar = ({ onMenuClick }) => {
           <div className="flex items-center max-w-xs truncate">
             <Link
               to={`/affiliate-list/${user?.id}`}
-              className="text-base font-semibold items-center gap-2 flex text-white border px-[10px] pr-[5.5px] pt-[2px] pb-1 rounded-full w-fit text-[16px]"
+              className="font-semibold items-center gap-2 flex text-white border sm:px-[10px] px-1 sm:pr-[5.5px] pt-[2px] pb-1 rounded-full w-fit text-[14px] sm:text-[16px]"
             >
               <p className="">
                 {(user?.fullname || user?.username || user?.email)?.length > 50
@@ -85,7 +85,9 @@ const Topbar = ({ onMenuClick }) => {
           onClick={handleLogout}
           disabled={isLoading || isLogoutLoading}
         >
-          {isLogoutLoading ? "Logging out..." : "Logout"}{" "}
+          <span className="sm:flex hidden">
+            {isLogoutLoading ? "Logging out..." : "Logout"}{" "}
+          </span>
           <FaSignOutAlt className="text-lg mt-1" />
         </button>
       </div>

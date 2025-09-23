@@ -54,7 +54,6 @@ export const useCreatePaymentMethod = () => {
     },
   });
 };
-
 // Update payment method
 export const useUpdatePaymentMethod = () => {
   const queryClient = useQueryClient();
