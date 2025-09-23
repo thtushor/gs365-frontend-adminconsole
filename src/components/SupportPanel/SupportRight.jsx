@@ -118,7 +118,7 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
     if (message.senderType === "admin" && message.senderAdmin) {
       return message.senderAdmin.fullname || message.senderAdmin.username;
     }
-    return "Unknown";
+    return message?.guestSenderId|| "Unknown";
   };
 
   if (!selectedChat && !isAffiliate) {
@@ -168,9 +168,9 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
             />
             <div>
               <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
-                {selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
+                {selectedChat?.type==="guest" ? selectedChat.guestId : selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
                 <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 capitalize block rounded-full">
-                  {selectedChat?.role ? selectedChat?.role : "Admin"}
+                  {selectedChat?.role ? selectedChat?.role : "Player"}
                 </span>
               </h1>
               <p className="text-[12px] mt-[-3px] text-white/80">

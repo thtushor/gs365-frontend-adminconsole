@@ -13,6 +13,8 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
 
   const { data: chatData, isLoading, isError } = useChats(chatUserType, searchKey);
 
+  console.log({chatData})
+
   // Reset active chat when chatUserType changes
   useEffect(() => {
     setSelectedChat(null); // Clear selected chat when user type changes
@@ -90,15 +92,17 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
           chatData.map((chat) => {
             const displayName = chatUserType === "admin"
               ? (chat?.fullname || "Unknown Admin")
-              : (chat?.username || "Unknown User");
+              : chatUserType==="user" ?  (chat?.username || "Unknown User"): (chat.guestId||"Guest Unknown");
 
-            const lastChat = chat?.chats && chat.chats.length > 0
+            const lastChat = chat.type==="guest" ? chat : chat?.chats && chat.chats.length > 0
               ? chat.chats[chat.chats.length - 1]
               : null;
 
             const lastMessageObj = lastChat?.messages && lastChat.messages.length > 0
               ? lastChat.messages[lastChat.messages.length - 1]
               : null;
+
+              console.log({lastChat,lastMessageObj})
 
             const lastMessageContent = lastMessageObj?.content;
             const hasAttachment = !!lastMessageObj?.attachmentUrl;

@@ -36,8 +36,8 @@ export const ChatProvider = ({ children }) => {
       previousChatId = activeConversation.id;
     }
 
-    if (selectedChatUser && selectedChatUser.chats && selectedChatUser.chats.length > 0) {
-      const latestChat = selectedChatUser.chats.reduce((prev, current) =>
+    if (selectedChatUser && selectedChatUser.type==="guest" ? selectedChatUser.id : selectedChatUser?.chats && selectedChatUser?.chats?.length > 0) {
+      const latestChat = selectedChatUser.type==="guest"  ? selectedChatUser: selectedChatUser?.chats?.reduce((prev, current) =>
         (prev.id > current.id) ? prev : current
       );
       setActiveConversation(latestChat);
@@ -68,7 +68,7 @@ export const ChatProvider = ({ children }) => {
     queryKey: ["chatMessages", activeConversation?.id],
     queryFn: async () => {
       const isSelectedAdminChat = Boolean(selectedChatUser?.role)
-      const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser.id}/${isSelectedAdminChat ? "admin":"user"}`
+      const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser?.type==="guest" ? selectedChatUser.guestId : selectedChatUser.id}/${isSelectedAdminChat ? "admin":selectedChatUser?.type==="guest"  ? "guest" : "user"}`
       // const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.GET_MESSAGES}/${activeConversation.id}`
       if (!activeConversation?.id  && !isAffiliate) return [];
       const response = await Axios.get(url);
