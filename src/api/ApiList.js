@@ -107,6 +107,11 @@ export const API_LIST = {
   GET_GAME_PROVIDER: "/api/admin/game-providers",
   CREATE_GAME_PROVIDER: "/api/admin/game-provider",
 
+  // notifications
+  CREATE_NOTIFICATION: "/api/admin/notifications",
+  GET_NOTIFICATION: "/api/admin/notifications",
+  UPDATE_NOTIFICATION_STATUS: "/api/admin/notifications-status",
+
   // game
   CREATE_UPDATE_GAME: "/api/admin/add-update-game",
   GET_GAMES: "/api/admin/games",
