@@ -183,6 +183,7 @@ import CurrencyConversion from "../components/CurrencyConversion";
 import Faqs from "../components/Faqs";
 import SupportLayout from "../components/SupportPanel/SupportLayout";
 import AffiliateSupportLayout from "../components/SupportPanel/AffiliateSupportLayout";
+import NotificationList from "../components/Notifications";
 
 export const menu = [
   {
@@ -306,6 +307,13 @@ export const menu = [
     icon: <BsShieldCheck />,
     component: KYCRequestList,
     accessCategory: "KYC",
+  },
+  {
+    label: "Notifications",
+    path: "/notification-history",
+    icon: <BsShieldCheck />,
+    component: NotificationList,
+    accessCategory: "notifications",
   },
   {
     label: "Affiliate",

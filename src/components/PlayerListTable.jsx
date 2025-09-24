@@ -9,7 +9,7 @@ import DataTable from "./DataTable";
 import { useEffect, useState } from "react";
 import ReusableModal from "./ReusableModal";
 import Axios from "../api/axios";
-import { API_LIST } from "../api/ApiList";
+import { API_LIST, BASE_URL, SINGLE_IMAGE_UPLOAD_URL } from "../api/ApiList";
 import { toast } from "react-toastify";
 import { formatAmount } from "./BettingWagerPage";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +23,7 @@ import BaseModal from "./shared/BaseModal";
 import ToggleButton from "../Utils/ToggleButton";
 import TextEditor from "./shared/TextEditor";
 import { IoIosCloseCircle } from "react-icons/io";
+import { usePostRequest } from "../Utils/apiClient";
 
 // Custom hook to fetch promotions
 const usePromotions = () => {
@@ -266,12 +267,153 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
     });
   };
 
-  const handleSubmitNotification = (e) => {
+  const [notifyLoading, setNotifyLoading] = useState(false);
+  const postRequest = usePostRequest();
+  const handleUpdatedData = () => {
+    setNotificationForm({
+      notificationType: "", // "claimable" | "linkable" | "static"
+      title: "",
+      amount: 0,
+      turnoverMultiply: 0,
+      startDate: "",
+      endDate: "",
+      promotionId: null,
+      link: "",
+      posterImg: null,
+      description: "",
+    });
+    setNotificationEditorOpen(false);
+    setSelectedPlayers([]);
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    // toast.success("Notification sent successfully");
+  };
+  const mutation = useMutation({
+    mutationFn: async (formData) => {
+      const payload = {
+        ...formData,
+      };
+
+      return await postRequest({
+        url: BASE_URL + API_LIST.CREATE_NOTIFICATION,
+        body: payload,
+        contentType: "application/json",
+        setLoading: setNotifyLoading,
+        onSuccessFn: handleUpdatedData,
+      });
+    },
+  });
+
+  const handleSubmitNotification = async (e) => {
     e.preventDefault();
     const selectedIds = selectedPlayers.map((p) => p.id);
-    console.log("Notification Data:", notificationForm);
-    console.log("Selected Player IDs:", selectedIds);
-    setNotificationEditorOpen(false);
+
+    // ===== Validation =====
+    if (notificationForm?.notificationType === "claimable") {
+      if (
+        !notificationForm.startDate ||
+        !notificationForm.endDate ||
+        !notificationForm.turnoverMultiply ||
+        !notificationForm.promotionId ||
+        !notificationForm.amount ||
+        !notificationForm.title
+      ) {
+        toast.error(
+          "For claimable notifications, Title, Amount, Promotion, Turnover Multiplier, Start Date, End Date are required."
+        );
+        return;
+      }
+      if (notificationForm.turnoverMultiply < 0) {
+        toast.error("Turnover Multiply is invalid.");
+        return;
+      }
+    }
+    if (notificationForm.notificationType === "linkable") {
+      if (!notificationForm.title || !notificationForm.promotionId) {
+        toast.error(
+          "For linkable notifications, Title and Promotion are required."
+        );
+        return;
+      }
+    }
+    if (notificationForm.notificationType === "static") {
+      if (!notificationForm.title || !notificationForm.description) {
+        toast.error(
+          "For static notifications, Title and description are required."
+        );
+        return;
+      }
+    }
+
+    // ===== File Upload + API Call =====
+    try {
+      setNotifyLoading(true);
+
+      let posterImgUrl = notificationForm.posterImg;
+
+      // Upload Poster Image if it's a File
+      if (notificationForm.posterImg instanceof File) {
+        const imageForm = new FormData();
+        imageForm.append("file", notificationForm.posterImg);
+
+        const uploadResponse = await fetch(SINGLE_IMAGE_UPLOAD_URL, {
+          method: "POST",
+          body: imageForm,
+        });
+
+        if (!uploadResponse.ok) {
+          toast.error("Poster image upload failed");
+          return;
+        }
+
+        const imageData = await uploadResponse.json();
+        if (!imageData?.status || !imageData.data?.original) {
+          toast.error("Invalid poster upload response");
+          return;
+        }
+
+        posterImgUrl = imageData.data.original;
+      }
+
+      // Build final payload according to schema
+      const payload = {
+        notificationType: notificationForm.notificationType,
+        title: notificationForm.title,
+        description: notificationForm.description || null,
+        posterImg: posterImgUrl || null,
+        amount:
+          notificationForm.notificationType === "claimable"
+            ? notificationForm.amount
+            : null,
+        turnoverMultiply:
+          notificationForm.notificationType === "claimable"
+            ? notificationForm.turnoverMultiply
+            : null,
+        promotionId:
+          notificationForm.notificationType === "linkable" ||
+          notificationForm.notificationType === "claimable"
+            ? notificationForm.promotionId
+            : null,
+        startDate: notificationForm.startDate || new Date().toISOString(), // must not be empty
+        endDate: notificationForm.endDate || new Date().toISOString(), // must not be empty
+        status: "active",
+      };
+
+      console.log("Final Payload (to API):", payload);
+
+      mutation.mutate(payload);
+
+      // If playerIds should also be linked, you likely need a separate API call
+      // to insert into a `notification_players` relation table
+      if (selectedIds.length > 0) {
+        console.log("Selected Player IDs (to handle separately):", selectedIds);
+        // postRequest({ url: ..., body: { notificationId, playerIds: selectedIds } });
+      }
+    } catch (error) {
+      console.error("Notification submit error:", error);
+      toast.error("Failed to submit notification");
+    } finally {
+      setNotifyLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -820,7 +962,6 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                       value={notificationForm.turnoverMultiply}
                       onChange={handleChange}
                       type="number"
-                      min="1"
                       required
                       placeholder="Turnover multiply"
                     />
@@ -853,7 +994,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               )}
 
               {/* Linkable Fields */}
-              {notificationForm.notificationType === "linkable" && (
+              {(notificationForm.notificationType === "linkable" ||
+                notificationForm.notificationType === "claimable") && (
                 <div>
                   <label className="block text-sm mb-1">Promotion</label>
                   <Select
@@ -870,22 +1012,6 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                     onChange={handleNotificationPromotionChange}
                     isLoading={promotionsLoading}
                     className="w-full"
-                  />
-                </div>
-              )}
-
-              {/* Static Fields */}
-              {notificationForm.notificationType === "static" && (
-                <div>
-                  <label className="block text-sm mb-1">Link</label>
-                  <input
-                    className="border rounded px-3 py-2 w-full"
-                    name="link"
-                    value={notificationForm.link}
-                    onChange={handleChange}
-                    type="text"
-                    required
-                    placeholder="Enter link"
                   />
                 </div>
               )}

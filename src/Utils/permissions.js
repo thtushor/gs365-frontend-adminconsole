@@ -46,6 +46,17 @@ export const PERMISSION_CATEGORIES = {
       "kyc_view_kyc_history",
     ],
   },
+  // NOTIFICATIONS: {
+  //   label: "Notifications",
+  //   icon: "🔔",
+  //   permissions: [
+  //     "notifications",
+  //     "kyc_approve_kyc",
+  //     "kyc_reject_kyc",
+  //     "kyc_send_kyc_requests",
+  //     "kyc_view_kyc_history",
+  //   ],
+  // },
   AFFILIATE: {
     label: "Affiliate",
     icon: "🤝",
