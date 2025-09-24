@@ -306,6 +306,10 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
   const handleSubmitNotification = async (e) => {
     e.preventDefault();
     const selectedIds = selectedPlayers.map((p) => p.id);
+    if (selectedIds.length === 0) {
+      toast.error("No players selected");
+      return;
+    }
 
     // ===== Validation =====
     if (notificationForm?.notificationType === "claimable") {
@@ -396,6 +400,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         startDate: notificationForm.startDate || new Date().toISOString(), // must not be empty
         endDate: notificationForm.endDate || new Date().toISOString(), // must not be empty
         status: "active",
+        playerIds: selectedIds,
       };
 
       console.log("Final Payload (to API):", payload);

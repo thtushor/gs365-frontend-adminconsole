@@ -40,8 +40,8 @@ const KYCVerificationPage = () => {
 
   // ✅ Prefill when details available
   useEffect(() => {
-    if (kycDetails?.data) {
-      const d = kycDetails.data;
+    if (kycDetails?.data[0]) {
+      const d = kycDetails?.data[0];
       console.log("ddddd", d);
       setFormData({
         fullName: d.fullName || "",
@@ -132,11 +132,11 @@ const KYCVerificationPage = () => {
         <KycRequestButton
           holderId={affiliateInfo?.id}
           holderType={"affiliate"}
-          isPending={kycDetails?.data?.status}
+          isPending={kycDetails?.data[0]?.status}
         />
       </div>
       <div className="flex md:flex-row flex-col-reverse  gap-8 items-start">
-        {kycDetails?.data.holderKycStatus !== "verified" && (
+        {kycDetails?.data[0].holderKycStatus !== "verified" && (
           <form onSubmit={handleSubmit} className="space-y-3 w-full md:w-1/2">
             {/* Full Name */}
             <div>
@@ -242,7 +242,7 @@ const KYCVerificationPage = () => {
                 className="bg-green-600 cursor-pointer text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
                 disabled={
                   submitLoading ||
-                  kycDetails?.data.holderKycStatus === "verified"
+                  kycDetails?.data[0].holderKycStatus === "verified"
                 }
               >
                 {submitLoading ? "Submitting..." : "Submit"}
@@ -254,7 +254,7 @@ const KYCVerificationPage = () => {
         {/* Right Column: Preview */}
         <div
           className={`border border-green-500 bg-green-50 ${
-            kycDetails?.data.holderKycStatus !== "verified"
+            kycDetails?.data[0].holderKycStatus !== "verified"
               ? "md:mt-[28px] w-full md:w-1/2"
               : "w-full"
           } p-4 rounded-lg  space-y-2`}
@@ -262,31 +262,32 @@ const KYCVerificationPage = () => {
           <h1 className="text-base font-semibold bg-[#07122b] text-white px-3 w-fit rounded-full py-1 pt-[2px] mb-2">
             Details Preview
           </h1>
-          {kycDetails?.data && (
+          {kycDetails?.data[0] && (
             <>
               <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 bg-white px-3 py-2 rounded-md">
                 <p>Holder Username:</p>{" "}
-                {kycDetails?.data.holderUsername || "Not selected"}
+                {kycDetails?.data[0].holderUsername || "Not selected"}
               </p>
               <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 bg-white px-3 py-2 rounded-md">
                 <p>Holder Email:</p>{" "}
-                {kycDetails?.data.holderEmail || "Not selected"}
+                {kycDetails?.data[0].holderEmail || "Not selected"}
               </p>
               <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200 bg-white px-3 py-2 rounded-md">
-                <p>Date of Birth:</p> {kycDetails?.data.dob || "Not selected"}
+                <p>Date of Birth:</p>{" "}
+                {kycDetails?.data[0].dob || "Not selected"}
               </p>
               <p className="flex items-center justify-between w-full font-medium text-[14px] border shadow-sm border-gray-200  bg-white px-3 py-2 rounded-md">
                 <p>Holder Kyc Status:</p>{" "}
                 <span
                   className={`px-2 py-1 rounded text-sm capitalize ${
-                    kycDetails?.data.holderKycStatus === "verified"
+                    kycDetails?.data[0].holderKycStatus === "verified"
                       ? "bg-green-200 text-green-800"
-                      : kycDetails?.data.holderKycStatus === "unverified"
+                      : kycDetails?.data[0].holderKycStatus === "unverified"
                       ? "bg-yellow-200 text-yellow-800"
                       : "bg-red-200 text-red-800"
                   }`}
                 >
-                  {kycDetails?.data.holderKycStatus}
+                  {kycDetails?.data[0].holderKycStatus}
                 </span>
               </p>
             </>

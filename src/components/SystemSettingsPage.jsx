@@ -22,6 +22,7 @@ const SystemSettingsPage = () => {
     minWithdrawableBalance: 0,
     conversionRate: 0,
     affiliateWithdrawTime: [],
+    systemActiveTime: { start: "", end: "" },
   });
 
   const { data: settingsData, isLoading, isError } = useSettings();
@@ -41,6 +42,7 @@ const SystemSettingsPage = () => {
         : setting.affiliateWithdrawTime
         ? setting.affiliateWithdrawTime.split(",")
         : [],
+      systemActiveTime: editValue.systemActiveTime,
     });
   };
 
@@ -59,6 +61,10 @@ const SystemSettingsPage = () => {
         toast.error("Please enter a valid conversion rate");
         return;
       }
+      if (editValue.systemActiveTime.start >= editValue.systemActiveTime.end) {
+        toast.error("Start time must be before end time");
+        return;
+      }
 
       await updateSettingsMutation.mutateAsync({
         id: settingId,
@@ -68,6 +74,7 @@ const SystemSettingsPage = () => {
           minWithdrawableBalance: Number(editValue.minWithdrawableBalance),
           conversionRate: Number(editValue.conversionRate),
           affiliateWithdrawTime: editValue.affiliateWithdrawTime,
+          systemActiveTime: editValue.systemActiveTime,
         },
       });
 
@@ -242,6 +249,25 @@ const SystemSettingsPage = () => {
                   updateSettingsMutation={updateSettingsMutation}
                   options={daysOptions}
                 />
+                <SettingRow
+                  label="System Active Time (Deposit/Withdraw)"
+                  description={`Current: ${
+                    setting.systemActiveTime?.start &&
+                    setting.systemActiveTime?.end
+                      ? `${setting.systemActiveTime?.start} - ${setting.systemActiveTime.end}`
+                      : "No restriction"
+                  }`}
+                  field="systemActiveTime"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                />
               </React.Fragment>
             ))
           )}
@@ -271,11 +297,24 @@ const SettingRow = ({
   const isEditing =
     editingField?.id === setting.id && editingField?.field === field;
 
+  const formatTime12Hour = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(":").map(Number);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+    return `${hour12}:${minute.toString().padStart(2, "0")} ${ampm}`;
+  };
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
       <div className="flex-1">
         <h3 className="font-medium text-gray-900">{label}</h3>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className="text-sm text-gray-600">
+          {setting.systemActiveTime?.start && setting.systemActiveTime?.end
+            ? `Current: ${formatTime12Hour(
+                setting.systemActiveTime.start
+              )} - ${formatTime12Hour(setting.systemActiveTime.end)}`
+            : "No restriction"}
+        </p>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -302,6 +341,32 @@ const SettingRow = ({
                   </option>
                 ))}
               </select>
+            ) : field === "systemActiveTime" ? (
+              <div className="flex gap-2">
+                <input
+                  type="time"
+                  value={editValue?.systemActiveTime?.start}
+                  onChange={(e) =>
+                    setEditValue((prev) => ({
+                      ...prev,
+                      [field]: { ...prev[field], start: e.target.value },
+                    }))
+                  }
+                  className="w-36 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="self-center text-gray-600">to</span>
+                <input
+                  type="time"
+                  value={editValue?.systemActiveTime?.end}
+                  onChange={(e) =>
+                    setEditValue((prev) => ({
+                      ...prev,
+                      [field]: { ...prev[field], end: e.target.value },
+                    }))
+                  }
+                  className="w-36 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             ) : (
               <input
                 type="number"
