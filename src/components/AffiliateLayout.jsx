@@ -71,7 +71,7 @@ const AffiliateLayout = () => {
     queryFn: () =>
       getRequest({
         url: BASE_URL + API_LIST.AFFILIATE_PROFILE,
-        params: { id: affiliateId || "-1" },
+        params: { id: affiliateId || "-1", holderType: "affiliate" },
         errorMessage: "Failed to fetch affiliate profile",
       }),
     keepPreviousData: true,

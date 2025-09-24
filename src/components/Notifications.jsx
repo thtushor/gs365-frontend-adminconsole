@@ -61,7 +61,7 @@ const NotificationList = ({ title = "Notifications" }) => {
   const updateNotificationMutation = useMutation({
     mutationFn: async ({ id, status }) => {
       return await postRequest({
-        url: `${BASE_URL}${API_LIST.UPDATE_NOTIFICATION_STATUS}`,
+        url: `${BASE_URL}/api/admin/${id}/status`,
         body: { id, status },
         contentType: "application/json",
       });

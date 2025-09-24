@@ -312,7 +312,7 @@ const PlayerProfile = () => {
                 <KycRequestButton
                   holderId={playerDetails?.id}
                   holderType={"player"}
-                  isPending={kycDetails?.data?.status}
+                  isPending={kycDetails?.data[0]?.status}
                 />
               )}
               {(isSuperAdmin ||
