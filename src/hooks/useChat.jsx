@@ -36,8 +36,8 @@ export const ChatProvider = ({ children }) => {
       previousChatId = activeConversation.id;
     }
 
-    if (selectedChatUser && selectedChatUser.type==="guest" ? selectedChatUser.id : selectedChatUser?.chats && selectedChatUser?.chats?.length > 0) {
-      const latestChat = selectedChatUser.type==="guest"  ? selectedChatUser: selectedChatUser?.chats?.reduce((prev, current) =>
+    if (selectedChatUser && selectedChatUser.type === "guest" ? selectedChatUser.id : selectedChatUser?.chats && selectedChatUser?.chats?.length > 0) {
+      const latestChat = selectedChatUser.type === "guest" ? selectedChatUser : selectedChatUser?.chats?.reduce((prev, current) =>
         (prev.id > current.id) ? prev : current
       );
       setActiveConversation(latestChat);
@@ -65,18 +65,46 @@ export const ChatProvider = ({ children }) => {
     error: messagesError,
     refetch: refetchMessages,
   } = useQuery({
-    queryKey: ["chatMessages", activeConversation?.id],
+    queryKey: ["chatMessages", {
+      ...user, selectedChatUser
+    }],
     queryFn: async () => {
       const isSelectedAdminChat = Boolean(selectedChatUser?.role)
-      const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser?.type==="guest" ? selectedChatUser.guestId : selectedChatUser.id}/${isSelectedAdminChat ? "admin":selectedChatUser?.type==="guest"  ? "guest" : "user"}`
+      const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser?.type === "guest" ? selectedChatUser.guestId : selectedChatUser.id}/${isSelectedAdminChat ? "admin" : selectedChatUser?.type === "guest" ? "guest" : "user"}`
       // const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.GET_MESSAGES}/${activeConversation.id}`
-      if (!activeConversation?.id  && !isAffiliate) return [];
+      if (!activeConversation?.id && !isAffiliate) return [];
       const response = await Axios.get(url);
       return response.data.data;
     },
-    enabled: isAffiliate ? !!user.id: !!activeConversation?.id , // Only run query if activeConversation.id exists
-    refetchInterval:2*1000,
+    enabled: isAffiliate ? !!user.id : !!activeConversation?.id, // Only run query if activeConversation.id exists
+    refetchInterval: 2 * 1000,
   });
+
+
+  const lastMessage = messages[messages?.length - 1];
+
+  useEffect(() => {
+    socket?.on(`newMessage`, (data) => {
+      console.log("New message found", data)
+      queryClient.invalidateQueries({
+        queryKey: ["chatMessages", {
+          ...user, selectedChatUser
+        }]
+      });
+      queryClient.invalidateQueries({ queryKey: ["userChats"] });
+      queryClient.invalidateQueries({ queryKey: ["chats"] });
+    })
+
+    return () => {
+      socket?.removeListener(`newMessage`)
+    }
+  }, [lastMessage?.chatId, socket])
+
+  useEffect(() => {
+    if (lastMessage?.chatId)
+      joinChat(String(lastMessage.chatId));
+
+  }, [lastMessage?.chatId]);
 
   // Create chat using useMutation
   const createChatMutation = useMutation({
@@ -90,11 +118,19 @@ export const ChatProvider = ({ children }) => {
       const response = await Axios.post(API_LIST.CREATE_CHAT, payload);
       return response.data.data;
     },
-    onSuccess: (newChat) => {
+    onSuccess: (newChat, arg) => {
       setActiveConversation(newChat);
-      queryClient.invalidateQueries({ queryKey: ["chatMessages", newChat.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["chatMessages", {
+          ...user, selectedChatUser
+        }]
+      });
       queryClient.invalidateQueries({ queryKey: ["userChats"] }); // Invalidate all user chats to reflect new chat
       queryClient.invalidateQueries({ queryKey: ["chats"] })
+      emitEvent('sendMessage', {
+        ...arg,
+        chatId: String(arg.chatId)
+      });
     },
     onError: (err) => {
       console.error("Error creating chat:", err);
@@ -118,8 +154,17 @@ export const ChatProvider = ({ children }) => {
       });
       return response.data.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["chatMessages", activeConversation?.id] });
+    onSuccess: (_, arg) => {
+
+      emitEvent('sendMessage', {
+        ...arg,
+        chatId: String(arg.chatId)
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["chatMessages", {
+          ...user, selectedChatUser
+        }]
+      });
       queryClient.invalidateQueries({ queryKey: ["chats"] })
     },
     onError: (err) => {
@@ -157,47 +202,15 @@ export const ChatProvider = ({ children }) => {
   });
 
   // Use a ref to track the last chat ID for which messages were marked as read
-  const lastReadChatIdRef = useRef(null);
+  // const lastReadChatIdRef = useRef(null);
 
   // Effect to mark messages as read when activeConversation changes
-  useEffect(() => {
-    if (activeConversation?.id && activeConversation.id !== lastReadChatIdRef.current) {
-      readMessagesMutation.mutate(activeConversation.id);
-      lastReadChatIdRef.current = activeConversation.id; // Update the ref after mutation
-    }
-  }, [activeConversation, readMessagesMutation]);
-
-  // Effect to handle socket events
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleNewMessage = (message) => {
-      console.log("New message received via socket:", message);
-      // Invalidate queries to refetch messages for the active conversation
-      queryClient.invalidateQueries({ queryKey: ["chatMessages", activeConversation?.id] });
-      queryClient.invalidateQueries({ queryKey: ["chats"] })
-      // Optionally, if the new message is for the active conversation, mark it as read
-      if (activeConversation?.id === message.chatId) {
-        readMessagesMutation.mutate(activeConversation.id);
-      }
-    };
-
-    const handleChatUpdated = (chatUpdate) => {
-      console.log("Chat updated via socket:", chatUpdate);
-      // Invalidate queries that list chats or specific chat details
-      queryClient.invalidateQueries({ queryKey: ["userChats"] }); // Assuming a query key for all user chats
-      queryClient.invalidateQueries({ queryKey: ["chatMessages", chatUpdate.id] }); // Invalidate messages for the updated chat
-      queryClient.invalidateQueries({ queryKey: ["chats"] })
-    };
-
-    socket.on("newMessage", handleNewMessage);
-    socket.on("chatUpdated", handleChatUpdated);
-
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-      socket.off("chatUpdated", handleChatUpdated);
-    };
-  }, [socket, activeConversation?.id, queryClient, readMessagesMutation]);
+  // useEffect(() => {
+  //   if (activeConversation?.id && activeConversation.id !== lastReadChatIdRef.current) {
+  //     readMessagesMutation.mutate(activeConversation.id);
+  //     lastReadChatIdRef.current = activeConversation.id; // Update the ref after mutation
+  //   }
+  // }, [activeConversation, readMessagesMutation]);
 
 
   const value = {

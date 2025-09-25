@@ -102,7 +102,7 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
               ? lastChat.messages[lastChat.messages.length - 1]
               : null;
 
-              console.log({lastChat,lastMessageObj})
+              // console.log({lastChat,lastMessageObj})
 
             const lastMessageContent = lastMessageObj?.content;
             const hasAttachment = !!lastMessageObj?.attachmentUrl;
