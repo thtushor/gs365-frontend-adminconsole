@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
-import {BASE_URL } from './api/ApiList';
+import { BASE_URL, SOCKET_BASE_URL } from './api/ApiList';
 
-const SOCKET_URL = BASE_URL
+const SOCKET_URL = SOCKET_BASE_URL
 
 export const useSocket = () => {
   const socketRef = useRef(null);
@@ -10,6 +10,7 @@ export const useSocket = () => {
   useEffect(() => {
     // Initialize socket connection only once
     socketRef.current = io(SOCKET_URL, {
+      path:"/gs-server/socket/socket.io/",
       transports: ['websocket', 'polling'],
     });
 
