@@ -29,35 +29,6 @@ export const ChatProvider = ({ children }) => {
 
   const { socket, emitEvent, joinChat, leaveChat } = useSocket(); // Initialize socket without chatId
 
-  // Effect to determine the active conversation when selectedChatUser changes and handle joining/leaving chat rooms
-  useEffect(() => {
-    let previousChatId = null;
-    if (activeConversation?.id) {
-      previousChatId = activeConversation.id;
-    }
-
-    if (selectedChatUser && selectedChatUser.type === "guest" ? selectedChatUser.id : selectedChatUser?.chats && selectedChatUser?.chats?.length > 0) {
-      const latestChat = selectedChatUser.type === "guest" ? selectedChatUser : selectedChatUser?.chats?.reduce((prev, current) =>
-        (prev.id > current.id) ? prev : current
-      );
-      setActiveConversation(latestChat);
-      if (latestChat.id && latestChat.id !== previousChatId) {
-        joinChat(latestChat.id);
-      }
-    } else {
-      setActiveConversation(null);
-      if (previousChatId) {
-        leaveChat(previousChatId);
-      }
-    }
-
-    return () => {
-      if (previousChatId) {
-        leaveChat(previousChatId);
-      }
-    };
-  }, [selectedChatUser, joinChat, leaveChat]); // Add joinChat and leaveChat to dependencies
-
   // Fetch messages using useQuery
   const {
     data: messages = [],
@@ -160,6 +131,7 @@ export const ChatProvider = ({ children }) => {
         ...arg,
         chatId: String(arg.chatId)
       });
+      
       queryClient.invalidateQueries({
         queryKey: ["chatMessages", {
           ...user, selectedChatUser
