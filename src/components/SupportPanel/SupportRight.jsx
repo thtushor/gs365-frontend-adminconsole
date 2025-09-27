@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile }) => {
   const { user } = useAuth();
-  const { selectedChat,setSelectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
+  const { selectedChat, setSelectedChat, activeConversation, messages, loading, sendMessage, createChat, uploadAttachment } = useChat();
   const navigate = useNavigate(); // Initialize useNavigate
 
   const [messageInput, setMessageInput] = useState("");
@@ -81,15 +81,17 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
 
       const hasMessage = Boolean(messages?.length)
 
-      const chatid = activeConversation?.id ? activeConversation?.id: hasMessage ? messages[messages.length-1].chatId:undefined
+      const chatid = hasMessage ? messages[messages.length - 1].chatId : undefined
+
+      console.log({ chatid })
 
       if (!chatid) {
         const isSelectedAdminChat = Boolean(selectedChat?.role)
         await createChat({
           initialMessageContent: messageInput,
-          targetUserId: !isSelectedAdminChat? selectedChat.id: undefined,
-          targetAffiliateId: isSelectedAdminChat? selectedChat?.id: undefined,
-          targetAdminId: user.id,
+          targetUserId: !isSelectedAdminChat ? selectedChat?.id : undefined,
+          targetAffiliateId: isSelectedAdminChat ? selectedChat?.id : undefined,
+          targetAdminId: user?.id,
           attachmentUrl,
           senderType,
         });
@@ -118,7 +120,7 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
     if (message.senderType === "admin" && message.senderAdmin) {
       return message.senderAdmin.fullname || message.senderAdmin.username;
     }
-    return message?.guestSenderId|| "Unknown";
+    return message?.guestSenderId || "Unknown";
   };
 
   if (!selectedChat && !isAffiliate) {
@@ -168,7 +170,7 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
             />
             <div>
               <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
-                {selectedChat?.type==="guest" ? selectedChat.guestId : selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
+                {selectedChat?.type === "guest" ? selectedChat.guestId : selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
                 <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 capitalize block rounded-full">
                   {selectedChat?.role ? selectedChat?.role : "Player"}
                 </span>
@@ -183,23 +185,21 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
         {/* center */}
         <div className="p-4 py-2 flex-1 overflow-y-auto space-y-1">
           {loading && <p className="text-green-500 text-center">Loading messages...</p>}
-          
+
           {messages.map((message) => {
-            const isCurrentUser = user.id === message?.senderAdmin?.id && user?.role === message?.senderAdmin?.role && message?.senderType==="admin";
+            const isCurrentUser = user.id === message?.senderAdmin?.id && user?.role === message?.senderAdmin?.role && message?.senderType === "admin";
             const senderName = getSenderName(message);
             return (
               <div
                 key={message?.id}
-                className={`flex flex-col ${
-                  isCurrentUser ? "items-end" : "items-start"
-                }`}
+                className={`flex flex-col ${isCurrentUser ? "items-end" : "items-start"
+                  }`}
               >
                 <div
-                  className={`${
-                    isCurrentUser
+                  className={`${isCurrentUser
                       ? "bg-[#01dc84] text-white"
                       : "bg-gray-200 text-black"
-                  } px-4 py-2 rounded-lg max-w-[80%] md:max-w-sm relative group`}
+                    } px-4 py-2 rounded-lg max-w-[80%] md:max-w-sm relative group`}
                 >
                   {message?.content && <p>{message?.content}</p>}
                   {message?.attachmentUrl && (
@@ -261,11 +261,10 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
                   </span>
                 </div>
                 <span
-                  className={`text-xs mt-1 ${
-                    isCurrentUser ? "text-gray-400" : "text-gray-500"
-                  }`}
+                  className={`text-xs mt-1 ${isCurrentUser ? "text-gray-400" : "text-gray-500"
+                    }`}
                 >
-                  {moment(message?.createdAt?.replace("Z","")).calendar()}
+                  {moment(message?.createdAt?.replace("Z", "")).calendar()}
                   {/* moment(chatCreatedAt.replace('Z', '')).fromNow() */}
                 </span>
               </div>
@@ -298,7 +297,7 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
               ) : (
                 <FaRegFile className="text-white text-4xl" />
               )}
-              
+
               <button
                 onClick={() => {
                   setAttachmentFile(null);
