@@ -41,14 +41,14 @@ export const ChatProvider = ({ children }) => {
     }],
     queryFn: async () => {
       const isSelectedAdminChat = Boolean(selectedChatUser?.role)
-      const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser?.type === "guest" ? selectedChatUser.guestId : selectedChatUser.id}/${isSelectedAdminChat ? "admin" : selectedChatUser?.type === "guest" ? "guest" : "user"}`
+      const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user?.id}/admin` : `${API_LIST.ADMIN_USER_MESSAGES}/${selectedChatUser?.type === "guest" ? selectedChatUser?.guestId : selectedChatUser?.id}/${isSelectedAdminChat ? "admin" : selectedChatUser?.type === "guest" ? "guest" : "user"}`
       // const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.GET_MESSAGES}/${activeConversation.id}`
-      if (!activeConversation?.id && !isAffiliate) return [];
+      // if (!activeConversation?.id && !isAffiliate) return [];
       const response = await Axios.get(url);
       return response.data.data;
     },
-    enabled: isAffiliate ? !!user.id : !!activeConversation?.id, // Only run query if activeConversation.id exists
-    refetchInterval: 2 * 1000,
+    enabled: isAffiliate ? !!user.id : !!(selectedChatUser?.type === "guest" ? selectedChatUser?.guestId : selectedChatUser?.id), // Only run query if activeConversation.id exists
+    // refetchInterval: 2 * 1000,
   });
 
 
