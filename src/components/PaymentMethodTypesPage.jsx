@@ -158,7 +158,7 @@ const PaymentMethodTypesPage = () => {
               <FaEdit size={14} />
             </button>
           )}
-          {(isSuperAdmin ||
+          {/* {(isSuperAdmin ||
             hasPermission(
               permissions,
               "payment_manage_payment_method_types"
@@ -170,7 +170,7 @@ const PaymentMethodTypesPage = () => {
             >
               <FaTrash size={14} />
             </button>
-          )}
+          )} */}
         </div>
       ),
     },
@@ -261,9 +261,10 @@ const PaymentMethodTypesPage = () => {
               Payment Method Type Name *
             </label>
             <input
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full cursor-not-allowed border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="Enter payment method type name"
               value={formData.name}
+              disabled={true}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
