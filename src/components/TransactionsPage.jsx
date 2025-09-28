@@ -11,6 +11,7 @@ import { formatAmount } from "./BettingWagerPage";
 import { useSettings } from "../hooks/useSettings";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission, hasAnyPermission } from "../Utils/permissions";
+import MouseFollowTooltip from "./MouseFollowTooltip";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -149,9 +150,11 @@ const TransactionsPage = ({
         width: 140,
         align: "center",
         render: (value, row) => (
+          <MouseFollowTooltip content={"Hello"}>
           <span className="font-medium text-center text-purple-500">
             {value != null ? `${formatAmount(value)}` : "-"}
           </span>
+          </MouseFollowTooltip>
         ),
       },
       {
