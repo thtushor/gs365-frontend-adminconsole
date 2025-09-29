@@ -304,7 +304,14 @@ const WithdrawBalance = () => {
             <label htmlFor="" className="text-[12px] uppercase font-semibold">
               Withdrawable Balance
             </label>
-            <p className="text-[20px] font-bold">{withdrawAbleBalance()}</p>
+            <p className="text-[20px] font-bold">{withdrawAbleBalance()} BDT</p>
+            {settingsData?.data[0]?.conversionRate && (
+              <p className="text-[14px] opacity-60 font-bold">
+                {Number(withdrawAbleBalance()) /
+                  Number(settingsData?.data[0]?.conversionRate)}{" "}
+                USD
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3">
