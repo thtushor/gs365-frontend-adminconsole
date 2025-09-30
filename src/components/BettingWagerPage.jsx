@@ -7,7 +7,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import DownloadButtons from "../Utils/DownloadButtons";
 
 export const formatAmount = (amount) => {
-  if (!amount || amount === "0.00") return "-";
+  if (!amount || amount === "0.00") return "0.00 BDT";
   return `${parseFloat(amount).toFixed(2)} BDT`;
 };
 

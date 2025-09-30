@@ -53,7 +53,6 @@ const TransactionsPage = ({
     }
   }, [settingsData]);
 
-  console.log(conversionRate);
   const { playerId: paramPlayerId } = useParams();
   const playerId = propPlayerId || paramPlayerId;
 
@@ -164,7 +163,7 @@ const TransactionsPage = ({
         align: "center",
         render: (value, row) => (
           <span className="font-medium text-center text-orange-500">
-            {formatUSD(row.amount, conversionRate)}
+            {formatUSD(row.amount, row?.usdConversion)}
           </span>
         ),
       },
@@ -175,13 +174,39 @@ const TransactionsPage = ({
         render: (value, row) => (
           <div className="flex flex-col">
             <span className="font-medium">
-              {value != null ? `${formatAmount(value)}` : "-"}
+              {value != null && Number(value) > 0 ? `${formatAmount(value)} ~ ${formatUSD(value, row?.usdConversion)}` : "-"}
             </span>
             <span className="font-medium text-gray-500 text-xs">
-              {row?.promotionName != null
+              {row?.promotionName != null && Number(value) > 0
                 ? `Promotion: ${row?.promotionName}`
                 : "-"}
             </span>
+          </div>
+        ),
+      },
+      {
+        field: "gatewayName",
+        headerName: "Gateway",
+        width: 160,
+        render: (_, row) => (
+          <div className="flex flex-col">
+            <span className="font-medium">
+              {row?.paymentGateway?.name}
+            </span>
+        
+          </div>
+        ),
+      },
+      {
+        field: "paymentMethodName",
+        headerName: "Payment Method",
+        width: 160,
+        render: (value) => (
+          <div className="flex flex-col">
+            <span className="font-medium">
+              {value}
+            </span>
+        
           </div>
         ),
       },
