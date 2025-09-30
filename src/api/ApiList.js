@@ -1,7 +1,7 @@
 export const BASE_URL = "https://glorypos.com/gs-server";
-// export const SOCKET_BASE_URL = "https://glorypos.com";
+export const SOCKET_BASE_URL = "https://glorypos.com";
 // export const BASE_URL = "http://localhost:3000";
-export const SOCKET_BASE_URL = "http://localhost:3000";
+// export const SOCKET_BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 

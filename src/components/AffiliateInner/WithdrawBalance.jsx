@@ -153,11 +153,13 @@ const WithdrawBalance = () => {
       setLoading(false);
       return;
     }
-
+    console.log("bdtConversionAmount", bdtConversionAmount);
     try {
-      if (bdtConversionAmount > withdrawAbleBalance()) {
+      if (bdtConversionAmount > Number(withdrawAbleBalance() || 0)) {
         toast.error(
-          `Your USD amount after conversion is ${bdtConversionAmount.toFixed(
+          `Your USD amount after conversion is ${Number(
+            bdtConversionAmount || 0
+          ).toFixed(
             2
           )} BDT, (You have only ${withdrawAbleBalance()} BDT balance to withdraw)!`
         );
