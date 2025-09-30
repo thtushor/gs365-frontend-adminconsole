@@ -21,6 +21,7 @@ import PlayerPasswordChange from "./PlayerPasswordChange";
 import { useSettings } from "../hooks/useSettings";
 import { hasPermission } from "../Utils/permissions";
 import { useGetRequest } from "../Utils/apiClient";
+import UserPhonesModal from "./UserPhonesModal";
 
 export const playerRoutes = [
   {
@@ -66,6 +67,7 @@ const PlayerProfile = () => {
   const { playerId } = useParams();
   const location = useLocation();
   const [modalOpen, setModalOpen] = useState(false);
+  const [phonesOpen, setPhonesOpen] = useState(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
   console.log(user);
@@ -193,6 +195,9 @@ const PlayerProfile = () => {
   const handleFormSubmit = (formData) => {
     editMutation.mutate({ id: playerId, ...formData });
   };
+
+  const handleOpenPhones = () => setPhonesOpen(true);
+  const handleClosePhones = () => setPhonesOpen(false);
 
   if (isLoading) {
     return (
@@ -323,6 +328,16 @@ const PlayerProfile = () => {
                 >
                   <FaEdit />
                   <span className="md:flex hidden">Edit Profile</span>
+                </button>
+              )}
+              {(isSuperAdmin ||
+                hasPermission(permissions, "player_edit_player")) && (
+                <button
+                  onClick={handleOpenPhones}
+                  className="bg-green-500 text-white px-2 md:px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
+                >
+                  <FaEdit />
+                  <span className="md:flex hidden">Phones</span>
                 </button>
               )}
             </div>
@@ -470,6 +485,9 @@ const PlayerProfile = () => {
           isEdit={true}
         />
       </ReusableModal>
+
+      {/* Edit Phones Modal */}
+      <UserPhonesModal open={phonesOpen} onClose={handleClosePhones} userId={playerId} />
     </div>
   );
 };

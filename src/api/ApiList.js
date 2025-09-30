@@ -1,7 +1,7 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-export const SOCKET_BASE_URL = "https://glorypos.com";
-// export const BASE_URL = "http://localhost:3000";
-// export const SOCKET_BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://glorypos.com/gs-server";
+// export const SOCKET_BASE_URL = "https://glorypos.com";
+export const BASE_URL = "http://localhost:3000";
+export const SOCKET_BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -185,6 +185,12 @@ export const API_LIST = {
 
   // Users
   GET_ALL_USERS: "/api/users",
+
+  // User Phones
+  CREATE_USER_PHONE: "/api/user-phones",
+  GET_USER_PHONES_BY_USER: "/api/user-phones/user/:userId",
+  UPDATE_USER_PHONE: "/api/user-phones/update",
+  DELETE_USER_PHONE: "/api/user-phones/delete",
 
   // KYC
   SUBMIT_KYC: "/api/admin/create-update-kyc",
