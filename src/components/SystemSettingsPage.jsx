@@ -42,26 +42,39 @@ const SystemSettingsPage = () => {
         : setting.affiliateWithdrawTime
         ? setting.affiliateWithdrawTime.split(",")
         : [],
-      systemActiveTime: editValue.systemActiveTime,
+      systemActiveTime: setting.systemActiveTime,
     });
   };
-
   const handleSave = async (settingId) => {
     try {
       // Validation only on save
-      if (editValue.defaultTurnover < 0) {
+      if (
+        editingField?.field === "defaultTurnover" &&
+        editValue.defaultTurnover < 0
+      ) {
         toast.error("Please enter a valid turnover value (minimum 0)");
         return;
       }
-      if (editValue.adminBalance < 0) {
+      if (
+        editingField?.field === "adminBalance" &&
+        editValue.adminBalance < 0
+      ) {
         toast.error("Please enter a valid adminBalance value (minimum 0)");
         return;
       }
-      if (!editValue.conversionRate || editValue.conversionRate < 0) {
+      if (
+        editingField?.field === "conversionRate" &&
+        (!editValue.conversionRate || editValue.conversionRate < 0)
+      ) {
         toast.error("Please enter a valid conversion rate");
         return;
       }
-      if (editValue.systemActiveTime.start >= editValue.systemActiveTime.end) {
+      if (
+        editingField?.field === "systemActiveTime" &&
+        editValue.systemActiveTime.start &&
+        editValue.systemActiveTime.end &&
+        editValue.systemActiveTime.start >= editValue.systemActiveTime.end
+      ) {
         toast.error("Start time must be before end time");
         return;
       }
@@ -308,13 +321,7 @@ const SettingRow = ({
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
       <div className="flex-1">
         <h3 className="font-medium text-gray-900">{label}</h3>
-        <p className="text-sm text-gray-600">
-          {setting.systemActiveTime?.start && setting.systemActiveTime?.end
-            ? `Current: ${formatTime12Hour(
-                setting.systemActiveTime.start
-              )} - ${formatTime12Hour(setting.systemActiveTime.end)}`
-            : "No restriction"}
-        </p>
+        <p className="text-sm text-gray-600">{description}</p>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3">
