@@ -693,7 +693,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       headerName: "ACTION",
       width: 150,
       align: "center",
-      render: (value, row) => (
+      render: (_, row) => (
         <ActionDropdown actions={getActionsForRow(row)} />
       ),
     },
@@ -733,17 +733,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                 readOnly
               />
             </div>
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Currency
-              </label>
-              <input
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-100"
-                value={`${selectedPlayer?.currencyCode || ""} (${selectedPlayer?.currencyName || ""})`}
-                readOnly
-              />
-            </div> */}
+      
           </div>
 
           <div>

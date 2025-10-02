@@ -15,6 +15,8 @@ import {
   FaShieldAlt,
   FaCommentDots,
 } from "react-icons/fa";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 const emptyPhone = {
   phoneNumber: "",
@@ -29,6 +31,8 @@ const UserPhonesModal = ({ open, onClose, userId }) => {
   const [editingId, setEditingId] = useState(null);
   const [localRows, setLocalRows] = useState([]);
   const [filter, setFilter] = useState("");
+  const [addError, setAddError] = useState("");
+  const [rowErrors, setRowErrors] = useState({});
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["userPhones", userId],
@@ -112,7 +116,13 @@ const UserPhonesModal = ({ open, onClose, userId }) => {
 
   const handleAdd = () => {
     if (!newPhone.phoneNumber?.trim()) {
+      setAddError("Phone number is required");
       toast.error("Phone number is required");
+      return;
+    }
+    if (!isValidPhoneNumber(newPhone.phoneNumber)) {
+      setAddError("Enter a valid phone number");
+      toast.error("Enter a valid phone number");
       return;
     }
     if (newPhone.isPrimary && hasPrimary) {
@@ -137,7 +147,13 @@ const UserPhonesModal = ({ open, onClose, userId }) => {
 
   const handleSaveEdit = (row) => {
     if (!row.phoneNumber?.trim()) {
+      setRowErrors((prev) => ({ ...prev, [row.id]: "Phone number is required" }));
       toast.error("Phone number is required");
+      return;
+    }
+    if (!isValidPhoneNumber(row.phoneNumber)) {
+      setRowErrors((prev) => ({ ...prev, [row.id]: "Enter a valid phone number" }));
+      toast.error("Enter a valid phone number");
       return;
     }
     if (row.isPrimary && hasPrimary && !data.find((r) => r.id === row.id)?.isPrimary) {
@@ -170,107 +186,114 @@ const UserPhonesModal = ({ open, onClose, userId }) => {
     return (
       <div
         key={row.id}
-        className={`flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4 p-3 sm:p-4 mb-3 border border-gray-200 rounded-xl transition-all duration-200 ${cardAccent} ${
+        className={`flex flex-col gap-3 p-3 sm:p-4 mb-3 border border-gray-200 rounded-xl transition-all duration-200 ${cardAccent} ${
           isSaving || isDeleting ? "opacity-75" : ""
         }`}
       >
-        {/* Phone Icon & Number Section */}
-        <div className="flex items-center gap-3 lg:gap-4 flex-1 min-w-0">
-          <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white shadow-lg">
-            <FaPhone className="text-xs sm:text-sm" />
-          </div>
-          
-          {isEditing ? (
-            <div className="flex-1 min-w-0">
-              <input
-                className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm font-medium"
-                value={row.phoneNumber || ""}
-                onChange={(e) =>
-                  setLocalRows((prev) =>
-                    prev.map((r) => (r.id === row.id ? { ...r, phoneNumber: e.target.value } : r))
-                  )
-                }
-                placeholder="Enter phone number"
-                disabled={isSaving}
-              />
+        {/* ROW 1: Icon + Input + Checkboxes (when editing) OR Icon + Info */}
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
+          <div className="flex items-center gap-3 lg:gap-4 flex-1 min-w-0">
+            <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white shadow-lg">
+              <FaPhone className="text-xs sm:text-sm" />
             </div>
-          ) : (
-            <div className="flex-1 min-w-0">
-              <div className="text-gray-900 font-bold text-base sm:text-lg tracking-wide mb-1 sm:mb-2 break-all">
-                {row.phoneNumber}
-              </div>
-              <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                {row.isPrimary && (
-                  <span className="px-2 sm:px-3 py-1 text-xs rounded-full bg-green-100 text-green-800 border border-green-300 inline-flex items-center gap-1 sm:gap-1.5 font-medium">
-                    <FaCheck className="text-xs" /> 
-                    <span className="hidden sm:inline">Primary</span>
-                    <span className="sm:hidden">P</span>
-                  </span>
-                )}
-                {row.isVerified && (
-                  <span className="px-2 sm:px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-300 inline-flex items-center gap-1 sm:gap-1.5 font-medium">
-                    <FaShieldAlt className="text-xs" /> 
-                    <span className="hidden sm:inline">Verified</span>
-                    <span className="sm:hidden">V</span>
-                  </span>
-                )}
-                {row.isSmsCapable && (
-                  <span className="px-2 sm:px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-800 border border-purple-300 inline-flex items-center gap-1 sm:gap-1.5 font-medium">
-                    <FaCommentDots className="text-xs" /> 
-                    <span className="hidden sm:inline">SMS Capable</span>
-                    <span className="sm:hidden">SMS</span>
-                  </span>
+            {isEditing ? (
+              <div className="flex-1 min-w-0">
+                <div className="border-2 border-gray-200 rounded-lg px-3 py-2">
+                  <PhoneInput
+                    className="w-full text-sm sm:text-base flex-1"
+                    international
+                    defaultCountry="BD"
+                    placeholder="Enter phone number"
+                    value={row.phoneNumber || ""}
+                    onChange={(value) =>
+                      setLocalRows((prev) =>
+                        prev.map((r) => (r.id === row.id ? { ...r, phoneNumber: value || "" } : r))
+                      )
+                    }
+                    disabled={isSaving}
+                  />
+                </div>
+                {rowErrors[row.id] && (
+                  <div className="text-red-500 text-xs mt-1">{rowErrors[row.id]}</div>
                 )}
               </div>
+            ) : (
+              <div className="flex-1 min-w-0">
+                <div className="text-gray-900 font-bold text-base sm:text-lg tracking-wide mb-1 sm:mb-2 break-all">
+                  {row.phoneNumber}
+                </div>
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                  {row.isPrimary && (
+                    <span className="px-2 sm:px-3 py-1 text-xs rounded-full bg-green-100 text-green-800 border border-green-300 inline-flex items-center gap-1 sm:gap-1.5 font-medium">
+                      <FaCheck className="text-xs" /> 
+                      <span className="hidden sm:inline">Primary</span>
+                      <span className="sm:hidden">P</span>
+                    </span>
+                  )}
+                  {row.isVerified && (
+                    <span className="px-2 sm:px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-300 inline-flex items-center gap-1 sm:gap-1.5 font-medium">
+                      <FaShieldAlt className="text-xs" /> 
+                      <span className="hidden sm:inline">Verified</span>
+                      <span className="sm:hidden">V</span>
+                    </span>
+                  )}
+                  {row.isSmsCapable && (
+                    <span className="px-2 sm:px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-800 border border-purple-300 inline-flex items-center gap-1 sm:gap-1.5 font-medium">
+                      <FaCommentDots className="text-xs" /> 
+                      <span className="hidden sm:inline">SMS Capable</span>
+                      <span className="sm:hidden">SMS</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {isEditing && (
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-6 bg-gray-50 rounded-lg px-3 sm:px-4 py-2 sm:py-3">
+              <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  checked={!!row.isPrimary}
+                  onChange={() =>
+                    setLocalRows((prev) =>
+                      prev.map((r) => ({
+                        ...r,
+                        isPrimary: r.id === row.id ? !r.isPrimary : false,
+                      }))
+                    )
+                  }
+                  disabled={isSaving}
+                />
+                Primary
+              </label>
+              <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  checked={!!row.isVerified}
+                  onChange={() => toggleLocalField(row.id, "isVerified")}
+                  disabled={isSaving}
+                />
+                Verified
+              </label>
+              <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                  checked={!!row.isSmsCapable}
+                  onChange={() => toggleLocalField(row.id, "isSmsCapable")}
+                  disabled={isSaving}
+                />
+                SMS
+              </label>
             </div>
           )}
         </div>
 
-        {/* Checkboxes Section */}
-        {isEditing && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 lg:gap-6 px-3 sm:px-4 py-2 sm:py-3 bg-gray-50 rounded-lg">
-            <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
-              <input
-                type="checkbox"
-                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                checked={!!row.isPrimary}
-                onChange={() =>
-                  setLocalRows((prev) =>
-                    prev.map((r) => ({
-                      ...r,
-                      isPrimary: r.id === row.id ? !r.isPrimary : false,
-                    }))
-                  )
-                }
-                disabled={isSaving}
-              />
-              Primary
-            </label>
-            <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
-              <input
-                type="checkbox"
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                checked={!!row.isVerified}
-                onChange={() => toggleLocalField(row.id, "isVerified")}
-                disabled={isSaving}
-              />
-              Verified
-            </label>
-            <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700">
-              <input
-                type="checkbox"
-                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                checked={!!row.isSmsCapable}
-                onChange={() => toggleLocalField(row.id, "isSmsCapable")}
-                disabled={isSaving}
-              />
-              SMS
-            </label>
-          </div>
-        )}
-
-        {/* Actions Section */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 lg:gap-2 shrink-0">
+        {/* ROW 2: Actions */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2">
           {isEditing ? (
             <>
               <button
@@ -427,12 +450,20 @@ const UserPhonesModal = ({ open, onClose, userId }) => {
           </div>
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-3 items-start lg:items-center">
             <div className="w-full lg:col-span-6">
-              <input
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="Enter phone number"
-                value={newPhone.phoneNumber}
-                onChange={(e) => setNewPhone((p) => ({ ...p, phoneNumber: e.target.value }))}
-              />
+              <div className="border-2 border-gray-200 rounded-lg px-3 py-2">
+                <PhoneInput
+                  className="w-full text-sm sm:text-base"
+                  international
+                  defaultCountry="BD"
+                  placeholder="Enter phone number"
+                  value={newPhone.phoneNumber}
+                  onChange={(value) => {
+                    setNewPhone((p) => ({ ...p, phoneNumber: value || "" }));
+                    setAddError("");
+                  }}
+                />
+              </div>
+              {addError && <div className="text-red-500 text-xs mt-1">{addError}</div>}
             </div>
             <div className="flex flex-col sm:flex-row lg:col-span-6 gap-3 lg:gap-4">
               <label className="inline-flex items-center gap-2 text-sm">

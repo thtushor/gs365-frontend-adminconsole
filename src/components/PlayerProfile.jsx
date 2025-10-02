@@ -8,6 +8,7 @@ import {
   FaDice,
   FaGamepad,
   FaEdit,
+  FaPhone,
 } from "react-icons/fa";
 import PlayerProfileStats from "./PlayerProfileStats";
 import ReusableModal from "./ReusableModal";
@@ -22,6 +23,7 @@ import { useSettings } from "../hooks/useSettings";
 import { hasPermission } from "../Utils/permissions";
 import { useGetRequest } from "../Utils/apiClient";
 import UserPhonesModal from "./UserPhonesModal";
+import ActionDropdown from "./shared/ActionDropdown";
 
 export const playerRoutes = [
   {
@@ -320,25 +322,23 @@ const PlayerProfile = () => {
                   isPending={kycDetails?.data[0]?.status}
                 />
               )}
-              {(isSuperAdmin ||
-                hasPermission(permissions, "player_edit_player")) && (
-                <button
-                  onClick={handleEditProfile}
-                  className="bg-green-500 text-white px-2 md:px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
-                >
-                  <FaEdit />
-                  <span className="md:flex hidden">Edit Profile</span>
-                </button>
-              )}
-              {(isSuperAdmin ||
-                hasPermission(permissions, "player_edit_player")) && (
-                <button
-                  onClick={handleOpenPhones}
-                  className="bg-green-500 text-white px-2 md:px-4 py-2 rounded-lg hover:bg-green-600 transition flex items-center gap-2 text-sm font-medium"
-                >
-                  <FaEdit />
-                  <span className="md:flex hidden">Phones</span>
-                </button>
+              {(isSuperAdmin || hasPermission(permissions, "player_edit_player")) && (
+                <ActionDropdown
+                  actions={[
+                    {
+                      label: "Edit Profile",
+                      icon: <FaEdit size={14} />,
+                      onClick: handleEditProfile,
+                      className: "text-green-600 hover:bg-green-50",
+                    },
+                    {
+                      label: "Edit Phones",
+                      icon: <FaPhone size={14} />,
+                      onClick: handleOpenPhones,
+                      className: "text-blue-600 hover:bg-blue-50",
+                    },
+                  ]}
+                />
               )}
             </div>
           </div>
