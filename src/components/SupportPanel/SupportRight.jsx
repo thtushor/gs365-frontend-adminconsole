@@ -184,7 +184,7 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
 
         {/* center */}
         <div className="p-4 py-2 flex-1 overflow-y-auto space-y-1">
-          {loading && <p className="text-green-500 text-center">Loading messages...</p>}
+          {/* {loading && <p className="text-green-500 text-center">Loading messages...</p>} */}
 
           {messages.map((message) => {
             const isCurrentUser = user.id === message?.senderAdmin?.id && user?.role === message?.senderAdmin?.role && message?.senderType === "admin";

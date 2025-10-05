@@ -55,15 +55,7 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
     }
   };
 
-  // if (isLoading) {
-  //   return <div className="p-4 text-white">Loading chats...</div>;
-  // }
 
-  // if (isError) {
-  //   return <div className="p-4 text-red-500">Error loading chats.</div>;
-  // }
-
-  console.log({setSelectedChat,selectedChat})
 
   return (
     <div className={`bg-[#07122b] overflow-y-auto w-full md:min-w-[300px] md:w-auto border-r-[3px] border-[#01dc84] ${showLeftPanelMobile ? "block" : "hidden md:block"}`}>
@@ -94,19 +86,12 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
               ? (chat?.fullname || "Unknown Admin")
               : chatUserType==="user" ?  (chat?.username || "Unknown User"): (chat.guestId||"Guest Unknown");
 
-            const lastChat = chat.type==="guest" ? chat : chat?.chats && chat.chats.length > 0
-              ? chat.chats[chat.chats.length - 1]
-              : null;
 
-            const lastMessageObj = lastChat?.messages && lastChat.messages.length > 0
-              ? lastChat.messages[lastChat.messages.length - 1]
-              : null;
-
-              // console.log({lastChat,lastMessageObj})
-
-            const lastMessageContent = lastMessageObj?.content;
-            const hasAttachment = !!lastMessageObj?.attachmentUrl;
-            const chatCreatedAt = lastMessageObj?.createdAt || chat?.created_at;
+            const lastMessageContent = chat?.lastMessage||"No messages yet";
+            const chatStatus = chat?.chatStatus;
+            console.log({chatStatus})
+            const hasAttachment = !!chat?.lastMessageAttachmentUrl;
+            const chatCreatedAt = chat?.lastMessageCreatedAt;
             const isLoggedIn = chatUserType === "admin" ? (chat?.isLoggedIn ?? false) : (chat?.isLoggedIn ?? false);
             // The user confirmed that the 'Z' suffix is incorrect and 15:50:53 should be treated as BDT time.
             // We remove the 'Z' to ensure moment parses it as local time directly.
@@ -121,6 +106,7 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
                 avatar={ChatAvatar}
                 isActive={chat?.id === selectedChat?.id}
                 isUserActive={isLoggedIn}
+                chatStatus={chatStatus}
                 hasAttachment={hasAttachment}
                 onClick={() => {
                   setSelectedChat(chat);

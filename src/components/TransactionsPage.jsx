@@ -92,6 +92,8 @@ const TransactionsPage = ({
   const pageSize = filters.pageSize;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
+  console.log({items})
+
   const formatDateTime = (iso) => {
     if (!iso) return "-";
     try {
@@ -133,11 +135,10 @@ const TransactionsPage = ({
         width: 120,
         render: (value, row) => (
           <div
-            className={`capitalize text-[12px] ${
-              value === "deposit"
-                ? "text-green-500 bg-green-50 border rounded-full px-2 border-green-500"
-                : "text-red-500 bg-red-50 border rounded-full px-2 border-red-500"
-            }`}
+            className={`capitalize text-[12px] ${value === "deposit"
+              ? "text-green-500 bg-green-50 border rounded-full px-2 border-green-500"
+              : "text-red-500 bg-red-50 border rounded-full px-2 border-red-500"
+              }`}
           >
             {value}
           </div>
@@ -149,11 +150,9 @@ const TransactionsPage = ({
         width: 140,
         align: "center",
         render: (value, row) => (
-          <MouseFollowTooltip content={"Hello"}>
-          <span className="font-medium text-center text-purple-500">
+          <span className={`font-medium text-center text-purple-500 ${row?.currencyCode !== "USD" ? "underline !font-bold":""}`} title={row?.currencyCode !== "USD" ? "Transaction applied by BDT":""}>
             {value != null ? `${formatAmount(value)}` : "-"}
           </span>
-          </MouseFollowTooltip>
         ),
       },
       {
@@ -162,7 +161,7 @@ const TransactionsPage = ({
         width: 140,
         align: "center",
         render: (value, row) => (
-          <span className="font-medium text-center text-orange-500">
+          <span className={`font-medium text-center text-orange-500 ${row?.currencyCode === "USD" ? "underline !font-bold":""} `} title={row?.currencyCode === "USD" ? "Transaction applied by USD":""}>          
             {formatUSD(row.amount, row?.usdConversion)}
           </span>
         ),
@@ -193,7 +192,7 @@ const TransactionsPage = ({
             <span className="font-medium">
               {row?.paymentGateway?.name}
             </span>
-        
+
           </div>
         ),
       },
@@ -206,7 +205,7 @@ const TransactionsPage = ({
             <span className="font-medium">
               {value}
             </span>
-        
+
           </div>
         ),
       },
@@ -227,13 +226,12 @@ const TransactionsPage = ({
         width: 120,
         render: (value) => (
           <span
-            className={`px-2 py-1 rounded capitalize text-xs font-medium ${
-              value === "approved"
-                ? "bg-green-100 text-green-800"
-                : value === "pending"
+            className={`px-2 py-1 rounded capitalize text-xs font-medium ${value === "approved"
+              ? "bg-green-100 text-green-800"
+              : value === "pending"
                 ? "bg-yellow-100 text-yellow-800"
                 : "bg-red-100 text-red-800"
-            }`}
+              }`}
           >
             {value}
           </span>
@@ -279,13 +277,13 @@ const TransactionsPage = ({
           <div className="flex gap-2">
             {(isSuperAdmin ||
               hasPermission(permissions, "payment_view_transactions")) && (
-              <button
-                className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
-                onClick={() => handleViewTransaction(row)}
-              >
-                View
-              </button>
-            )}
+                <button
+                  className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
+                  onClick={() => handleViewTransaction(row)}
+                >
+                  View
+                </button>
+              )}
             {row.attachment && (
               <button
                 className="px-3 py-1 rounded bg-green-50 text-green-600 hover:bg-green-100 text-xs"
@@ -303,13 +301,13 @@ const TransactionsPage = ({
                 "payment_approve_withdrawals",
                 "payment_reject_withdrawals",
               ])) && (
-              <button
-                className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
-                onClick={() => handleOpenModal(row)}
-              >
-                Update
-              </button>
-            )}
+                <button
+                  className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
+                  onClick={() => handleOpenModal(row)}
+                >
+                  Update
+                </button>
+              )}
           </div>
         ),
       },
@@ -371,6 +369,8 @@ const TransactionsPage = ({
               setFilters((f) => ({ ...f, search: e.target.value, page: 1 }))
             }
           />
+
+
           <select
             className="border rounded px-3 py-2"
             value={filters.status}
@@ -432,6 +432,29 @@ const TransactionsPage = ({
               <option value="desc">Desc</option>
               <option value="asc">Asc</option>
             </select>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+              <input
+                type="date"
+                name="dateFrom"
+                placeholder="Date From"
+                value={filters.dateFrom}
+                onChange={(e) => {
+                  setFilters((f) => ({ ...f, dateFrom: e.target.value, page: 1 }))
+                }}
+                className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
+              />
+              <input
+                type="date"
+                name="dateTo"
+                placeholder="Date To"
+                value={filters.dateTo}
+                onChange={(e) => {
+                  setFilters((f) => ({ ...f, dateTo: e.target.value, page: 1 }))
+                }}
+                className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -484,13 +507,12 @@ const TransactionsPage = ({
               {/* Status Badge */}
               <div className="flex justify-center">
                 <span
-                  className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${
-                    selectedTx.status === "approved"
-                      ? "bg-green-100 text-green-800 border-2 border-green-300"
-                      : selectedTx.status === "pending"
+                  className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${selectedTx.status === "approved"
+                    ? "bg-green-100 text-green-800 border-2 border-green-300"
+                    : selectedTx.status === "pending"
                       ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-300"
                       : "bg-red-100 text-red-800 border-2 border-red-300"
-                  }`}
+                    }`}
                 >
                   {selectedTx.status}
                 </span>
@@ -521,8 +543,8 @@ const TransactionsPage = ({
                         <span className="text-gray-600 font-medium">
                           Amount:
                         </span>
-                        <span className="font-bold text-2xl text-green-600">
-                          {formatAmount(selectedTx.amount)}
+                        <span className="font-bold text-base text-green-600">
+                          {formatAmount(selectedTx.amount)} ~ {formatUSD(selectedTx.amount, selectedTx?.usdConversion)}
                         </span>
                       </div>
                       <div className="flex justify-start gap-2">
@@ -530,7 +552,7 @@ const TransactionsPage = ({
                           Currency:
                         </span>
                         <span className="font-semibold text-gray-800">
-                          BDT (Bangladeshi Taka)
+                          {selectedTx.currencyCode==="USD" ? selectedTx.currencyCode : "BDT"}
                         </span>
                       </div>
                     </div>
@@ -578,8 +600,8 @@ const TransactionsPage = ({
                           <span className="text-gray-600 font-medium">
                             Bonus Amount:
                           </span>
-                          <span className="font-bold text-xl text-purple-600">
-                            {formatAmount(selectedTx.bonusAmount)}
+                          <span className="font-bold text-base text-purple-600">
+                            {formatAmount(selectedTx.bonusAmount)} ~ {formatUSD(selectedTx.bonusAmount, selectedTx?.usdConversion)}
                           </span>
                         </div>
                       </div>
@@ -599,118 +621,118 @@ const TransactionsPage = ({
                 {(selectedTx.accountNumber ||
                   selectedTx.bankName ||
                   selectedTx.walletAddress) && (
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg p-6 mb-6">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                      <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                      Payment Method Details
-                    </h2>
-                    <div className="space-y-3">
-                      {selectedTx.paymentGateway?.id && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Gateway:
-                          </span>
-                          <span className="font-bold font-semibold text-gray-800">
-                            {selectedTx?.paymentGateway?.name}
-                          </span>
-                        </div>
-                      )}
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg p-6 mb-6">
+                      <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                        Payment Method Details
+                      </h2>
+                      <div className="space-y-3">
+                        {selectedTx.paymentGateway?.id && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Gateway:
+                            </span>
+                            <span className="font-bold font-semibold text-gray-800">
+                              {selectedTx?.paymentGateway?.name}
+                            </span>
+                          </div>
+                        )}
 
-                      {selectedTx.accountNumber && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Account Number:
-                          </span>
-                          <span className="font-bold font-semibold text-gray-800">
-                            {selectedTx.accountNumber}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.accountHolderName && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Account Holder:
-                          </span>
-                          <span className="font-semibold text-gray-800">
-                            {selectedTx.accountHolderName}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.bankName && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Bank Name:
-                          </span>
-                          <span className="font-semibold text-gray-800">
-                            {selectedTx.bankName}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.branchName && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Branch:
-                          </span>
-                          <span className="font-semibold text-gray-800">
-                            {selectedTx.branchName}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.branchAddress && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Branch Address:
-                          </span>
-                          <span className="font-semibold text-gray-800">
-                            {selectedTx.branchAddress}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.swiftCode && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Swift Code:
-                          </span>
-                          <span className="font-semibold text-gray-800">
-                            {selectedTx.swiftCode}
-                          </span>
-                        </div>
-                      )}
+                        {selectedTx.accountNumber && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Account Number:
+                            </span>
+                            <span className="font-bold font-semibold text-gray-800">
+                              {selectedTx.accountNumber}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.accountHolderName && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Account Holder:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedTx.accountHolderName}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.bankName && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Bank Name:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedTx.bankName}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.branchName && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Branch:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedTx.branchName}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.branchAddress && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Branch Address:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedTx.branchAddress}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.swiftCode && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Swift Code:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedTx.swiftCode}
+                            </span>
+                          </div>
+                        )}
 
-                      {selectedTx.iban && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            IBAN Code:
-                          </span>
-                          <span className="font-semibold text-gray-800">
-                            {selectedTx.swiftCode}
-                          </span>
-                        </div>
-                      )}
+                        {selectedTx.iban && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              IBAN Code:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedTx.swiftCode}
+                            </span>
+                          </div>
+                        )}
 
-                      {selectedTx.walletAddress && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Wallet Address:
-                          </span>
-                          <span className="font-bold text-xs text-gray-700 break-all">
-                            {selectedTx.walletAddress}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.network && (
-                        <div className="flex justify-start gap-2">
-                          <span className="text-gray-600 font-medium">
-                            Network:
-                          </span>
-                          <span className="font-semibold text-gray-800">
-                            {selectedTx.network}
-                          </span>
-                        </div>
-                      )}
+                        {selectedTx.walletAddress && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Wallet Address:
+                            </span>
+                            <span className="font-bold text-xs text-gray-700 break-all">
+                              {selectedTx.walletAddress}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.network && (
+                          <div className="flex justify-start gap-2">
+                            <span className="text-gray-600 font-medium">
+                              Network:
+                            </span>
+                            <span className="font-semibold text-gray-800">
+                              {selectedTx.network}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Notes */}
                 {selectedTx.notes && (
@@ -817,11 +839,10 @@ const TransactionsPage = ({
                           Status:
                         </span>
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-bold ${
-                            selectedTx.userStatus === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                          className={`px-2 py-1 rounded-full text-xs font-bold ${selectedTx.userStatus === "active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {selectedTx.userStatus}
                         </span>
@@ -831,11 +852,10 @@ const TransactionsPage = ({
                           Verified:
                         </span>
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-bold ${
-                            selectedTx.userIsVerified
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                          className={`px-2 py-1 rounded-full text-xs font-bold ${selectedTx.userIsVerified
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                            }`}
                         >
                           {selectedTx.userIsVerified
                             ? "✓ Verified"

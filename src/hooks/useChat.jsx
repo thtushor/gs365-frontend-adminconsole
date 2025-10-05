@@ -45,6 +45,8 @@ export const ChatProvider = ({ children }) => {
       // const url = isAffiliate ? `${API_LIST.ADMIN_USER_MESSAGES}/${user.id}/admin` : `${API_LIST.GET_MESSAGES}/${activeConversation.id}`
       // if (!activeConversation?.id && !isAffiliate) return [];
       const response = await Axios.get(url);
+
+      queryClient.invalidateQueries({ queryKey: ["chats"] })
       return response.data.data;
     },
     enabled: isAffiliate ? !!user.id : !!(selectedChatUser?.type === "guest" ? selectedChatUser?.guestId : selectedChatUser?.id), // Only run query if activeConversation.id exists
