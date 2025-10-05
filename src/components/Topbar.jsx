@@ -110,11 +110,11 @@ const Topbar = ({ onMenuClick }) => {
       <div className="flex-1 flex justify-end items-center gap-4">
         <div className="relative w-fit">
           <div
-            className="relative text-yellow-500 cursor-pointer w-fit z-[999]"
+            className="relative text-white cursor-pointer w-fit z-[999]"
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <IoNotificationsOutline size={27} />
-            <div className="w-[11px] h-[11px] top-[1px] right-[2px] border-black border-2 bg-yellow-500 absolute rounded-full" />
+            <div className="w-[11px] h-[11px] top-[1px] right-[2px] border-black border-2 bg-blue-500 absolute rounded-full" />
           </div>
           {/* Dropdown */}
           {isOpen && (
@@ -127,7 +127,7 @@ const Topbar = ({ onMenuClick }) => {
                 Notifications
                 <IoIosCloseCircleOutline
                   size={25}
-                  className="text-yellow-500 cursor-pointer"
+                  className="text-blue-500 cursor-pointer"
                   onClick={() => setIsOpen(false)}
                 />
               </div>
@@ -144,7 +144,7 @@ const Topbar = ({ onMenuClick }) => {
                       {/* Image with fallback */}
                       <img
                         src={note?.posterImg || ""}
-                        className="w-[35px] h-[35px] object-cover rounded-full border-2 border-yellow-500"
+                        className="w-[35px] h-[35px] object-cover rounded-full border-2 border-blue-500"
                         alt={note?.title || "Notification"}
                       />
 
@@ -171,7 +171,7 @@ const Topbar = ({ onMenuClick }) => {
                           />
                         </p>
                         <div className="absolute bottom-2 right-3 flex items-center gap-2">
-                          <span className="text-[10px] text-yellow-300">
+                          <span className="text-[10px] text-blue-500">
                             {formatTimeAgo(note?.createdAt)}
                           </span>
                         </div>
