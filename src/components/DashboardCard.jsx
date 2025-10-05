@@ -1,6 +1,7 @@
 import { FaArrowUp, FaArrowDown, FaMinus } from "react-icons/fa";
 // import { motion } from "framer-motion";
 import { motion } from "framer-motion";
+import liveGif from "../assets/live.gif";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -22,7 +23,7 @@ const DashboardCard = ({
   index = 0,
 }) => (
   <motion.div
-    className={`border-l-4 ${color} rounded-lg p-6 flex flex-col gap-3 bg-white shadow-md min-w-[200px] cursor-pointer hover:shadow-lg transition-all duration-300`}
+    className={`border-l-4 ${color} relative rounded-lg p-6 flex flex-col gap-3 bg-white shadow-md min-w-[200px] cursor-pointer hover:shadow-lg transition-all duration-300`}
     custom={index}
     initial="hidden"
     animate="visible"
@@ -43,22 +44,20 @@ const DashboardCard = ({
       {trend === "down" && (
         <FaArrowDown className="text-red-500 text-sm animate-pulse" />
       )}
-      {trend === "neutral" && (
-        <FaMinus className="text-gray-400 text-sm" />
-      )}
+      {trend === "neutral" && <FaMinus className="text-gray-400 text-sm" />}
     </div>
-    
+
     <div className="flex flex-col gap-1">
       <span className="text-sm text-gray-500 font-medium">{title}</span>
-      <span className={`text-xl font-bold ${textColor}`}>
-        {value}
-      </span>
+      <span className={`text-xl font-bold ${textColor}`}>{value}</span>
       {subtitle && (
-        <span className="text-xs text-gray-400 font-medium">
-          {subtitle}
-        </span>
+        <span className="text-xs text-gray-400 font-medium">{subtitle}</span>
       )}
     </div>
+
+    {title === "Total Online Player" && (
+      <img className="absolute w-[70px] top-0 right-3" src={liveGif} alt="" />
+    )}
   </motion.div>
 );
 
