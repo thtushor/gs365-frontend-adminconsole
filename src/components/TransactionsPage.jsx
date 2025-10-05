@@ -543,8 +543,8 @@ const TransactionsPage = ({
                         <span className="text-gray-600 font-medium">
                           Amount:
                         </span>
-                        <span className="font-bold text-2xl text-green-600">
-                          {formatAmount(selectedTx.amount)}
+                        <span className="font-bold text-base text-green-600">
+                          {formatAmount(selectedTx.amount)} ~ {formatUSD(selectedTx.amount, selectedTx?.usdConversion)}
                         </span>
                       </div>
                       <div className="flex justify-start gap-2">
@@ -552,7 +552,7 @@ const TransactionsPage = ({
                           Currency:
                         </span>
                         <span className="font-semibold text-gray-800">
-                          BDT (Bangladeshi Taka)
+                          {selectedTx.currencyCode==="USD" ? selectedTx.currencyCode : "BDT"}
                         </span>
                       </div>
                     </div>
@@ -600,8 +600,8 @@ const TransactionsPage = ({
                           <span className="text-gray-600 font-medium">
                             Bonus Amount:
                           </span>
-                          <span className="font-bold text-xl text-purple-600">
-                            {formatAmount(selectedTx.bonusAmount)}
+                          <span className="font-bold text-base text-purple-600">
+                            {formatAmount(selectedTx.bonusAmount)} ~ {formatUSD(selectedTx.bonusAmount, selectedTx?.usdConversion)}
                           </span>
                         </div>
                       </div>
