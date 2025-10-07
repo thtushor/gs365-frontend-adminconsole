@@ -5,8 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { useEffect, useRef, useState } from "react";
 import Axios from "../api/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { useSocket } from "../socket";
 
 const topbarVariants = {
   hidden: { y: -30, opacity: 0 },
@@ -28,7 +29,9 @@ const roleColors = {
 const Topbar = ({ onMenuClick }) => {
   const { logout, isLoading, isLogoutLoading, user } = useAuth();
   const navigate = useNavigate();
+  const { socket } = useSocket();
   const [selectedNote, setSelectedNote] = useState(null);
+  const queryClient = useQueryClient();
   const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const USER_ID = 1;
@@ -37,7 +40,7 @@ const Topbar = ({ onMenuClick }) => {
     refetch,
     isLoading: notificationLoading,
   } = useQuery({
-    queryKey: ["notifications", USER_ID],
+    queryKey: ["notifications"],
     queryFn: async () => {
       if (!USER_ID) return null;
       const res = await Axios.get(`/api/users/notifications/${user?.id}?userType=admin`);
@@ -46,6 +49,17 @@ const Topbar = ({ onMenuClick }) => {
     enabled: !!USER_ID,
     refetchOnWindowFocus: false,
   });
+
+  const updateNotificationMutation = useMutation({
+    mutationFn: async (data) => {
+      return Axios.post(`/api/users/notifications-status`, data)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    }
+  })
+
+
   const notifications = notificationsData || [];
 
   const handleLogout = () => {
@@ -92,6 +106,21 @@ const Topbar = ({ onMenuClick }) => {
     };
   }, [isOpen]);
 
+
+  useEffect(() => {
+
+    if (!socket) return;
+    socket?.on(`admin-notifications`, (data) => {
+      console.log("New notification received", data)
+      refetch();
+    }
+    )
+    return () => {
+      socket?.removeListener(`admin-notifications`)
+    }
+
+  }, [socket])
+
   return (
     <motion.header
       className="flex items-center justify-between bg-[#07122b] text-white px-4 md:px-6 py-3 shadow-md w-full"
@@ -114,8 +143,13 @@ const Topbar = ({ onMenuClick }) => {
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <IoNotificationsOutline size={27} />
-            <div className="w-[11px] h-[11px] top-[1px] right-[2px] border-black border-2 bg-blue-500 absolute rounded-full" />
+            {notificationsData?.length > 0 && (
+              <div className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-blue-500 border-2 border-black rounded-full">
+                {notificationsData?.length > 9 ? "9+" : notificationsData?.length}
+              </div>
+            )}
           </div>
+
           {/* Dropdown */}
           {isOpen && (
             <div
@@ -139,7 +173,21 @@ const Topbar = ({ onMenuClick }) => {
                     <li
                       key={idx}
                       className="px-4 py-3 border-b border-white/10 flex gap-2 relative text-sm hover:bg-yellow-500/10 cursor-pointer"
-                      onClick={() => setSelectedNote(note)}
+                      onClick={async () => {
+
+                        if (note?.link) {
+                          if (note?.id) {
+                            await updateNotificationMutation.mutateAsync({
+                              id: note?.id,
+                              status: "inactive"
+                            })
+                          }
+                          navigate(note.link);
+                          setIsOpen(false);
+                        }
+
+                        // setSelectedNote(note)
+                      }}
                     >
                       {/* Image with fallback */}
                       <img
@@ -205,17 +253,16 @@ const Topbar = ({ onMenuClick }) => {
               <p className="">
                 {(user?.fullname || user?.username || user?.email)?.length > 50
                   ? (user?.fullname || user?.username || user?.email)?.slice(
-                      0,
-                      50
-                    ) + "..."
+                    0,
+                    50
+                  ) + "..."
                   : user?.fullname || user?.username || user?.email}
               </p>
 
               <span
-                className={`border rounded-full px-2 py-0.5 text-xs font-semibold capitalize mb-[-3px] whitespace-nowrap ${
-                  roleColors[user.role] ||
+                className={`border rounded-full px-2 py-0.5 text-xs font-semibold capitalize mb-[-3px] whitespace-nowrap ${roleColors[user.role] ||
                   "bg-gray-100 text-gray-700 border-gray-400"
-                }`}
+                  }`}
               >
                 {user.role}
               </span>
