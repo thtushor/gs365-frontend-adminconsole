@@ -40,7 +40,7 @@ const Topbar = ({ onMenuClick }) => {
     queryKey: ["notifications", USER_ID],
     queryFn: async () => {
       if (!USER_ID) return null;
-      const res = await Axios.get(`/api/users/notifications/${USER_ID}`);
+      const res = await Axios.get(`/api/users/notifications/${user?.id}?userType=admin`);
       return res.data?.data;
     },
     enabled: !!USER_ID,
