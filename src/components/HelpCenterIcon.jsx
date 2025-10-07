@@ -5,7 +5,7 @@ export const HelpCenterIconWithChatsCount = () => {
 
     const { messages } = useChat();
 
-    const unreadMessagesCount = messages?.filter(
+    // const unreadMessagesCount = messages?.filter(
 
     return (
         <div className="-top-2 left-4 relative inline-block" title="You have new messages">
