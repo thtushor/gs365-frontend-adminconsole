@@ -154,7 +154,7 @@ const Topbar = ({ onMenuClick }) => {
           {isOpen && (
             <div
               ref={dropdownRef}
-              className="absolute top-10 bg-[#07122b] text-left right-0 mt-[2px] w-80 max-w-[90vw] second-bg profile-shadow shadow-lg rounded-lg overflow-hidden z-[999]"
+              className="fixed md:absolute top-16 md:top-10 bg-[#07122b] text-left right-0 mt-[2px] w-full md:w-80 max-w-[90vw] second-bg profile-shadow shadow-lg rounded-lg overflow-hidden z-[999999]"
             >
               {/* Header */}
               <div className="p-4 pr-2 py-0 flex items-center justify-between border-b border-white/10 mt-3 pb-3 font-semibold text-white text-[14px]">
@@ -235,6 +235,7 @@ const Topbar = ({ onMenuClick }) => {
             </div>
           )}
         </div>
+        
         {user?.role === "superAffiliate" && (
           <Link
             to={`/create-affiliate?refCode=${user?.refCode}`}
