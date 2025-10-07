@@ -66,6 +66,7 @@ export const ChatProvider = ({ children }) => {
       });
       queryClient.invalidateQueries({ queryKey: ["userChats"] });
       queryClient.invalidateQueries({ queryKey: ["chats"] });
+      queryClient.invalidateQueries({ queryKey: ["chats-count"] })
     })
 
     return () => {
@@ -140,6 +141,7 @@ export const ChatProvider = ({ children }) => {
         }]
       });
       queryClient.invalidateQueries({ queryKey: ["chats"] })
+      queryClient.invalidateQueries({ queryKey: ["chats-count"] })
     },
     onError: (err) => {
       console.error("Error sending message:", err);
@@ -160,6 +162,7 @@ export const ChatProvider = ({ children }) => {
         }]
       });
       queryClient.invalidateQueries({ queryKey: ["chats"] })
+      queryClient.invalidateQueries({ queryKey: ["chats-count"] })
     },
     onError: (err) => {
       console.error("Error marking messages as read:", err);

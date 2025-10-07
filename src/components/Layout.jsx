@@ -4,10 +4,16 @@ import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { staticAdminCheck, staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
+import { useSocket } from "../socket";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Layout = () => {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  const { socket } = useSocket(); // Initialize socket without chatId
 
   // Close sidebar when clicking overlay or navigating
   const closeSidebar = () => setSidebarOpen(false);
@@ -44,6 +50,25 @@ const Layout = () => {
     // Dynamically set title
     documentTitle;
   }, [userType]);
+
+
+  useEffect(() => {
+      socket?.on(`newMessage`, (data) => {
+        console.log("New message found 2", data)
+        queryClient.invalidateQueries({
+          queryKey: ["chatMessages", {
+            ...user
+          }]
+        });
+        queryClient.invalidateQueries({ queryKey: ["userChats"] });
+        queryClient.invalidateQueries({ queryKey: ["chats"] });
+        queryClient.invalidateQueries({ queryKey: ["chats-count"] })
+      })
+  
+      return () => {
+        socket?.removeListener(`newMessage`)
+      }
+    }, [socket])
 
   documentTitle();
   return (

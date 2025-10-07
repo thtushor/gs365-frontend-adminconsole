@@ -1,24 +1,30 @@
 import { BiMessage } from "react-icons/bi";
-import { useChat } from "../hooks/useChat";
+import { useQuery } from "@tanstack/react-query";
+import Axios from "../api/axios";
 
 export const HelpCenterIconWithChatsCount = () => {
+  const { data: chatsCount } = useQuery({
+    queryKey: ["chats-count"],
+    queryFn: async () => {
+      const response = await Axios.get("/api/chats/count-unread");
+      return response?.data?.data;
+    },
+    select: (data) => ({
+      total: (data?.countGuest ?? 0) + (data?.countUser ?? 0) + (data?.countAffiliate ?? 0),
+    }),
+  });
 
-    const { messages } = useChat();
+  const totalUnread = chatsCount?.total || 0;
 
-    // const unreadMessagesCount = messages?.filter(
+  return (
+    <div className="relative inline-flex items-center justify-center" title="Help Center">
+      <BiMessage className="text-2xl text-gray-700" />
 
-    return (
-        <div className="-top-2 left-4 relative inline-block" title="You have new messages">
-            {/* Replace this div with your Help icon */}
-            {/* <div className="w-4 h-4 flex items-center justify-center">
-        <BiMessage size={10} />
-      </div> */}
-
-            {/* Blinking red circle */}
-            <span className="absolute top-0 right-0 block w-3 h-3 rounded-full bg-red-600 animate-ping"></span>
-
-            {/* Solid red dot (stays visible while ping animates) */}
-            <span className="absolute top-0 right-0 block w-3 h-3 rounded-full bg-red-600"></span>
+      {totalUnread > 0 && (
+        <div className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-red-600 text-white text-[10px] font-semibold animate-pulse">
+          {totalUnread}
         </div>
-    );
+      )}
+    </div>
+  );
 };
