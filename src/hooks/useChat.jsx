@@ -75,7 +75,7 @@ export const ChatProvider = ({ children }) => {
 
   useEffect(() => {
     if (lastMessage?.chatId)
-      joinChat(String(lastMessage.chatId));
+      joinChat(String(lastMessage?.chatId));
 
   }, [lastMessage?.chatId]);
 
@@ -133,7 +133,7 @@ export const ChatProvider = ({ children }) => {
         ...arg,
         chatId: String(arg.chatId)
       });
-      
+
       queryClient.invalidateQueries({
         queryKey: ["chatMessages", {
           ...user, selectedChatUser
@@ -147,11 +147,19 @@ export const ChatProvider = ({ children }) => {
   });
   // Read messages using useMutation
   const readMessagesMutation = useMutation({
-    mutationFn: async (chatId) => {
+    mutationFn: async ({ chatId, status }) => {
       if (!chatId) return;
-      await Axios.post(`${API_LIST.READ_MESSAGES}/${chatId}`, {
-        senderType: user.role === "admin" ? "admin" : "user",
+      await Axios.put(`${API_LIST.CREATE_CHAT}/${chatId}/status`, {
+        status,
       });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["chatMessages", {
+          ...user, selectedChatUser
+        }]
+      });
+      queryClient.invalidateQueries({ queryKey: ["chats"] })
     },
     onError: (err) => {
       console.error("Error marking messages as read:", err);
@@ -178,13 +186,17 @@ export const ChatProvider = ({ children }) => {
   // Use a ref to track the last chat ID for which messages were marked as read
   // const lastReadChatIdRef = useRef(null);
 
+  console.log({ lastMessage })
+
   // Effect to mark messages as read when activeConversation changes
-  // useEffect(() => {
-  //   if (activeConversation?.id && activeConversation.id !== lastReadChatIdRef.current) {
-  //     readMessagesMutation.mutate(activeConversation.id);
-  //     lastReadChatIdRef.current = activeConversation.id; // Update the ref after mutation
-  //   }
-  // }, [activeConversation, readMessagesMutation]);
+  useEffect(() => {
+    if (lastMessage?.chatId && lastMessage?.chat?.status === "pending_admin_response") {
+      readMessagesMutation.mutate({
+        chatId: Number(lastMessage?.chatId),
+        status: "open"
+      });
+    }
+  }, [lastMessage?.chatId]);
 
 
   const value = {

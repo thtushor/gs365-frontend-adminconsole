@@ -89,7 +89,6 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
 
             const lastMessageContent = chat?.lastMessage||"No messages yet";
             const chatStatus = chat?.chatStatus;
-            console.log({chatStatus})
             const hasAttachment = !!chat?.lastMessageAttachmentUrl;
             const chatCreatedAt = chat?.lastMessageCreatedAt;
             const isLoggedIn = chatUserType === "admin" ? (chat?.isLoggedIn ?? false) : (chat?.isLoggedIn ?? false);

@@ -184,6 +184,7 @@ import Faqs from "../components/Faqs";
 import SupportLayout from "../components/SupportPanel/SupportLayout";
 import AffiliateSupportLayout from "../components/SupportPanel/AffiliateSupportLayout";
 import NotificationList from "../components/Notifications";
+import { HelpCenterIconWithChatsCount } from "../components/HelpCenterIcon";
 
 export const menu = [
   {
@@ -299,6 +300,7 @@ export const menu = [
     path: "/message-chat-box",
     component: SupportLayout,
     icon: <BiMessage />,
+    rightIcons: <HelpCenterIconWithChatsCount/>,
     accessKey: "player_manage_player_chat",
   },
   {

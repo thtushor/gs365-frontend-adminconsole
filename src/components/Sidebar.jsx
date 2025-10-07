@@ -76,6 +76,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                 >
                   {item.icon}
                   {item.label}
+                  {item.rightIcons && item.rightIcons}
                 </Link>
 
                 {item.children && (
@@ -131,6 +132,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
                 >
                   {item.icon}
                   {item.label}
+                  {item.rightIcons && item.rightIcons}
                 </Link>
 
                 {item.children && (

@@ -317,7 +317,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         !notificationForm.startDate ||
         !notificationForm.endDate ||
         !notificationForm.turnoverMultiply ||
-        !notificationForm.promotionId ||
+        // !notificationForm.promotionId ||
         !notificationForm.amount ||
         !notificationForm.title
       ) {
