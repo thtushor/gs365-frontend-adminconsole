@@ -174,6 +174,37 @@ const Dashboard = () => {
         permission: "dashboard_view_sales",
       },
     ],
+    // Row 2 (4 cards) (USD Amount)
+     [
+      {
+        title: "Total Player Deposit (USD)",
+        value:dashboardData?.totalDepositUSD||0,
+        icon: <FaMoneyCheckAlt />,
+        color: "border-green-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Player Bonus Deposit (USD)",
+        value: dashboardData?.totalBonusAmountUSD || 0,
+        icon: <FaCoins />,
+        color: "border-indigo-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Player Withdraw (USD)",
+        value: dashboardData?.totalWithdrawUSD || 0,
+        icon: <FaWallet />,
+        color: "border-orange-400",
+        permission: "dashboard_view_sales",
+      },
+      {
+        title: "Total Player Current Balance",
+        value: formatAmount(dashboardData?.totalPlayerCurrentBalance || 0),
+        icon: <FaWallet />,
+        color: "border-emerald-400",
+        permission: "dashboard_view_sales",
+      },
+    ],
     // Row 3 (4 cards)
     [
       {
