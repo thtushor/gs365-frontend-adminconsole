@@ -1,11 +1,11 @@
-export const BASE_URL = "https://glorypos.com/gs-server";
-export const SOCKET_BASE_URL = "https://glorypos.com";
+export const BASE_URL = "https://api.gamestar365.com";
+export const SOCKET_BASE_URL = "https://api.gamestar365.com";
 // export const BASE_URL = "http://localhost:3000";
 // export const SOCKET_BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
-export const Image_BASE_URL = "https://glorypos.com/image-upload";
+export const Image_BASE_URL = "https://api.gamestar365.com/image-upload";
 export const SINGLE_IMAGE_UPLOAD_URL = `${Image_BASE_URL}/upload`;
 export const MULTIPLE_IMAGE_UPLOAD_URL = `${Image_BASE_URL}/uploads`;
 
