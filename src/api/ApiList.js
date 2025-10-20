@@ -1,7 +1,7 @@
-export const BASE_URL = "https://api.gamestar365.com";
-export const SOCKET_BASE_URL = "https://api.gamestar365.com";
-// export const BASE_URL = "http://localhost:3000";
-// export const SOCKET_BASE_URL = "http://localhost:3000";
+// export const BASE_URL = "https://api.gamestar365.com";
+// export const SOCKET_BASE_URL = "https://api.gamestar365.com";
+export const BASE_URL = "http://localhost:3000";
+export const SOCKET_BASE_URL = "http://localhost:3000";
 
 export const GAME_SITE = "https://gamestar365.com";
 
@@ -217,6 +217,12 @@ export const API_LIST = {
   SEND_MESSAGE: "/api/messages/send-message",
   READ_MESSAGES: "/api/messages/read", // Will append chatId
   ADMIN_USER_MESSAGES: "/api/messages/user-admin",
+  DATABASE_BACKUP: "/api/database/backup",
+  DATABASE_RESTORE: "/api/database/restore",
+  DATABASE_BACKUP_FILES: "/api/database/backup-files",
+  DATABASE_DOWNLOAD_BACKUP_FILES: "/api/database/download-backup",
+  DATABASE_DELETE_FILES: "/api/database/delete-backup",
+  DATABASE_DELETE_TABLES: "/api/database/drop-all-tables",
 };
 
 export const DROPDOWN_ID = {
