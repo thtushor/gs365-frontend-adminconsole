@@ -137,7 +137,7 @@ const Topbar = ({ onMenuClick }) => {
         <FaBars />
       </button>
       <div className="flex-1 flex justify-end items-center gap-4">
-        <div className="relative w-fit">
+       {["admin","superAdmin"].includes(user.role) && <div className="relative w-fit">
           <div
             className="relative text-white cursor-pointer w-fit z-[999]"
             onClick={() => setIsOpen((prev) => !prev)}
@@ -234,7 +234,7 @@ const Topbar = ({ onMenuClick }) => {
               </ul>
             </div>
           )}
-        </div>
+        </div>}
         
         {user?.role === "superAffiliate" && (
           <Link

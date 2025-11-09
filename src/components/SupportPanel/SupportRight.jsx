@@ -172,7 +172,7 @@ const SupportRight = ({ isAffiliate, showLeftPanelMobile, setShowLeftPanelMobile
               <h1 className="flex items-center mt-[-2px] text-[#01dc84] gap-1 font-semibold">
                 {selectedChat?.type === "guest" ? selectedChat.guestId : selectedChat?.fullname || selectedChat?.username || "Support"}{" "}
                 <span className="text-[12px] bg-[#01dc84] px-[6px] text-white leading-4 capitalize block rounded-full">
-                  {selectedChat?.role ? selectedChat?.role : "Player"}
+                  {selectedChat?.role ? selectedChat?.role : ["affiliate","superAffiliate"].includes(user?.role) ?"" :  "Player"}
                 </span>
               </h1>
               <p className="text-[12px] mt-[-3px] text-white/80">
