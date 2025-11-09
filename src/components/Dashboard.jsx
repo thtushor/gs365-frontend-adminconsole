@@ -199,7 +199,7 @@ const Dashboard = () => {
       },
       {
         title: "Total Player Current Balance (USD)",
-        value: formatAmount(dashboardData?.totalPlayerCurrentBalanceUSD || 0),
+        value: dashboardData?.totalPlayerCurrentBalanceUSD,
         icon: <FaWallet />,
         color: "border-emerald-400",
         permission: "dashboard_view_sales",
