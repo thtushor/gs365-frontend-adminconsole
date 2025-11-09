@@ -130,6 +130,7 @@ const PlayerProfile = () => {
 
 
   useEffect(() => {
+    if (!socket || !playerId) return;
     const betHistoryUpdateEvent = `betResultUpdated-${playerId}`;
     socket.on(betHistoryUpdateEvent, () => {
       queryClient.invalidateQueries({ queryKey: ["players"] });
