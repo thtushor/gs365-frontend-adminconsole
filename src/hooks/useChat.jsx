@@ -193,13 +193,14 @@ export const ChatProvider = ({ children }) => {
 
   // Effect to mark messages as read when activeConversation changes
   useEffect(() => {
-    if (lastMessage?.chatId && lastMessage?.chat?.status === "pending_admin_response") {
+    const statusCheck = isAffiliate ? "pending_user_response" : "pending_admin_response"
+    if (lastMessage?.chatId && lastMessage?.chat?.status === statusCheck) {
       readMessagesMutation.mutate({
         chatId: Number(lastMessage?.chatId),
         status: "open"
       });
     }
-  }, [lastMessage?.chatId]);
+  }, [lastMessage?.chatId,lastMessage?.chat?.status,user.role]);
 
 
   const value = {

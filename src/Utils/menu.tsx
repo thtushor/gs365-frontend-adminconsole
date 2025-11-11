@@ -300,7 +300,7 @@ export const menu = [
     path: "/message-chat-box",
     component: SupportLayout,
     icon: <BiMessage />,
-    rightIcons: <HelpCenterIconWithChatsCount/>,
+    rightIcons: <HelpCenterIconWithChatsCount userType={"admin"} iconClassName={''}/>,
     accessKey: "player_manage_player_chat",
   },
   {

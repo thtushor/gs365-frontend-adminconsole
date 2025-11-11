@@ -10,6 +10,7 @@ import { Spin } from "antd";
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import { BiCheck, BiCheckSquare, BiCopy } from "react-icons/bi";
 import { toast } from "react-toastify";
+import { HelpCenterIconWithChatsCount } from "./HelpCenterIcon";
 
 export const affiliateRoutes = [
   {
@@ -48,6 +49,7 @@ export const affiliateRoutes = [
   },
   {
     label: "Support",
+    rightComponent: <HelpCenterIconWithChatsCount iconClassName={"text-white hover:text-black duration-300 w-4 opacity-0 h-4"} userType="affiliate"/>,
     path: "/affiliate-list/:affiliateId/support",
     requiredPermission: "affiliate_support",
   },
@@ -239,26 +241,24 @@ const AffiliateLayout = () => {
       </div>
     ) : (
       <div
-        className={`relative z-[1] ${
-          label === "Main Balance"
+        className={`relative z-[1] ${label === "Main Balance"
             ? "bg-blue-400 text-white border-blue-400"
             : label === "Downline Balance"
-            ? "bg-purple-500 text-white border-purple-500"
-            : label === "Withdrawable Balance"
-            ? value > 0
-              ? "bg-green-400 text-white border-green-400"
-              : "bg-red-500 text-white border-red-500"
-            : "bg-white text-black"
-        } border   p-3 py-2 rounded shadow-md w-full sm:w-fit`}
+              ? "bg-purple-500 text-white border-purple-500"
+              : label === "Withdrawable Balance"
+                ? value > 0
+                  ? "bg-green-400 text-white border-green-400"
+                  : "bg-red-500 text-white border-red-500"
+                : "bg-white text-black"
+          } border   p-3 py-2 rounded shadow-md w-full sm:w-fit`}
       >
         <div
-          className={`text-xs font-medium ${
-            label === "Main Balance" ||
-            label === "Downline Balance" ||
-            label === "Withdrawable Balance"
+          className={`text-xs font-medium ${label === "Main Balance" ||
+              label === "Downline Balance" ||
+              label === "Withdrawable Balance"
               ? "text-white"
               : "text-gray-600"
-          }`}
+            }`}
         >
           {label}
         </div>
@@ -267,7 +267,7 @@ const AffiliateLayout = () => {
           <>
             <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
               {Number(value) >= Number(affiliateDetails?.data?.minTrx) &&
-              Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
+                Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
                 <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
                   Withdrawable
                 </div>
@@ -300,25 +300,27 @@ const AffiliateLayout = () => {
     <div>
       <nav className="bg-[#07122b] sticky top-[-24px] z-[5] border-[#07122b] border-2 rounded-lg text-[#fff] font-medium py-[14px] px-3 flex items-center justify-between md:flex-row flex-col gap-3 text-[12px] md:text-base">
         <ul className="flex gap-2 md:gap-4 flex-wrap">
-          {filteredRoutes.map(({ label, path }) => {
+          {filteredRoutes.map(({ label, rightComponent, path }) => {
             const to = path.replace(":affiliateId", affiliateId);
             const isActive =
               path === "/affiliate-list/:affiliateId"
                 ? location.pathname === to
                 : location.pathname === to ||
-                  location.pathname.startsWith(to + "/");
+                location.pathname.startsWith(to + "/");
 
             return (
               <li key={label} className="relative">
                 <Link
                   to={to}
-                  className={`${
-                    isActive
+                  className={`${isActive
                       ? "bg-green-400 text-black"
                       : "text-[#ffff] hover:text-black hover:bg-green-400"
-                  }  px-2 py-1 rounded-[5px]`}
+                    }  px-2 py-1 rounded-[5px]  gap-2 flex items-center`}
                 >
                   {label}
+                  {
+                    rightComponent
+                  }
                 </Link>
                 {label === "KYC Verification" &&
                   affiliateDetails?.data?.kyc_status === "required" && (
@@ -355,41 +357,41 @@ const AffiliateLayout = () => {
                 permissions,
                 "affiliate_view_main_balance"
               ) && (
-                <HighlightBox
-                  label="Main Balance"
-                  value={(
-                    Number(affiliateDetails?.data?.remainingBalance) +
-                    Math.abs(
-                      Number(
-                        affiliateCommissionDetails?.data?.totalLossCommission ||
+                  <HighlightBox
+                    label="Main Balance"
+                    value={(
+                      Number(affiliateDetails?.data?.remainingBalance) +
+                      Math.abs(
+                        Number(
+                          affiliateCommissionDetails?.data?.totalLossCommission ||
                           0
+                        )
                       )
-                    )
-                  ).toFixed(2)}
-                />
-              )}
+                    ).toFixed(2)}
+                  />
+                )}
               {staticAffiliatePermission(
                 user?.role,
                 permissions,
                 "affiliate_view_downline_balance"
               ) && (
-                <HighlightBox
-                  label="Downline Balance"
-                  value={Number(
-                    affiliateCommissionDetails?.data?.totalWinCommission || 0
-                  ).toFixed(2)}
-                />
-              )}
+                  <HighlightBox
+                    label="Downline Balance"
+                    value={Number(
+                      affiliateCommissionDetails?.data?.totalWinCommission || 0
+                    ).toFixed(2)}
+                  />
+                )}
               {staticAffiliatePermission(
                 user?.role,
                 permissions,
                 "affiliate_view_withdrawable_balance"
               ) && (
-                <HighlightBox
-                  label="Withdrawable Balance"
-                  value={withdrawAbleBalance()}
-                />
-              )}
+                  <HighlightBox
+                    label="Withdrawable Balance"
+                    value={withdrawAbleBalance()}
+                  />
+                )}
             </div>
             <div className="flex gap-4 flex-wrap whitespace-nowrap ">
               {staticAffiliatePermission(
@@ -397,34 +399,33 @@ const AffiliateLayout = () => {
                 permissions,
                 "affiliate_view_commission_percentage"
               ) && (
-                <HighlightBox
-                  label="Commission %"
-                  value={`${affiliateDetails?.data?.commission_percent || 0}%`}
-                />
-              )}
+                  <HighlightBox
+                    label="Commission %"
+                    value={`${affiliateDetails?.data?.commission_percent || 0}%`}
+                  />
+                )}
               {staticAffiliatePermission(
                 user?.role,
                 permissions,
                 "affiliate_view_referral_code"
               ) && (
-                <HighlightBox
-                  label="Referral Code"
-                  value={affiliateDetails?.data?.refCode || "N/A"}
-                  uplineDetails={affiliateDetails?.data?.role}
-                />
-              )}
+                  <HighlightBox
+                    label="Referral Code"
+                    value={affiliateDetails?.data?.refCode || "N/A"}
+                    uplineDetails={affiliateDetails?.data?.role}
+                  />
+                )}
               {staticAffiliatePermission(
                 user?.role,
                 permissions,
                 "affiliate_view_min_max_withdraw_limit"
               ) && (
-                <HighlightBox
-                  label="Min-Max Withdraw Limit"
-                  value={`${affiliateDetails?.data?.minTrx || 0} - ${
-                    affiliateDetails?.data?.maxTrx || 0
-                  }`}
-                />
-              )}
+                  <HighlightBox
+                    label="Min-Max Withdraw Limit"
+                    value={`${affiliateDetails?.data?.minTrx || 0} - ${affiliateDetails?.data?.maxTrx || 0
+                      }`}
+                  />
+                )}
             </div>
           </div>
         )}

@@ -13,8 +13,6 @@ const SupportLeft = ({ chatUserType, showLeftPanelMobile, setShowLeftPanelMobile
 
   const { data: chatData, isLoading, isError } = useChats(chatUserType, searchKey);
 
-  console.log({chatData})
-
   // Reset active chat when chatUserType changes
   useEffect(() => {
     setSelectedChat(null); // Clear selected chat when user type changes
