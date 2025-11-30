@@ -71,11 +71,11 @@ const ChatCard = ({
             )}
 
           {chatStatus === "pending_admin_response" ? (
-            <div className="rounded-full w-fit px-1.5 leading-[14px] bg-green-500 font-normal text-white text-[12px]">
+            <div className="rounded-full w-fit px-1 leading-[14px] bg-red-500 font-normal text-white text-[12px]">
               Unread
             </div>
           ) : (
-            <div className="rounded-full w-fit px-1.5 leading-[14px] bg-gray-500 font-normal text-white text-[12px]">
+            <div className="rounded-full w-fit px-1.5 leading-[14px] bg-green-500/30 font-normal text-white text-[12px]">
               Read
             </div>
           )}
