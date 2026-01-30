@@ -13,7 +13,7 @@ import {
 import PlayerProfileStats from "./PlayerProfileStats";
 import ReusableModal from "./ReusableModal";
 import PlayerForm from "./PlayerForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
@@ -24,6 +24,7 @@ import { hasPermission } from "../Utils/permissions";
 import { useGetRequest } from "../Utils/apiClient";
 import UserPhonesModal from "./UserPhonesModal";
 import ActionDropdown from "./shared/ActionDropdown";
+import { useSocket } from "../socket";
 
 export const playerRoutes = [
   {
@@ -62,6 +63,7 @@ export const playerRoutes = [
 
 const PlayerProfile = () => {
   const { data: settingsData } = useSettings();
+  const { socket } = useSocket();
   // const {user} = useAuth();/
 
   const conversionRate =
@@ -86,8 +88,8 @@ const PlayerProfile = () => {
       const res = await Axios.get(
         `${BASE_URL}${API_LIST.GET_PLAYER_PROFILE.replace(
           ":playerID",
-          playerId
-        )}`
+          playerId,
+        )}`,
       );
       if (!res.data.status) throw new Error("Failed to fetch player profile");
       return res.data.data;
@@ -126,6 +128,18 @@ const PlayerProfile = () => {
     },
   });
 
+  useEffect(() => {
+    if (!socket || !playerId) return;
+    const betHistoryUpdateEvent = `betResultUpdated-${playerId}`;
+    socket.on(betHistoryUpdateEvent, () => {
+      queryClient.invalidateQueries({ queryKey: ["players"] });
+      queryClient.invalidateQueries({ queryKey: ["playerProfile", playerId] });
+    });
+    return () => {
+      socket.off(betHistoryUpdateEvent);
+    };
+  });
+
   // Highlight Box component for displaying stats
   const HighlightBox = ({
     label,
@@ -133,6 +147,7 @@ const PlayerProfile = () => {
     isAmount = true,
     color = "green",
     conversion,
+    isForcedSpinBonus = false,
   }) => {
     const colorClasses = {
       green: "text-green-500",
@@ -165,6 +180,16 @@ const PlayerProfile = () => {
       cyan: "bg-cyan-100",
     };
 
+    const handleEnabledForcedSpin = () => {
+      const formData = {
+        id: playerId,
+        isSpinForcedByAdmin: true,
+        isForcedSpinComplete: false,
+      };
+      // Implement the logic to enable forced spin bonus for the player
+      editMutation.mutate(formData);
+    };
+
     return (
       <div
         className={` border-2 text-black p-4 py-2 rounded-lg shadow-md w-full ${bgClasses[color]} sm:w-fit ${borderClasses[color]}`}
@@ -177,10 +202,21 @@ const PlayerProfile = () => {
             ? `BDT ${value.toFixed(2)}`
             : value || 0}
         </div>
-        {conversion && (
-          <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${
-            conversion ? (Number(value) / Number(conversion)).toFixed(2) : 0
-          } USD`}</span>
+        {isForcedSpinBonus ? (
+          <div>
+            <button
+              onClick={handleEnabledForcedSpin}
+              className={`text-[12px] font-semibold text-white cursor-pointer w-fit px-3 py-1 rounded-full flex items-center gap-1 bg-green-500`}
+            >
+              Enable Forced Spin
+            </button>
+          </div>
+        ) : (
+          conversion && (
+            <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${
+              conversion ? (Number(value) / Number(conversion)).toFixed(2) : 0
+            } USD`}</span>
+          )
         )}
       </div>
     );
@@ -322,7 +358,8 @@ const PlayerProfile = () => {
                   isPending={kycDetails?.data[0]?.status}
                 />
               )}
-              {(isSuperAdmin || hasPermission(permissions, "player_edit_player")) && (
+              {(isSuperAdmin ||
+                hasPermission(permissions, "player_edit_player")) && (
                 <ActionDropdown
                   actions={[
                     {
@@ -456,6 +493,12 @@ const PlayerProfile = () => {
                 color="cyan"
                 isAmount={false}
               />
+              <HighlightBox
+                label="Total Spin Bonus Amount"
+                value={transactionSummary.totalSpinBonusAmount}
+                color="red"
+                isForcedSpinBonus={true}
+              />
             </div>
           </div>
         </div>
@@ -487,7 +530,11 @@ const PlayerProfile = () => {
       </ReusableModal>
 
       {/* Edit Phones Modal */}
-      <UserPhonesModal open={phonesOpen} onClose={handleClosePhones} userId={playerId} />
+      <UserPhonesModal
+        open={phonesOpen}
+        onClose={handleClosePhones}
+        userId={playerId}
+      />
     </div>
   );
 };

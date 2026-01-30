@@ -221,6 +221,11 @@ const BackupRestorePage = () => {
       dropTablesMutation.mutate();
       // Trigger delete logic here
     }
+    else if (modalType === "manualBackup") {
+      // alert(`Dropping all tables`);
+      handleManualBackup();
+      // Trigger delete logic here
+    }
     setModalOpen(false);
   }
 
@@ -230,7 +235,7 @@ const BackupRestorePage = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
         <ReportCard title="Last Backup" value={new Date(backupFiles?.[0]?.date).toLocaleString()} />
-        <ReportCard title="Total Backups" value={backupFiles?.length||0} />
+        <ReportCard title="Total Backups" value={backupFiles?.length || 0} />
         <ReportCard title="Storage Location" value={"GS Server"} />
         <ReportCard
           title="Auto-Backup"
@@ -242,14 +247,18 @@ const BackupRestorePage = () => {
       <div className="flex gap-4 mb-6">
         <button
           className="bg-green-500 disabled:bg-green-400 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-          onClick={handleManualBackup}
+          onClick={() => {
+            setModalType("manualBackup");
+            setModalOpen(true);
+          }}
+          // onClick={handleManualBackup}
           disabled={backupMutation?.isPending}
         >
           {backupMutation?.isPending ? "Backuping..." : "Manual Backup"}
         </button>
-         <button
+        <button
           className="bg-red-500 disabled:bg-red-400 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-          onClick={()=>{
+          onClick={() => {
             setModalType("dropTables");
             setModalOpen(true);
           }}
@@ -267,7 +276,7 @@ const BackupRestorePage = () => {
       <ReusableModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={modalType === "restore" ? "Restore Backup" : "Delete Backup"}
+        title={modalType === "restore" ? "Restore Backup" :  modalType==="delete" ? "Delete Backup": modalType==="dropTables" ? "Drop All Tables": "Manual Backup"}
         onSave={handleModalConfirm}
       >
         <div>
@@ -298,6 +307,17 @@ const BackupRestorePage = () => {
             <>
               <p>
                 Are you sure you want to <b>drop</b> all the tables?{" "}
+                {/* <b>{selectedBackup?.name}</b>? */}
+              </p>
+              <p className="text-xs text-red-500 mt-2">
+                This action cannot be undone.
+              </p>
+            </>
+          )}
+          {modalType === "manualBackup" && (
+            <>
+              <p>
+                Are you sure you want to <b>backup</b> databases manually?{" "}
                 {/* <b>{selectedBackup?.name}</b>? */}
               </p>
               <p className="text-xs text-red-500 mt-2">

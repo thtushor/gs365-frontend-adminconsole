@@ -105,11 +105,10 @@ const AffiliateListPage = () => {
 
   const columns = [
     {
-      field: "sl",
-      headerName: "SL",
+      field: "ID",
+      headerName: "ID",
       width: 60,
-      render: (_, __, index) =>
-        (filters.page - 1) * filters.pageSize + index + 1,
+      render: (_,row) => row.id,
     },
     {
       field: "username",

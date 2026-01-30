@@ -1,7 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import App from "./App";
@@ -21,22 +28,25 @@ function ProtectedRoute({ children }) {
 
   const navigate = useNavigate();
   // console.log({ isValidating, user });
+
+  useEffect(() => {
+    if (user) {
+      if (
+        (user?.role === "affiliate" || user?.role === "superAffiliate") &&
+        !pathname.includes(`/affiliate-list/`) &&
+        !pathname.includes("/create-affiliate")
+      ) {
+        navigate(`/affiliate-list/${user?.id}`, {
+          replace: true,
+        });
+      }
+    }
+  }, [user, navigate]);
+
   if (!user && !isValidating) {
     return <Navigate to="/login" replace />;
   }
 
-    useEffect(() => {
-      if (user) {
-        if (
-          (user?.role === "affiliate" || user?.role === "superAffiliate") &&
-          !pathname.includes(`/affiliate-list/`) && !pathname.includes('/create-affiliate')
-        ) {
-          navigate(`/affiliate-list/${user?.id}`, {
-            replace: true,
-          });
-        }
-      }
-    }, [user, navigate]);
   return (
     <>
       <ToastContainer
@@ -60,12 +70,9 @@ function Router() {
     <Routes>
       <Route path="/login" element={<Login />} />
 
-      <Route path="/server-error" element={
-        <ServerError/>
-      }/>
+      <Route path="/server-error" element={<ServerError />} />
 
       <Route path="/test/image-upload" element={<ImageUploadTestPage />} />
-
 
       <Route
         path="/*"
