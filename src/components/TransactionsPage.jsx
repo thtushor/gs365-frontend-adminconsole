@@ -92,7 +92,7 @@ const TransactionsPage = ({
   const pageSize = filters.pageSize;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  console.log({items})
+  console.log({ items })
 
   const formatDateTime = (iso) => {
     if (!iso) return "-";
@@ -150,7 +150,7 @@ const TransactionsPage = ({
         width: 140,
         align: "center",
         render: (value, row) => (
-          <span className={`font-medium text-center text-purple-500 ${row?.currencyCode !== "USD" ? "underline !font-bold":""}`} title={row?.currencyCode !== "USD" ? "Transaction applied by BDT":""}>
+          <span className={`font-medium text-center text-purple-500 ${row?.currencyCode !== "USD" ? "underline !font-bold" : ""}`} title={row?.currencyCode !== "USD" ? "Transaction applied by BDT" : ""}>
             {value != null ? `${formatAmount(value)}` : "-"}
           </span>
         ),
@@ -161,7 +161,7 @@ const TransactionsPage = ({
         width: 140,
         align: "center",
         render: (value, row) => (
-          <span className={`font-medium text-center text-orange-500 ${row?.currencyCode === "USD" ? "underline !font-bold":""} `} title={row?.currencyCode === "USD" ? "Transaction applied by USD":""}>          
+          <span className={`font-medium text-center text-orange-500 ${row?.currencyCode === "USD" ? "underline !font-bold" : ""} `} title={row?.currencyCode === "USD" ? "Transaction applied by USD" : ""}>
             {formatUSD(row.amount, row?.usdConversion)}
           </span>
         ),
@@ -358,9 +358,10 @@ const TransactionsPage = ({
       </div>
 
       <div className="bg-white rounded-lg shadow p-4 mb-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          {/* Search Input */}
           <input
-            className="border rounded px-3 py-2"
+            className="border rounded px-3 py-2 w-full"
             placeholder={
               playerId ? "Search by transaction ID" : "Search by id/user"
             }
@@ -370,9 +371,9 @@ const TransactionsPage = ({
             }
           />
 
-
+          {/* Status Filter */}
           <select
-            className="border rounded px-3 py-2"
+            className="border rounded px-3 py-2 w-full"
             value={filters.status}
             onChange={(e) =>
               setFilters((f) => ({ ...f, status: e.target.value, page: 1 }))
@@ -385,8 +386,10 @@ const TransactionsPage = ({
               </option>
             ))}
           </select>
+
+          {/* Type Filter */}
           <select
-            className="border rounded px-3 py-2"
+            className="border rounded px-3 py-2 w-full"
             value={filters.type}
             onChange={(e) =>
               setFilters((f) => ({ ...f, type: e.target.value, page: 1 }))
@@ -397,9 +400,11 @@ const TransactionsPage = ({
             <option value="withdraw">Withdraw</option>
             <option value="transfer">Transfer</option>
           </select>
+
+          {/* User ID Input - only shown when no playerId */}
           {!playerId && (
             <input
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 w-full"
               placeholder="User ID"
               value={filters.userId}
               onChange={(e) =>
@@ -407,54 +412,61 @@ const TransactionsPage = ({
               }
             />
           )}
-          <div className="flex gap-2">
-            <select
-              className="border rounded px-3 py-2"
-              value={filters.sortBy}
-              onChange={(e) =>
-                setFilters((f) => ({ ...f, sortBy: e.target.value, page: 1 }))
-              }
-            >
-              <option value="createdAt">Created At</option>
-              <option value="amount">Amount</option>
-            </select>
-            <select
-              className="border rounded px-3 py-2"
-              value={filters.sortOrder}
-              onChange={(e) =>
-                setFilters((f) => ({
-                  ...f,
-                  sortOrder: e.target.value,
-                  page: 1,
-                }))
-              }
-            >
-              <option value="desc">Desc</option>
-              <option value="asc">Asc</option>
-            </select>
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-              <input
-                type="date"
-                name="dateFrom"
-                placeholder="Date From"
-                value={filters.dateFrom}
-                onChange={(e) => {
-                  setFilters((f) => ({ ...f, dateFrom: e.target.value, page: 1 }))
-                }}
-                className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
-              />
-              <input
-                type="date"
-                name="dateTo"
-                placeholder="Date To"
-                value={filters.dateTo}
-                onChange={(e) => {
-                  setFilters((f) => ({ ...f, dateTo: e.target.value, page: 1 }))
-                }}
-                className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
-              />
-            </div>
+          {/* Sort By */}
+          <select
+            className="border rounded px-3 py-2 w-full"
+            value={filters.sortBy}
+            onChange={(e) =>
+              setFilters((f) => ({ ...f, sortBy: e.target.value, page: 1 }))
+            }
+          >
+            <option value="createdAt">Sort: Created At</option>
+            <option value="amount">Sort: Amount</option>
+          </select>
+
+          {/* Sort Order */}
+          <select
+            className="border rounded px-3 py-2 w-full"
+            value={filters.sortOrder}
+            onChange={(e) =>
+              setFilters((f) => ({
+                ...f,
+                sortOrder: e.target.value,
+                page: 1,
+              }))
+            }
+          >
+            <option value="desc">Order: Desc</option>
+            <option value="asc">Order: Asc</option>
+          </select>
+
+          {/* Date From */}
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-1">From Date</label>
+            <input
+              type="date"
+              name="dateFrom"
+              value={filters.dateFrom}
+              onChange={(e) => {
+                setFilters((f) => ({ ...f, dateFrom: e.target.value, page: 1 }))
+              }}
+              className="border rounded px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-200"
+            />
+          </div>
+
+          {/* Date To */}
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-500 mb-1">To Date</label>
+            <input
+              type="date"
+              name="dateTo"
+              value={filters.dateTo}
+              onChange={(e) => {
+                setFilters((f) => ({ ...f, dateTo: e.target.value, page: 1 }))
+              }}
+              className="border rounded px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-200"
+            />
           </div>
         </div>
       </div>
@@ -552,7 +564,7 @@ const TransactionsPage = ({
                           Currency:
                         </span>
                         <span className="font-semibold text-gray-800">
-                          {selectedTx.currencyCode==="USD" ? selectedTx.currencyCode : "BDT"}
+                          {selectedTx.currencyCode === "USD" ? selectedTx.currencyCode : "BDT"}
                         </span>
                       </div>
                     </div>
