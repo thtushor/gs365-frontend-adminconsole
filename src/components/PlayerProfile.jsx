@@ -88,8 +88,8 @@ const PlayerProfile = () => {
       const res = await Axios.get(
         `${BASE_URL}${API_LIST.GET_PLAYER_PROFILE.replace(
           ":playerID",
-          playerId
-        )}`
+          playerId,
+        )}`,
       );
       if (!res.data.status) throw new Error("Failed to fetch player profile");
       return res.data.data;
@@ -128,7 +128,6 @@ const PlayerProfile = () => {
     },
   });
 
-
   useEffect(() => {
     if (!socket || !playerId) return;
     const betHistoryUpdateEvent = `betResultUpdated-${playerId}`;
@@ -138,8 +137,8 @@ const PlayerProfile = () => {
     });
     return () => {
       socket.off(betHistoryUpdateEvent);
-    }
-  })
+    };
+  });
 
   // Highlight Box component for displaying stats
   const HighlightBox = ({
@@ -148,6 +147,7 @@ const PlayerProfile = () => {
     isAmount = true,
     color = "green",
     conversion,
+    isForcedSpinBonus = false,
   }) => {
     const colorClasses = {
       green: "text-green-500",
@@ -180,6 +180,16 @@ const PlayerProfile = () => {
       cyan: "bg-cyan-100",
     };
 
+    const handleEnabledForcedSpin = () => {
+      const formData = {
+        id: playerId,
+        isSpinForcedByAdmin: true,
+        isForcedSpinComplete: false,
+      };
+      // Implement the logic to enable forced spin bonus for the player
+      editMutation.mutate(formData);
+    };
+
     return (
       <div
         className={` border-2 text-black p-4 py-2 rounded-lg shadow-md w-full ${bgClasses[color]} sm:w-fit ${borderClasses[color]}`}
@@ -192,9 +202,21 @@ const PlayerProfile = () => {
             ? `BDT ${value.toFixed(2)}`
             : value || 0}
         </div>
-        {conversion && (
-          <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${conversion ? (Number(value) / Number(conversion)).toFixed(2) : 0
+        {isForcedSpinBonus ? (
+          <div>
+            <button
+              onClick={handleEnabledForcedSpin}
+              className={`text-[12px] font-semibold text-white cursor-pointer w-fit px-3 py-1 rounded-full flex items-center gap-1 bg-green-500`}
+            >
+              Enable Forced Spin
+            </button>
+          </div>
+        ) : (
+          conversion && (
+            <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${
+              conversion ? (Number(value) / Number(conversion)).toFixed(2) : 0
             } USD`}</span>
+          )
         )}
       </div>
     );
@@ -265,16 +287,17 @@ const PlayerProfile = () => {
               path === "/players/:playerId/profile"
                 ? location.pathname === to
                 : location.pathname === to ||
-                location.pathname.startsWith(to + "/");
+                  location.pathname.startsWith(to + "/");
 
             return (
               <li key={label}>
                 <Link
                   to={to}
-                  className={`${isActive
+                  className={`${
+                    isActive
                       ? "bg-green-400 text-black"
                       : "text-[#ffff] hover:text-black hover:bg-green-400"
-                    }  px-2 py-1 rounded-[5px]`}
+                  }  px-2 py-1 rounded-[5px]`}
                 >
                   {label}
                 </Link>
@@ -305,10 +328,11 @@ const PlayerProfile = () => {
                 <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
                   ACC:
                   <span
-                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${playerDetails.status === "active"
+                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
+                      playerDetails.status === "active"
                         ? "bg-green-100 text-green-500 border-green-500"
                         : "bg-red-100 text-red-500 border-red-500"
-                      }`}
+                    }`}
                   >
                     {playerDetails.status || "Unverified"}
                   </span>
@@ -316,10 +340,11 @@ const PlayerProfile = () => {
                 <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
                   KYC:
                   <span
-                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${playerDetails.kyc_status === "verified"
+                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
+                      playerDetails.kyc_status === "verified"
                         ? "bg-green-100 text-green-500 border-green-500"
                         : "bg-red-100 text-red-500 border-red-500"
-                      }`}
+                    }`}
                   >
                     {playerDetails.kyc_status || "Unverified"}
                   </span>
@@ -327,13 +352,14 @@ const PlayerProfile = () => {
               </div>
               {(isSuperAdmin ||
                 hasPermission(permissions, "kyc_view_kyc_requests")) && (
-                  <KycRequestButton
-                    holderId={playerDetails?.id}
-                    holderType={"player"}
-                    isPending={kycDetails?.data[0]?.status}
-                  />
-                )}
-              {(isSuperAdmin || hasPermission(permissions, "player_edit_player")) && (
+                <KycRequestButton
+                  holderId={playerDetails?.id}
+                  holderType={"player"}
+                  isPending={kycDetails?.data[0]?.status}
+                />
+              )}
+              {(isSuperAdmin ||
+                hasPermission(permissions, "player_edit_player")) && (
                 <ActionDropdown
                   actions={[
                     {
@@ -382,8 +408,9 @@ const PlayerProfile = () => {
         <div className="flex xl:items-center justify-between flex-col gap-4 mb-5">
           <div className="header-auth mt-[-5px] mb-3 relative">
             <div
-              className={` ${playerInProfitOrLoss() < 0 ? "signup-btn" : "signup-btn-green"
-                }`}
+              className={` ${
+                playerInProfitOrLoss() < 0 ? "signup-btn" : "signup-btn-green"
+              }`}
             >
               <div className="flex items-center justify-center flex-col mt-[-2px]">
                 BDT {playerInProfitOrLoss()}
@@ -466,6 +493,12 @@ const PlayerProfile = () => {
                 color="cyan"
                 isAmount={false}
               />
+              <HighlightBox
+                label="Total Spin Bonus Amount"
+                value={transactionSummary.totalSpinBonusAmount}
+                color="red"
+                isForcedSpinBonus={true}
+              />
             </div>
           </div>
         </div>
@@ -497,7 +530,11 @@ const PlayerProfile = () => {
       </ReusableModal>
 
       {/* Edit Phones Modal */}
-      <UserPhonesModal open={phonesOpen} onClose={handleClosePhones} userId={playerId} />
+      <UserPhonesModal
+        open={phonesOpen}
+        onClose={handleClosePhones}
+        userId={playerId}
+      />
     </div>
   );
 };

@@ -18,6 +18,8 @@ import {
   FaHistory,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { RxColorWheel } from "react-icons/rx";
+
 import { FaListCheck, FaMoneyBills, FaPeopleRobbery } from "react-icons/fa6";
 import { PiContactlessPayment } from "react-icons/pi";
 import { CgDisplayFlex, CgDisplayFullwidth, CgMediaLive } from "react-icons/cg";
@@ -185,6 +187,7 @@ import SupportLayout from "../components/SupportPanel/SupportLayout";
 import AffiliateSupportLayout from "../components/SupportPanel/AffiliateSupportLayout";
 import NotificationList from "../components/Notifications";
 import { HelpCenterIconWithChatsCount } from "../components/HelpCenterIcon";
+import SpinBonus from "../components/SpinBonus";
 
 export const menu = [
   {
@@ -300,7 +303,9 @@ export const menu = [
     path: "/message-chat-box",
     component: SupportLayout,
     icon: <BiMessage />,
-    rightIcons: <HelpCenterIconWithChatsCount userType={"admin"} iconClassName={''}/>,
+    rightIcons: (
+      <HelpCenterIconWithChatsCount userType={"admin"} iconClassName={""} />
+    ),
     accessKey: "player_manage_player_chat",
   },
   {
@@ -408,6 +413,13 @@ export const menu = [
         props: {},
       },
     ],
+  },
+  {
+    label: "Spin Bonus",
+    path: "/spin-bonus",
+    icon: <RxColorWheel />,
+    component: SpinBonus,
+    accessCategory: "notifications",
   },
   // {
   //   label: "Bets",

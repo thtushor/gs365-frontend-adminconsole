@@ -18,6 +18,8 @@ const SystemSettingsPage = () => {
   const [editingField, setEditingField] = useState(null); // { id, field }
   const [editValue, setEditValue] = useState({
     defaultTurnover: 0,
+    spinTurnoverMultiply: 0,
+    isGlobalSpinEnabled: "Enabled",
     adminBalance: 0,
     minWithdrawableBalance: 0,
     conversionRate: 0,
@@ -35,13 +37,15 @@ const SystemSettingsPage = () => {
     setEditValue({
       defaultTurnover: setting.defaultTurnover,
       adminBalance: setting.adminBalance,
+      spinTurnoverMultiply: setting.spinTurnoverMultiply,
+      isGlobalSpinEnabled: setting.isGlobalSpinEnabled,
       minWithdrawableBalance: setting.minWithdrawableBalance,
       conversionRate: setting.conversionRate,
       affiliateWithdrawTime: Array.isArray(setting.affiliateWithdrawTime)
         ? setting.affiliateWithdrawTime
         : setting.affiliateWithdrawTime
-        ? setting.affiliateWithdrawTime.split(",")
-        : [],
+          ? setting.affiliateWithdrawTime.split(",")
+          : [],
       systemActiveTime: setting.systemActiveTime,
     });
   };
@@ -53,6 +57,15 @@ const SystemSettingsPage = () => {
         editValue.defaultTurnover < 0
       ) {
         toast.error("Please enter a valid turnover value (minimum 0)");
+        return;
+      }
+      if (
+        editingField?.field === "spinTurnoverMultiply" &&
+        editValue.spinTurnoverMultiply < 0
+      ) {
+        toast.error(
+          "Please enter a valid spin turnover multiply value (minimum 0)",
+        );
         return;
       }
       if (
@@ -83,6 +96,8 @@ const SystemSettingsPage = () => {
         id: settingId,
         data: {
           defaultTurnover: Number(editValue.defaultTurnover),
+          spinTurnoverMultiply: Number(editValue.spinTurnoverMultiply),
+          isGlobalSpinEnabled: editValue.isGlobalSpinEnabled,
           adminBalance: Number(editValue.adminBalance),
           minWithdrawableBalance: Number(editValue.minWithdrawableBalance),
           conversionRate: Number(editValue.conversionRate),
@@ -130,6 +145,7 @@ const SystemSettingsPage = () => {
     "thursday",
     "friday",
   ];
+  const spinOnOffOptions = ["Enabled", "Disabled"];
 
   return (
     <div className="p-6">
@@ -147,10 +163,10 @@ const SystemSettingsPage = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
-            Turnover Settings
+            Admin Settings
           </h2>
           <p className="text-sm text-gray-600 mt-1">
-            Configure default system settings below
+            Configure default admin system settings below
           </p>
         </div>
 
@@ -168,6 +184,24 @@ const SystemSettingsPage = () => {
           ) : (
             settings.map((setting) => (
               <React.Fragment key={setting.id}>
+                {/* Admin Balance */}
+                <SettingRow
+                  label="Admin Balance"
+                  description={`Current value: ${formatAmount(
+                    setting.adminBalance || 0,
+                  )}`}
+                  field="adminBalance"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                />
+
                 {/* Default Turnover */}
                 <SettingRow
                   label="Default Turnover Settings"
@@ -186,13 +220,31 @@ const SystemSettingsPage = () => {
                   updateSettingsMutation={updateSettingsMutation}
                 />
 
-                {/* Admin Balance */}
+                {/* Default Turnover */}
                 <SettingRow
-                  label="Admin Balance"
-                  description={`Current value: ${formatAmount(
-                    setting.adminBalance || 0
-                  )}`}
-                  field="adminBalance"
+                  label="Spin On/Off Setting"
+                  description={`Current value: ${setting.isGlobalSpinEnabled}`}
+                  field="isGlobalSpinEnabled"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                  options={spinOnOffOptions}
+                  isMultiSelect={false}
+                />
+
+                {/* Default Turnover */}
+                <SettingRow
+                  label="Spin Turnover Settings"
+                  description={`Current value: ${
+                    setting.spinTurnoverMultiply || 0
+                  } times`}
+                  field="spinTurnoverMultiply"
                   setting={setting}
                   editingField={editingField}
                   editValue={editValue}
@@ -208,7 +260,7 @@ const SystemSettingsPage = () => {
                 <SettingRow
                   label="Minimum Balance to Access Withdraw Button"
                   description={`Current value: ${formatAmount(
-                    setting.minWithdrawableBalance || 0
+                    setting.minWithdrawableBalance || 0,
                   )}`}
                   field="minWithdrawableBalance"
                   setting={setting}
@@ -306,6 +358,7 @@ const SettingRow = ({
   step = "1",
   min = "1",
   options,
+  isMultiSelect = true,
 }) => {
   const isEditing =
     editingField?.id === setting.id && editingField?.field === field;
@@ -329,14 +382,14 @@ const SettingRow = ({
           <>
             {options ? (
               <select
-                multiple
+                multiple={isMultiSelect}
                 value={editValue[field]}
                 onChange={(e) =>
                   setEditValue((prev) => ({
                     ...prev,
                     [field]: Array.from(
                       e.target.selectedOptions,
-                      (option) => option.value
+                      (option) => option.value,
                     ),
                   }))
                 }
