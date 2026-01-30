@@ -8,6 +8,7 @@ import { useGetRequest } from "../Utils/apiClient";
 import { useQuery } from "@tanstack/react-query";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Link } from "react-router-dom";
 
 const defaultFilters = {
   page: 1,
@@ -96,9 +97,12 @@ const SpinBonusList = ({ title = "Spin Bonuses" }) => {
         width: 220,
         render: (value) => (
           <div className="flex flex-col">
-            <span className="font-medium">
+            <Link
+              to={`/players/${value?.id}/profile`}
+              className="font-medium text-green-500"
+            >
               {value?.username || `ID: ${value?.id || "-"}`}
-            </span>
+            </Link>
             <span className="text-xs text-gray-500">{value?.email || "-"}</span>
           </div>
         ),
