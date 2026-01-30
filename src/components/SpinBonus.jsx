@@ -13,7 +13,6 @@ const defaultFilters = {
   page: 1,
   pageSize: 20,
   userId: "",
-  transactionId: "",
   minAmount: "",
   maxAmount: "",
   startDate: "",
@@ -144,7 +143,6 @@ const SpinBonusList = ({ title = "Spin Bonuses" }) => {
 
   const hasActiveFilters =
     filters.userId ||
-    filters.transactionId ||
     filters.minAmount ||
     filters.maxAmount ||
     filters.startDate ||
@@ -173,25 +171,6 @@ const SpinBonusList = ({ title = "Spin Bonuses" }) => {
               value={filters.userId}
               onChange={(e) =>
                 setFilters((f) => ({ ...f, userId: e.target.value, page: 1 }))
-              }
-            />
-          </div>
-
-          <div className="flex-1 min-w-[180px]">
-            <label className="block text-sm text-gray-600 mb-1">
-              Transaction ID
-            </label>
-            <input
-              className="border rounded px-3 py-2 w-full"
-              placeholder="Transaction ID"
-              type="text"
-              value={filters.transactionId}
-              onChange={(e) =>
-                setFilters((f) => ({
-                  ...f,
-                  transactionId: e.target.value,
-                  page: 1,
-                }))
               }
             />
           </div>
