@@ -75,9 +75,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
-    const interval = setInterval(() => {
-      fetchDashboardData();
-    }, 5 * 60 * 1000);
+    const interval = setInterval(
+      () => {
+        fetchDashboardData();
+      },
+      5 * 60 * 1000,
+    );
     return () => clearInterval(interval);
   }, []);
 
@@ -175,10 +178,10 @@ const Dashboard = () => {
       },
     ],
     // Row 2 (4 cards) (USD Amount)
-     [
+    [
       {
         title: "Total Player Deposit (USD)",
-        value:dashboardData?.totalDepositUSD||0,
+        value: dashboardData?.totalDepositUSD || 0,
         icon: <FaMoneyCheckAlt />,
         color: "border-green-400",
         permission: "dashboard_view_sales",
@@ -253,6 +256,13 @@ const Dashboard = () => {
         permission: "dashboard_view_user_activity",
       },
       {
+        title: "Total Player Spin Bonus",
+        value: formatAmount(dashboardData?.totalSpinBonus || 0),
+        icon: <FaTrophy />,
+        color: "border-red-400",
+        permission: "dashboard_view_user_activity",
+      },
+      {
         title: "Total BD Players",
         value: dashboardData?.totalBDUsers?.toLocaleString() || "0",
         icon: <FaUserFriends />,
@@ -294,7 +304,7 @@ const Dashboard = () => {
       {
         title: "Total Aff Withdraw Pending",
         value: formatAmount(
-          dashboardData?.totalAffiliateWithdrawalPending || 0
+          dashboardData?.totalAffiliateWithdrawalPending || 0,
         ),
         icon: <FaRegClock />,
         color: "border-amber-400",
@@ -400,12 +410,33 @@ const Dashboard = () => {
   const filteredRows = rows
     .map((row) =>
       row.filter(
-        (card) => isSuperAdmin || hasPermission(permissions, card.permission)
-      )
+        (card) => isSuperAdmin || hasPermission(permissions, card.permission),
+      ),
     )
     .filter((row) => row.length > 0);
 
   console.log("Filtered Rows:", { filteredRows, permissions, isSuperAdmin });
+
+  const getGridCols = (count) => {
+    switch (count) {
+      case 1:
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-1 md:grid-cols-2";
+      case 3:
+        return "grid-cols-1 md:grid-cols-3";
+      case 4:
+        return "grid-cols-1 md:grid-cols-4";
+      case 5:
+        return "grid-cols-1 md:grid-cols-5";
+      case 6:
+        return "grid-cols-1 md:grid-cols-6";
+      case 7:
+        return "grid-cols-1 md:grid-cols-7";
+      default:
+        return "grid-cols-1 md:grid-cols-4";
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -442,14 +473,7 @@ const Dashboard = () => {
 
       {/* Rows */}
       {filteredRows.map((row, rIdx) => (
-        <div
-          key={rIdx}
-          className={`grid gap-6 ${
-            row.length > 0
-              ? `grid-cols-1 md:grid-cols-${row.length}`
-              : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-          }`}
-        >
+        <div key={rIdx} className={`grid gap-6 ${getGridCols(row.length)}`}>
           {row.map((card, cIdx) => (
             <DashboardCard key={cIdx} {...card} />
           ))}
