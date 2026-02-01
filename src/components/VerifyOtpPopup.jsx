@@ -41,6 +41,25 @@ const VerifyOtpPopup = ({ email, onClose, onSuccess }) => {
         }
     };
 
+    const handlePaste = (e) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData("text").replace(/\D/g, "");
+        const pasteData = pastedText.slice(0, 6).split("");
+
+        if (pasteData.length > 0) {
+            const newOtp = [...otp];
+            pasteData.forEach((char, index) => {
+                newOtp[index] = char;
+            });
+            setOtp(newOtp);
+
+            // Focus the next available input or the last one
+            const nextIndex = pasteData.length < 6 ? pasteData.length : 5;
+            const targetInput = document.getElementById(`otp-${nextIndex}`);
+            if (targetInput) targetInput.focus();
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const otpString = otp.join("");
@@ -119,6 +138,7 @@ const VerifyOtpPopup = ({ email, onClose, onSuccess }) => {
                                 value={digit}
                                 onChange={(e) => handleChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
+                                onPaste={handlePaste}
                                 className="w-10 h-12 sm:w-12 sm:h-14 border-2 border-gray-200 rounded-lg text-center text-xl font-bold focus:border-green-500 focus:outline-none transition-colors"
                                 autoFocus={index === 0}
                             />
