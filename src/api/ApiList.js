@@ -21,6 +21,10 @@ export const API_LIST = {
   GET_ADMIN_DETAILS: `/api/admin/details`,
   UPDATE_ADMIN: `/api/admin/update`,
   DELETE_ADMIN: `/api/admin/delete`,
+  VERIFY_OTP: `/api/admin/verify-otp`,
+  RESEND_OTP: `/api/admin/resend-otp`,
+  FORGOT_PASSWORD: `/api/admin/forgot-password`,
+  RESET_PASSWORD: `/api/admin/reset-password`,
   // players
   GET_PLAYERS: "/api/admin/players",
   // GET_PLAYER_DETAILS:"/api/admin/player",

@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
 
+import VerifyOtpPopup from "./VerifyOtpPopup";
+import ForgotPasswordPopup from "./ForgotPasswordPopup";
+
 const Login = () => {
   const userType = import.meta.env.VITE_USER_TYPE;
   const [form, setForm] = useState({ username: "", password: "" });
@@ -12,8 +15,11 @@ const Login = () => {
   const { login, isLoading, user } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [showForgotPopup, setShowForgotPopup] = useState(false);
+  const [verifyEmail, setVerifyEmail] = useState("");
 
-  useEffect(() => { 
+  useEffect(() => {
     if (user?.role === "admin" || user?.role === "superAdmin") {
       navigate("/", { replace: true });
     } else if (user) {
@@ -41,10 +47,21 @@ const Login = () => {
       setIsLoadingLogin(false);
     } catch (err) {
       setIsLoadingLogin(false);
-      // console.log(err.response.data.message);
-      setError(err.response.data.message || "Login failed");
-      toast.error(err.response.data.message || "Login failed");
+      const resData = err.response?.data;
+      if (resData?.requiresVerification) {
+        setVerifyEmail(resData.email);
+        setShowOtpPopup(true);
+        toast.info(resData.message || "Please verify your email");
+      } else {
+        setError(resData?.message || "Login failed");
+        toast.error(resData?.message || "Login failed");
+      }
     }
+  };
+
+  const handleVerifySuccess = () => {
+    setShowOtpPopup(false);
+    toast.success("Verification successful! You can now log in.");
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-blue-200 p-4">
@@ -56,8 +73,8 @@ const Login = () => {
           {userType === "affiliate"
             ? "Affiliate Sign In"
             : userType === "agent"
-            ? "Agent Sign In"
-            : "Admin Sign In"}
+              ? "Agent Sign In"
+              : "Admin Sign In"}
         </h2>
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700">
@@ -98,6 +115,15 @@ const Login = () => {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setShowForgotPopup(true)}
+              className="text-sm font-medium text-green-600 hover:text-green-700 underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
         </div>
         {error && (
           <div className="text-red-500 text-sm text-center">{error}</div>
@@ -110,6 +136,18 @@ const Login = () => {
           {isLoading ? "Signing in..." : "Sign In"}
         </button>
       </form>
+
+      {showOtpPopup && (
+        <VerifyOtpPopup
+          email={verifyEmail}
+          onClose={() => setShowOtpPopup(false)}
+          onSuccess={handleVerifySuccess}
+        />
+      )}
+
+      {showForgotPopup && (
+        <ForgotPasswordPopup onClose={() => setShowForgotPopup(false)} />
+      )}
     </div>
   );
 };
