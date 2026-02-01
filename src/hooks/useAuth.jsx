@@ -14,6 +14,15 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
+const PUBLIC_ROUTES = [
+  "/login",
+  "/reset-password",
+  "/server-error",
+  "/test/image-upload"
+];
+
+const isPublicRoute = (path) => PUBLIC_ROUTES.some(route => path.startsWith(route));
+
 export function AuthProvider({ children }) {
   const [affiliateInfo, setAffiliateInfo] = useState(null);
   const [affiliateCommission, setAffiliateCommission] = useState(null);
@@ -58,11 +67,8 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token");
 
       // Redirect to login if the error indicates an invalid token or unauthorized access.
-      // This check is more robust than just checking for any error.
-      // We assume that if the profile fetch fails and we have no token, it's an invalid session.
-      // The condition `!authStateToken` in the useEffect below will also trigger a redirect if the token is cleared.
       if (error.response?.status === 401 || error.message === "Profile fetch failed") {
-        if (window.location.pathname !== "/login") {
+        if (!isPublicRoute(window.location.pathname)) {
           window.location.href = "/login";
         }
       }
@@ -75,7 +81,7 @@ export function AuthProvider({ children }) {
     // We should stop validating and redirect to login if not already there.
     if (!authStateToken && !user) {
       setIsValidating(false); // Stop validation as we are unauthenticated
-      if (window.location.pathname !== "/login") {
+      if (!isPublicRoute(window.location.pathname)) {
         window.location.href = "/login";
       }
     } else if (authStateToken && !user && !isProfileLoading) {
