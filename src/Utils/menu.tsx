@@ -3,105 +3,50 @@ import {
   FaUserFriends,
   FaMoneyCheckAlt,
   FaListUl,
-  FaGamepad,
   FaUserPlus,
   FaUsers,
-  FaCoins,
   FaCreditCard,
-  FaFutbol,
   FaCogs,
-  FaKey,
   FaDatabase,
-  FaChartPie,
   FaShieldAlt,
   FaGlobe,
   FaHistory,
-  FaSignOutAlt,
 } from "react-icons/fa";
 import { RxColorWheel } from "react-icons/rx";
 
-import { FaListCheck, FaMoneyBills, FaPeopleRobbery } from "react-icons/fa6";
+import { FaMoneyBills, FaPeopleRobbery } from "react-icons/fa6";
 import { PiContactlessPayment } from "react-icons/pi";
 import { CgDisplayFlex, CgDisplayFullwidth, CgMediaLive } from "react-icons/cg";
 
 import Dashboard from "../components/Dashboard";
-import ComingSoon from "../components/ComingSoon";
 import PlayerListPage from "../components/PlayerListPage";
 import PlayerProfile from "../components/PlayerProfile";
 import PlayerPaymentsPage from "../components/PlayerPaymentsPage";
 import PlayerTransactionsPage from "../components/PlayerTransactionsPage";
 import BettingWagerPage from "../components/BettingWagerPage";
-import AllDepositPage from "../components/AllDepositPage";
-import PendingDepositPage from "../components/PendingDepositPage";
-import AllWithdrawPage from "../components/AllWithdrawPage";
-import PendingWithdrawPage from "../components/PendingWithdrawPage";
-import BetListPage from "../components/BetListPage";
-import PendingBetListPage from "../components/PendingBetListPage";
-import GamesPage from "../components/GamesPage";
-import CreateAgentPage from "../components/CreateAgentPage";
-import AgentListPage from "../components/AgentListPage";
-import PrepaymentPage from "../components/PrepaymentPage";
-import CommissionPage from "../components/CommissionPage";
-import CreateMethodPage from "../components/CreateMethodPage";
-// import PaymentMethodsPage from "../components/PaymentMethodsPage";
-import PaymentListPage from "../components/PaymentListPage";
+
 import TransactionsPage from "../components/TransactionsPage";
-import AddSportPage from "../components/AddSportPage";
-import PlayersPage from "../components/PlayersPage";
-import NetProfitLossPage from "../components/NetProfitLossPage";
 import WinLossPage from "../components/WinLossPage";
-import ProductAnalyticsPage from "../components/ProductAnalyticsPage";
-import CoinAnalyticsPage from "../components/CoinAnalyticsPage";
-import ProviderPaymentsPage from "../components/ProviderPaymentsPage";
-import AffiliatePanelPage from "../components/AffiliatePanelPage";
-import TurnoverSettingsPage from "../components/TurnoverSettingsPage";
 import SystemSettingsPage from "../components/SystemSettingsPage";
 import BackupRestorePage from "../components/BackupRestorePage";
 import OwnerAccountControlPage from "../components/OwnerAccountControlPage";
-import {
-  BiAddToQueue,
-  BiHistory,
-  BiLoader,
-  BiMessage,
-  BiTrophy,
-} from "react-icons/bi";
-import OwnerPermissionPage from "../components/OwnerPermissionPage";
+import { BiAddToQueue, BiMessage, BiTrophy } from "react-icons/bi";
 import DesignationManagementPage from "../components/DesignationManagementPage";
-import SportsListPage from "../components/SportsListPage";
-import { GiAmericanFootballBall } from "react-icons/gi";
-import { FiPercent, FiStar } from "react-icons/fi";
+import { FiPercent } from "react-icons/fi";
 import {
-  TbEaseInOutControlPoints,
-  TbFileStar,
   TbGoGame,
   TbLicense,
   TbMapDiscount,
   TbMenuOrder,
-  TbShoppingBag,
 } from "react-icons/tb";
-import {
-  BsCalendar2Event,
-  BsShieldCheck,
-  BsStarFill,
-  BsTrophy,
-} from "react-icons/bs";
-import AddPopularSports from "../components/AddPopularSports";
-import PopularSportsList from "../components/PopularSportsList";
-import AddSlider from "../components/AddSlider";
-import SliderList from "../components/SliderList";
-import AddLanguage from "../components/AddLanguage";
+import { BsCalendar2Event, BsShieldCheck } from "react-icons/bs";
 import LanguageList from "../components/LanguageList";
-import AddProvider from "../components/AddProvider";
-import ProviderList from "../components/ProviderList";
-import LoginHistoryPage from "../components/LoginHistoryPage";
 import CreateAffiliate from "../components/CreateAffiliate";
 import AffiliateListPage from "../components/AffiliateListPage";
 import PlayerLoginHistoryPage from "../components/PlayerLoginHistoryPage";
 import PlayerTurnoverPage from "../components/PlayerTurnoverPage";
-import CountryManagementPage from "../components/CountryManagementPage";
 import CountryList from "../components/CountryList";
 import CurrencyList from "../components/CurrencyList";
-import CountryManagementDemo from "../components/CountryManagementDemo";
 import DropdownConfiguration from "../components/DropdownConfiguration";
 import { VscGitPullRequestCreate } from "react-icons/vsc";
 import {
@@ -134,11 +79,8 @@ import PaymentGatewaysPage from "../components/PaymentGatewaysPage";
 import PaymentProvidersPage from "../components/PaymentProvidersPage";
 import ProviderProfilePage from "../components/ProviderProfilePage";
 import GatewayManagementPage from "../components/GatewayManagementPage";
-import StatusChipDemo from "../components/test/StatusChipDemo";
 import AffiliatePlayerList from "../components/AffiliatePlayerList";
 import AffiliateWithdrawHistory from "../components/AffiliateWithdrawHistory";
-import SubAffiliateComHistory from "../components/SubAffiliateComHistory";
-import AffiliatePlayerComHistory from "../components/AffiliatePlayerComHistory";
 import AddParentProvider from "../components/AddParentProvider";
 import GameProvidersList from "../components/GameProvidersList";
 import AddGameProvider from "../components/AddGameProvider";
@@ -178,10 +120,9 @@ import {
   LiaPeopleCarrySolid,
 } from "react-icons/lia";
 import { SiLegacygames } from "react-icons/si";
-import { RiDropdownList, RiExchangeDollarFill } from "react-icons/ri";
+import { RiDropdownList } from "react-icons/ri";
 import SocialList from "../components/SocialList";
 import { FaWallet } from "react-icons/fa";
-import CurrencyConversion from "../components/CurrencyConversion";
 import Faqs from "../components/Faqs";
 import SupportLayout from "../components/SupportPanel/SupportLayout";
 import AffiliateSupportLayout from "../components/SupportPanel/AffiliateSupportLayout";
@@ -362,35 +303,6 @@ export const menu = [
       },
     ],
   },
-  // {
-  //   label: "Agent",
-  //   children: [
-  //     {
-  //       label: "Create Agent",
-  //       path: "/create-agent",
-  //       component: CreateAgentPage,
-  //       icon: <FaUserPlus />,
-  //     },
-  //     {
-  //       label: "Agent List",
-  //       path: "/agent-list",
-  //       component: AgentListPage,
-  //       icon: <FaUsers />,
-  //     },
-  //     {
-  //       label: "Prepayment",
-  //       path: "/prepayment",
-  //       component: PrepaymentPage,
-  //       icon: <FaCoins />,
-  //     },
-  //     {
-  //       label: "Commission",
-  //       path: "/commission",
-  //       component: CommissionPage,
-  //       icon: <FaCoins />,
-  //     },
-  //   ],
-  // },
   {
     label: "Promotions",
     icon: <TbMapDiscount />,
@@ -421,44 +333,12 @@ export const menu = [
     component: SpinBonus,
     accessCategory: "notifications",
   },
-  // {
-  //   label: "Bets",
-  //   children: [
-  //     {
-  //       label: "Bet List",
-  //       path: "/bet-list",
-  //       component: BetListPage,
-  //       icon: <FaListUl />,
-  //       props: {},
-  //     },
-  //     {
-  //       label: "Pending Bet",
-  //       path: "/pending-bet",
-  //       component: PendingBetListPage,
-  //       icon: <FaListUl />,
-  //       props: {},
-  //     },
-  //     {
-  //       label: "Games",
-  //       path: "/games",
-  //       component: GamesPage,
-  //       icon: <FaGamepad />,
-  //       props: {},
-  //     },
-  //   ],
-  // },
 
   {
     label: "Payment Method",
     icon: <MdOutlinePayment />,
     accessCategory: "PAYMENT",
     children: [
-      // {
-      //   label: "Create Method",
-      //   path: "/create-method",
-      //   component: CreateMethodPage,
-      //   icon: <FaCreditCard />,
-      // },
       {
         label: "Payment Methods",
         path: "/payment-methods",
@@ -473,12 +353,7 @@ export const menu = [
         icon: <FaMoneyBills />,
         accessKey: "payment_manage_payment_method_types",
       },
-      // {
-      //   label: "Payment List",
-      //   path: "/payment-list",
-      //   component: PaymentListPage,
-      //   icon: <FaCreditCard />,
-      // },
+
       {
         label: "Payment Gateway",
         path: "/payment-gateways",
@@ -503,7 +378,6 @@ export const menu = [
       {
         label: "Gateway Management",
         path: "/gateway-management/:gatewayId/provider/:providerId/gateway-provider/:gatewayProviderId",
-        // path: "/gateway-management/:gatewayId/provider/:providerId",
         component: GatewayManagementPage,
         icon: <FaCogs />,
         skipFromMenu: true,
@@ -631,65 +505,12 @@ export const menu = [
       },
     ],
   },
-  // {
-  //   label: "Slider",
-  //   icon: <TbFileStar />,
-  //   children: [
-  //     {
-  //       label: "Add Slider",
-  //       path: "/add-slider",
-  //       component: AddSlider,
-  //       icon: <FiStar />,
-  //     },
-  //     {
-  //       label: "Slider List",
-  //       path: "/slider-list",
-  //       component: SliderList,
-  //       icon: <TbFileStar />,
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Language",
-  //   icon: <FaGlobe />,
-  //   children: [
-  //     {
-  //       label: "Add Language",
-  //       path: "/add-language",
-  //       component: AddLanguage,
-  //       icon: <FaGlobe />,
-  //     },
-  //     {
-  //       label: "Language List",
-  //       path: "/language-list",
-  //       component: LanguageList,
-  //       icon: <FaGlobe />,
-  //     },
-  //     {
-  //       label: "Country List",
-  //       path: "/country-list",
-  //       component: CountryList,
-  //       icon: <FaGlobe />,
-  //     },
-  //   ],
-  // },
+
   {
     label: "Country Management",
     icon: <FaGlobe />,
     accessCategory: "COUNTRY",
     children: [
-      // {
-      //   label: "Overview",
-      //   path: "/country-management",
-      //   component: CountryManagementPage,
-      //   icon: <GrGlobe />,
-      // },
-      // {
-      //   label: "Demo",
-      //   path: "/country-demo",
-      //   component: CountryManagementDemo,
-      //   icon: <FaGlobe />,
-      // },
       {
         label: "Countries",
         path: "/countries",
@@ -717,7 +538,7 @@ export const menu = [
   {
     label: "CMS",
     icon: <MdDisplaySettings />,
-    onlyOwner: true, // Only visible to owner
+    onlyOwner: true,
     accessCategory: "CMS",
     children: [
       {
@@ -806,12 +627,6 @@ export const menu = [
       },
     ],
   },
-  // {
-  //   label: "Login History",
-  //   path: "/login-history",
-  //   icon: <FaHistory />,
-  //   component: LoginHistoryPage,
-  // },
   {
     label: "Configuration",
     icon: <VscGitPullRequestCreate />,
@@ -832,17 +647,6 @@ export const menu = [
         icon: <TbMenuOrder />,
         accessKey: "settings_manage_menu_management",
       },
-      // {
-      //   label: "Currency Conversion",
-      //   path: "/currency-conversion",
-      //   component: CurrencyConversion,
-      //   icon: <RiExchangeDollarFill />,
-      // },
-      // {
-      //   label: "StatusChip Demo",
-      //   path: "/status-chip-demo",
-      //   component: StatusChipDemo,
-      // },
     ],
   },
 
@@ -881,17 +685,10 @@ export const menu = [
         accessKey: "settings_view_system_settings",
         icon: <FaCogs />,
       },
-      // {
-      //   label: "Turnover",
-      //   path: "/settings/turnover",
-      //   component: TurnoverSettingsPage,
-      //   icon: <BiLoader />,
-      // },
       {
         label: "Backup & Restore",
         path: "/settings/backup",
         component: BackupRestorePage,
-        // onlyOwner: true, // Only visible to owner
         accessKey: "settings_manage_backup_restore",
         icon: <FaDatabase />,
       },
@@ -924,17 +721,6 @@ export const affiliateOutsideRoute = [
     component: AffiliateWithdrawHistory,
     accessKey: "affiliate_view_affiliate_withdraw_history",
   },
-
-  // {
-  //   label: "Sub Affiliate C. History",
-  //   path: "/affiliate-list/:affiliateId/sub-affiliate-commission-history",
-  //   component: AffiliateCommissionListPage,
-  // },
-  // {
-  //   label: "Player C. History",
-  //   path: "/affiliate-list/:affiliateId/player-commission-history",
-  //   component: AffiliateCommissionListPage,
-  // },
   {
     label: "Commission History",
     path: "/affiliate-list/:affiliateId/affiliate-commission-history",
