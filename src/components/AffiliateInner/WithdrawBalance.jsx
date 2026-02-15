@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../../api/ApiList";
 import { useCurrencies } from "../shared/useCurrencies";
@@ -24,6 +25,7 @@ const defaultFilters = {
 };
 
 const WithdrawBalance = () => {
+  const navigate = useNavigate();
   const { data: settingsData } = useSettings();
   const isTodayWithdrawDay = (days) => {
     if (!days) return "N/A";
@@ -38,7 +40,7 @@ const WithdrawBalance = () => {
     return days.toLowerCase().includes(today);
   };
 
-  const { affiliateInfo, affiliateCommission } = useAuth();
+  const { affiliateInfo, affiliateCommission, user } = useAuth();
   console.log(affiliateInfo);
   const [filters, setFilters] = useState({
     ...defaultFilters,
@@ -96,8 +98,8 @@ const WithdrawBalance = () => {
       const usdCurrency =
         currencyOptions?.length > 0
           ? currencyOptions.find(
-              (option) => option?.label === "US Dollar (USD)"
-            )
+            (option) => option?.label === "US Dollar (USD)"
+          )
           : null;
 
       setForm((prev) => ({ ...prev, currencyId: usdCurrency?.value }));
@@ -137,7 +139,7 @@ const WithdrawBalance = () => {
     const bdtConversionAmount =
       isUSD?.label === "US Dollar (USD)"
         ? Number(form.amount || 0) *
-          Number(settingsData?.data[0]?.conversionRate || 1)
+        Number(settingsData?.data[0]?.conversionRate || 1)
         : form.amount;
     if (
       Number(bdtConversionAmount) < affiliateInfo?.minTrx ||
@@ -177,18 +179,18 @@ const WithdrawBalance = () => {
         remainingBalance: withdrawAbleBalance() - Number(bdtConversionAmount),
         ...(form.withdrawMethod === "bank"
           ? {
-              accountNumber: form.accountNumber,
-              accountHolderName: form.accountHolderName,
-              bankName: form.bankName,
-              branchName: form.branchName,
-              branchAddress: form.branchAddress,
-              swiftCode: form.swiftCode,
-              iban: form.iban,
-            }
+            accountNumber: form.accountNumber,
+            accountHolderName: form.accountHolderName,
+            bankName: form.bankName,
+            branchName: form.branchName,
+            branchAddress: form.branchAddress,
+            swiftCode: form.swiftCode,
+            iban: form.iban,
+          }
           : {
-              walletAddress: form.walletAddress,
-              network: form.network,
-            }),
+            walletAddress: form.walletAddress,
+            network: form.network,
+          }),
       };
       mutation.mutate(payload, {
         onSuccess: () => {
@@ -210,7 +212,11 @@ const WithdrawBalance = () => {
             walletAddress: "",
             network: "",
           });
-          window.location.reload();
+          if (user?.role === "superAdmin" || user?.role === "admin") {
+            navigate("/affiliate-withdraw-requests");
+          } else {
+            navigate(`/affiliate-list/${affiliateInfo?.id}/withdraw-history`);
+          }
         },
         onError: (err) => {
           setResponse({
@@ -407,8 +413,8 @@ const WithdrawBalance = () => {
                       placeholder={label}
                       value={
                         form[
-                          label.replace(/\s+/g, "").charAt(0).toLowerCase() +
-                            label.replace(/\s+/g, "").slice(1)
+                        label.replace(/\s+/g, "").charAt(0).toLowerCase() +
+                        label.replace(/\s+/g, "").slice(1)
                         ]
                       }
                       onChange={handleChange}
@@ -473,18 +479,16 @@ const WithdrawBalance = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`bg-green-500 text-white px-4 py-2 rounded ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-green-500 text-white px-4 py-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
 
           {response && (
             <p
-              className={`text-sm mt-2 ${
-                response.status ? "text-green-600" : "text-red-600"
-              }`}
+              className={`text-sm mt-2 ${response.status ? "text-green-600" : "text-red-600"
+                }`}
             >
               {response.message}
             </p>
