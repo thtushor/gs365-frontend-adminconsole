@@ -5,7 +5,15 @@ import { API_LIST } from "../api/ApiList";
 import DataTable from "./DataTable";
 import ReusableModal from "./ReusableModal";
 import Pagination from "./Pagination";
-import { FaTrash, FaEdit, FaUserCheck } from "react-icons/fa";
+import {
+  FaTrash,
+  FaEdit,
+  FaUserCheck,
+  FaEnvelope,
+  FaEnvelopeOpenText,
+  FaMobile,
+  FaMobileAlt,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
@@ -19,6 +27,9 @@ const mapAgent = (agent) => ({
   mobile: agent.mobile,
   role: agent.role,
   status: agent.status,
+  isVerified: agent.isVerified,
+  isEmailVerified: agent.isEmailVerified,
+  isPhoneVerified: agent.isPhoneVerified,
   created: agent.created_at
     ? new Date(agent.created_at).toLocaleDateString()
     : "N/A",
@@ -295,29 +306,62 @@ const AffiliateListPage = () => {
             )}
           {(isSuperAdmin ||
             hasPermission(permissions, "affiliate_edit_affiliate")) && (
-              <button
-                className={`inline-flex items-center justify-center rounded-full p-2 transition ${row.isVerified
-                  ? "text-green-600 hover:bg-green-100"
-                  : "text-purple-600 hover:bg-purple-100"
-                  }`}
-                title={row.isVerified ? "Unverify" : "Verify"}
-                onClick={() => {
-                  const newStatus = !row.isVerified;
-                  if (
-                    window.confirm(
-                      `Are you sure you want to ${newStatus ? "verify" : "unverify"
-                      } ${row.username}?`
-                    )
-                  ) {
-                    updateMutation.mutate({
-                      id: row.id,
-                      isVerified: newStatus,
-                    });
-                  }
-                }}
-              >
-                <FaUserCheck />
-              </button>
+              <>
+                <button
+                  className={`inline-flex items-center justify-center rounded-full p-2 transition ${row.isEmailVerified
+                    ? "text-green-600 hover:bg-green-100"
+                    : "text-purple-600 hover:bg-purple-100"
+                    }`}
+                  title={row.isEmailVerified ? "Unverify Email" : "Verify Email"}
+                  onClick={() => {
+                    const newStatus = !row.isEmailVerified;
+                    if (
+                      window.confirm(
+                        `Are you sure you want to ${newStatus ? "verify" : "unverify"
+                        } ${row.username}'s email?`
+                      )
+                    ) {
+                      updateMutation.mutate({
+                        id: row.id,
+                        isEmailVerified: newStatus,
+                      });
+                    }
+                  }}
+                >
+                  {row.isEmailVerified ? (
+                    <FaEnvelopeOpenText size={14} />
+                  ) : (
+                    <FaEnvelope size={14} />
+                  )}
+                </button>
+                <button
+                  className={`inline-flex items-center justify-center rounded-full p-2 transition ${row.isPhoneVerified
+                    ? "text-green-600 hover:bg-green-100"
+                    : "text-purple-600 hover:bg-purple-100"
+                    }`}
+                  title={row.isPhoneVerified ? "Unverify Phone" : "Verify Phone"}
+                  onClick={() => {
+                    const newStatus = !row.isPhoneVerified;
+                    if (
+                      window.confirm(
+                        `Are you sure you want to ${newStatus ? "verify" : "unverify"
+                        } ${row.username}'s phone?`
+                      )
+                    ) {
+                      updateMutation.mutate({
+                        id: row.id,
+                        isPhoneVerified: newStatus,
+                      });
+                    }
+                  }}
+                >
+                  {row.isPhoneVerified ? (
+                    <FaMobileAlt size={14} />
+                  ) : (
+                    <FaMobile size={14} />
+                  )}
+                </button>
+              </>
             )}
           {(isSuperAdmin ||
             hasPermission(permissions, "affiliate_delete_affiliate")) && (
