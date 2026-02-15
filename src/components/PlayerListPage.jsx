@@ -44,6 +44,9 @@ const mapPlayer = (p) => ({
   agentRole: p.agentRole,
   totalBalance: p.totalBalance,
   totalDeposits: p.totalDeposits,
+  totalOnlyDeposits: p.totalOnlyDeposits,
+  totalBonus: p.totalBonus,
+  totalSpinBonus: p.totalSpinBonus,
   totalWithdrawals: p.totalWithdrawals,
   totalWins: p.totalWins,
   totalLosses: p.totalLosses,
@@ -228,19 +231,19 @@ const PlayerListPage = () => {
         <div>
           {(isSuperAdmin ||
             hasPermission(permissions, "player_create_player")) && (
-            <button
-              className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium mr-2"
-              onClick={handleAddPlayer}
-            >
-              Add Player
-            </button>
-          )}
+              <button
+                className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium mr-2"
+                onClick={handleAddPlayer}
+              >
+                Add Player
+              </button>
+            )}
           {(isSuperAdmin ||
             hasPermission(permissions, "player_export_player_data")) && (
-            <button className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium">
-              Print
-            </button>
-          )}
+              <button className="border border-green-400 text-green-500 px-4 py-1 rounded hover:bg-green-50 transition text-sm font-medium">
+                Print
+              </button>
+            )}
         </div>
       </div>
       <div className="bg-white rounded-lg shadow p-4 mb-4">
@@ -266,7 +269,7 @@ const PlayerListPage = () => {
               }
               onDelete={
                 isSuperAdmin ||
-                hasPermission(permissions, "player_delete_player")
+                  hasPermission(permissions, "player_delete_player")
                   ? handleDeletePlayer
                   : undefined
               }

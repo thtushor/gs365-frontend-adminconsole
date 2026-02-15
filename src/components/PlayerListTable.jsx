@@ -394,7 +394,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
             : null,
         promotionId:
           notificationForm.notificationType === "linkable" ||
-          notificationForm.notificationType === "claimable"
+            notificationForm.notificationType === "claimable"
             ? notificationForm.promotionId
             : null,
         startDate: notificationForm.startDate || new Date().toISOString(), // must not be empty
@@ -494,9 +494,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       width: 100,
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
-            value === "active" ? "text-green-600" : "text-red-500"
-          }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "active" ? "text-green-600" : "text-red-500"
+            }`}
         >
           {value}
         </span>
@@ -508,9 +507,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       width: 100,
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
-            value === "verified" ? "text-green-600" : "text-red-500"
-          }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "verified" ? "text-green-600" : "text-red-500"
+            }`}
         >
           {value}
         </span>
@@ -522,9 +520,8 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       width: 100,
       render: (value) => (
         <span
-          className={`px-2 py-1 rounded text-xs ${
-            value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-          }`}
+          className={`px-2 py-1 rounded text-xs ${value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
         >
           {value ? "Yes" : "No"}
         </span>
@@ -614,12 +611,22 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
       ),
     },
     {
-      field: "totalDeposits",
+      field: "totalOnlyDeposits",
       headerName: "DEPOSITS",
       width: 120,
       render: (value) => (
         <span className="font-medium text-blue-600">
           {formatAmount(value || 0)}
+        </span>
+      ),
+    },
+    {
+      field: "totalBonus",
+      headerName: "TOTAL BONUS",
+      width: 120,
+      render: (value, row) => (
+        <span className="font-medium text-purple-600">
+          {formatAmount(value + Number(row.totalSpinBonus) || 0)}
         </span>
       ),
     },
@@ -733,7 +740,7 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
                 readOnly
               />
             </div>
-      
+
           </div>
 
           <div>
@@ -991,25 +998,25 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
               {/* Linkable Fields */}
               {(notificationForm.notificationType === "linkable" ||
                 notificationForm.notificationType === "claimable") && (
-                <div>
-                  <label className="block text-sm mb-1">Promotion</label>
-                  <Select
-                    isClearable
-                    isSearchable
-                    placeholder="Select a promotion..."
-                    options={promotionOptions}
-                    value={
-                      promotionOptions.find(
-                        (option) =>
-                          option.value === notificationForm.promotionId
-                      ) || null
-                    }
-                    onChange={handleNotificationPromotionChange}
-                    isLoading={promotionsLoading}
-                    className="w-full"
-                  />
-                </div>
-              )}
+                  <div>
+                    <label className="block text-sm mb-1">Promotion</label>
+                    <Select
+                      isClearable
+                      isSearchable
+                      placeholder="Select a promotion..."
+                      options={promotionOptions}
+                      value={
+                        promotionOptions.find(
+                          (option) =>
+                            option.value === notificationForm.promotionId
+                        ) || null
+                      }
+                      onChange={handleNotificationPromotionChange}
+                      isLoading={promotionsLoading}
+                      className="w-full"
+                    />
+                  </div>
+                )}
 
               {/* Common Optional Fields */}
               <div>
