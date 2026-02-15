@@ -55,6 +55,8 @@ const AffiliateListPage = () => {
   const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
 
+  console.log(permissions, "permissions", isSuperAdmin);
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["affiliates", filters],
     queryFn: async () => {
@@ -292,26 +294,29 @@ const AffiliateListPage = () => {
               </button>
             )}
           {(isSuperAdmin ||
-            hasPermission(permissions, "affiliate_edit_affiliate")) &&
-            !row.isVerified && (
+            hasPermission(permissions, "affiliate_edit_affiliate")) && (
               <button
-                className="inline-flex items-center justify-center text-purple-500 hover:bg-purple-100 rounded-full p-2 transition"
-                title="Verify"
+                className={`inline-flex items-center justify-center rounded-full p-2 transition ${row.isVerified
+                  ? "text-green-600 hover:bg-green-100"
+                  : "text-purple-600 hover:bg-purple-100"
+                  }`}
+                title={row.isVerified ? "Unverify" : "Verify"}
                 onClick={() => {
+                  const newStatus = !row.isVerified;
                   if (
                     window.confirm(
-                      `Are you sure you want to verify ${row.username}?`
+                      `Are you sure you want to ${newStatus ? "verify" : "unverify"
+                      } ${row.username}?`
                     )
                   ) {
                     updateMutation.mutate({
                       id: row.id,
-                      isVerified: true,
+                      isVerified: newStatus,
                     });
                   }
                 }}
               >
-                {/* <FaUserCheck /> */}
-                verify
+                <FaUserCheck />
               </button>
             )}
           {(isSuperAdmin ||

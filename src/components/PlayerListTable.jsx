@@ -204,12 +204,14 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect, onVerify }) => {
       });
     }
 
-    if (onVerify && !row.isVerified) {
+    if (onVerify) {
       actions.push({
-        label: "Verify",
+        label: row.isVerified ? "Unverify" : "Verify",
         icon: <FaUserCheck size={14} />,
         onClick: () => onVerify(row),
-        className: "text-purple-600 hover:bg-purple-50",
+        className: row.isVerified
+          ? "text-green-600 hover:bg-green-50"
+          : "text-purple-600 hover:bg-purple-50",
       });
     }
 

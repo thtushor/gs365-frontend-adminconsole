@@ -204,8 +204,14 @@ const PlayerListPage = () => {
   };
 
   const handleVerify = (player) => {
-    if (window.confirm(`Are you sure you want to manually verify ${player.name}?`)) {
-      editMutation.mutate({ id: player.id, isVerified: true });
+    const newStatus = !player.isVerified;
+    if (
+      window.confirm(
+        `Are you sure you want to manually ${newStatus ? "verify" : "unverify"
+        } ${player.name}?`
+      )
+    ) {
+      editMutation.mutate({ id: player.id, isVerified: newStatus });
     }
   };
 
