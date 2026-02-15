@@ -5,6 +5,10 @@ import {
   FaMoneyBillWave,
   FaEllipsisV,
   FaUserCheck,
+  FaEnvelope,
+  FaEnvelopeOpenText,
+  FaMobile,
+  FaMobileAlt,
 } from "react-icons/fa";
 import DataTable from "./DataTable";
 import { useEffect, useState } from "react";
@@ -38,7 +42,14 @@ const usePromotions = () => {
   });
 };
 
-const PlayerListTable = ({ players, onEdit, onDelete, onSelect, onVerify }) => {
+const PlayerListTable = ({
+  players,
+  onEdit,
+  onDelete,
+  onSelect,
+  onVerifyEmail,
+  onVerifyPhone,
+}) => {
   console.log(players);
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
@@ -204,12 +215,31 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect, onVerify }) => {
       });
     }
 
-    if (onVerify) {
+    if (onVerifyEmail) {
       actions.push({
-        label: row.isVerified ? "Unverify" : "Verify",
-        icon: <FaUserCheck size={14} />,
-        onClick: () => onVerify(row),
-        className: row.isVerified
+        label: row.isEmailVerified ? "Unverify Email" : "Verify Email",
+        icon: row.isEmailVerified ? (
+          <FaEnvelopeOpenText size={14} />
+        ) : (
+          <FaEnvelope size={14} />
+        ),
+        onClick: () => onVerifyEmail(row),
+        className: row.isEmailVerified
+          ? "text-green-600 hover:bg-green-50"
+          : "text-purple-600 hover:bg-purple-50",
+      });
+    }
+
+    if (onVerifyPhone) {
+      actions.push({
+        label: row.isPhoneVerified ? "Unverify Phone" : "Verify Phone",
+        icon: row.isPhoneVerified ? (
+          <FaMobileAlt size={14} />
+        ) : (
+          <FaMobile size={14} />
+        ),
+        onClick: () => onVerifyPhone(row),
+        className: row.isPhoneVerified
           ? "text-green-600 hover:bg-green-50"
           : "text-purple-600 hover:bg-purple-50",
       });

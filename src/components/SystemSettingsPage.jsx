@@ -20,6 +20,8 @@ const SystemSettingsPage = () => {
     defaultTurnover: 0,
     spinTurnoverMultiply: 0,
     isGlobalSpinEnabled: "Enabled",
+    isEmailVerificationEnabled: "Enabled",
+    isSmsVerificationEnabled: "Enabled",
     adminBalance: 0,
     minWithdrawableBalance: 0,
     conversionRate: 0,
@@ -39,6 +41,8 @@ const SystemSettingsPage = () => {
       adminBalance: setting.adminBalance,
       spinTurnoverMultiply: setting.spinTurnoverMultiply,
       isGlobalSpinEnabled: setting.isGlobalSpinEnabled,
+      isEmailVerificationEnabled: setting.isEmailVerificationEnabled,
+      isSmsVerificationEnabled: setting.isSmsVerificationEnabled,
       minWithdrawableBalance: setting.minWithdrawableBalance,
       conversionRate: setting.conversionRate,
       affiliateWithdrawTime: Array.isArray(setting.affiliateWithdrawTime)
@@ -98,6 +102,8 @@ const SystemSettingsPage = () => {
           defaultTurnover: Number(editValue.defaultTurnover),
           spinTurnoverMultiply: Number(editValue.spinTurnoverMultiply),
           isGlobalSpinEnabled: editValue.isGlobalSpinEnabled,
+          isEmailVerificationEnabled: editValue.isEmailVerificationEnabled,
+          isSmsVerificationEnabled: editValue.isSmsVerificationEnabled,
           adminBalance: Number(editValue.adminBalance),
           minWithdrawableBalance: Number(editValue.minWithdrawableBalance),
           conversionRate: Number(editValue.conversionRate),
@@ -205,9 +211,8 @@ const SystemSettingsPage = () => {
                 {/* Default Turnover */}
                 <SettingRow
                   label="Default Turnover Settings"
-                  description={`Current value: ${
-                    setting.defaultTurnover || 0
-                  } times`}
+                  description={`Current value: ${setting.defaultTurnover || 0
+                    } times`}
                   field="defaultTurnover"
                   setting={setting}
                   editingField={editingField}
@@ -238,12 +243,46 @@ const SystemSettingsPage = () => {
                   isMultiSelect={false}
                 />
 
+                <SettingRow
+                  label="Email Verification Required"
+                  description={`Current value: ${setting.isEmailVerificationEnabled}`}
+                  field="isEmailVerificationEnabled"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                  options={spinOnOffOptions}
+                  isMultiSelect={false}
+                />
+
+                {/* SMS Verification Toggle */}
+                <SettingRow
+                  label="SMS Verification Required"
+                  description={`Current value: ${setting.isSmsVerificationEnabled}`}
+                  field="isSmsVerificationEnabled"
+                  setting={setting}
+                  editingField={editingField}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  handleEdit={handleEdit}
+                  handleSave={handleSave}
+                  handleCancel={handleCancel}
+                  hasAccess={hasAccess}
+                  updateSettingsMutation={updateSettingsMutation}
+                  options={spinOnOffOptions}
+                  isMultiSelect={false}
+                />
+
                 {/* Default Turnover */}
                 <SettingRow
                   label="Spin Turnover Settings"
-                  description={`Current value: ${
-                    setting.spinTurnoverMultiply || 0
-                  } times`}
+                  description={`Current value: ${setting.spinTurnoverMultiply || 0
+                    } times`}
                   field="spinTurnoverMultiply"
                   setting={setting}
                   editingField={editingField}
@@ -277,9 +316,8 @@ const SystemSettingsPage = () => {
                 {/* Conversion Rate */}
                 <SettingRow
                   label="Conversion Rate"
-                  description={`Current value: 1 USD = ${
-                    setting.conversionRate || 0
-                  } BDT`}
+                  description={`Current value: 1 USD = ${setting.conversionRate || 0
+                    } BDT`}
                   field="conversionRate"
                   setting={setting}
                   editingField={editingField}
@@ -297,11 +335,10 @@ const SystemSettingsPage = () => {
                 {/* Affiliate Withdraw Days */}
                 <SettingRow
                   label="Affiliate Withdraw Days"
-                  description={`Current value: ${
-                    Array.isArray(setting.affiliateWithdrawTime)
-                      ? setting.affiliateWithdrawTime.join(", ")
-                      : setting.affiliateWithdrawTime || "Any Time"
-                  }`}
+                  description={`Current value: ${Array.isArray(setting.affiliateWithdrawTime)
+                    ? setting.affiliateWithdrawTime.join(", ")
+                    : setting.affiliateWithdrawTime || "Any Time"
+                    }`}
                   field="affiliateWithdrawTime"
                   setting={setting}
                   editingField={editingField}
@@ -316,12 +353,11 @@ const SystemSettingsPage = () => {
                 />
                 <SettingRow
                   label="System Active Time (Deposit/Withdraw)"
-                  description={`Current: ${
-                    setting.systemActiveTime?.start &&
+                  description={`Current: ${setting.systemActiveTime?.start &&
                     setting.systemActiveTime?.end
-                      ? `${setting.systemActiveTime?.start} - ${setting.systemActiveTime.end}`
-                      : "No restriction"
-                  }`}
+                    ? `${setting.systemActiveTime?.start} - ${setting.systemActiveTime.end}`
+                    : "No restriction"
+                    }`}
                   field="systemActiveTime"
                   setting={setting}
                   editingField={editingField}

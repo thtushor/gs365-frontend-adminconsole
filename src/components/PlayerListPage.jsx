@@ -32,6 +32,8 @@ const mapPlayer = (p) => ({
   created: new Date(p.created_at).toLocaleDateString(),
   // New fields from updated API
   isVerified: p.isVerified,
+  isEmailVerified: p.isEmailVerified,
+  isPhoneVerified: p.isPhoneVerified,
   currencyCode: p.currencyCode,
   currencyName: p.currencyName,
   referrerName: p.referrerName,
@@ -203,15 +205,27 @@ const PlayerListPage = () => {
     navigate(`/players/${player.id}/profile`);
   };
 
-  const handleVerify = (player) => {
-    const newStatus = !player.isVerified;
+  const handleVerifyEmail = (player) => {
+    const newStatus = !player.isEmailVerified;
     if (
       window.confirm(
         `Are you sure you want to manually ${newStatus ? "verify" : "unverify"
-        } ${player.name}?`
+        } ${player.name}'s email?`
       )
     ) {
-      editMutation.mutate({ id: player.id, isVerified: newStatus });
+      editMutation.mutate({ id: player.id, isEmailVerified: newStatus });
+    }
+  };
+
+  const handleVerifyPhone = (player) => {
+    const newStatus = !player.isPhoneVerified;
+    if (
+      window.confirm(
+        `Are you sure you want to manually ${newStatus ? "verify" : "unverify"
+        } ${player.name}'s phone?`
+      )
+    ) {
+      editMutation.mutate({ id: player.id, isPhoneVerified: newStatus });
     }
   };
 
@@ -285,8 +299,11 @@ const PlayerListPage = () => {
                   ? handleDeletePlayer
                   : undefined
               }
-              onVerify={
-                isSuperAdmin || hasPermission(permissions, "player_edit_player") ? handleVerify : undefined
+              onVerifyEmail={
+                isSuperAdmin || hasPermission(permissions, "player_edit_player") ? handleVerifyEmail : undefined
+              }
+              onVerifyPhone={
+                isSuperAdmin || hasPermission(permissions, "player_edit_player") ? handleVerifyPhone : undefined
               }
               onSelect={handlePlayerSelect}
             />
