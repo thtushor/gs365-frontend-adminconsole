@@ -203,6 +203,12 @@ const PlayerListPage = () => {
     navigate(`/players/${player.id}/profile`);
   };
 
+  const handleVerify = (player) => {
+    if (window.confirm(`Are you sure you want to manually verify ${player.name}?`)) {
+      editMutation.mutate({ id: player.id, isVerified: true });
+    }
+  };
+
   const handleDeletePlayer = (player) => {
     if (window.confirm("Are you sure you want to delete this player?")) {
       deleteMutation.mutate(player.id);
@@ -272,6 +278,9 @@ const PlayerListPage = () => {
                   hasPermission(permissions, "player_delete_player")
                   ? handleDeletePlayer
                   : undefined
+              }
+              onVerify={
+                isSuperAdmin || hasPermission(permissions, "player_edit_player") ? handleVerify : undefined
               }
               onSelect={handlePlayerSelect}
             />

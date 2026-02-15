@@ -5,7 +5,7 @@ import { API_LIST } from "../api/ApiList";
 import DataTable from "./DataTable";
 import ReusableModal from "./ReusableModal";
 import Pagination from "./Pagination";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaTrash, FaEdit, FaUserCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { CreateAgentForm } from "./shared/CreateAgentForm";
@@ -108,7 +108,7 @@ const AffiliateListPage = () => {
       field: "ID",
       headerName: "ID",
       width: 60,
-      render: (_,row) => row.id,
+      render: (_, row) => row.id,
     },
     {
       field: "username",
@@ -162,9 +162,8 @@ const AffiliateListPage = () => {
       align: "center",
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
-            value === "active" ? "text-green-600" : "text-red-500"
-          }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "active" ? "text-green-600" : "text-red-500"
+            }`}
         >
           {value}
         </span>
@@ -177,9 +176,8 @@ const AffiliateListPage = () => {
       align: "center",
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
-            value === "verified" ? "text-green-600" : "text-red-500"
-          }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "verified" ? "text-green-600" : "text-red-500"
+            }`}
         >
           {value}
         </span>
@@ -285,27 +283,50 @@ const AffiliateListPage = () => {
         <div className="flex gap-2 justify-center">
           {(isSuperAdmin ||
             hasPermission(permissions, "affiliate_edit_affiliate")) && (
-            <button
-              className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
-              title="Edit"
-              onClick={() => handleEdit(row)}
-            >
-              <FaEdit />
-            </button>
-          )}
+              <button
+                className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
+                title="Edit"
+                onClick={() => handleEdit(row)}
+              >
+                <FaEdit />
+              </button>
+            )}
+          {(isSuperAdmin ||
+            hasPermission(permissions, "affiliate_edit_affiliate")) &&
+            !row.isVerified && (
+              <button
+                className="inline-flex items-center justify-center text-purple-500 hover:bg-purple-100 rounded-full p-2 transition"
+                title="Verify"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      `Are you sure you want to verify ${row.username}?`
+                    )
+                  ) {
+                    updateMutation.mutate({
+                      id: row.id,
+                      isVerified: true,
+                    });
+                  }
+                }}
+              >
+                {/* <FaUserCheck /> */}
+                verify
+              </button>
+            )}
           {(isSuperAdmin ||
             hasPermission(permissions, "affiliate_delete_affiliate")) && (
-            <button
-              className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
-              title="Delete"
-              onClick={() => {
-                setSelectedAgent(row);
-                setDeleteModalOpen(true);
-              }}
-            >
-              <FaTrash />
-            </button>
-          )}
+              <button
+                className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
+                title="Delete"
+                onClick={() => {
+                  setSelectedAgent(row);
+                  setDeleteModalOpen(true);
+                }}
+              >
+                <FaTrash />
+              </button>
+            )}
         </div>
       ),
     },
@@ -371,13 +392,13 @@ const AffiliateListPage = () => {
         <h2 className="text-lg font-semibold">Affiliate List</h2>
         {(isSuperAdmin ||
           hasPermission(permissions, "affiliate_create_affiliate")) && (
-          <button
-            className="bg-green-500 text-center text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-            onClick={() => navigate("/create-affiliate")}
-          >
-            Create Affiliate
-          </button>
-        )}
+            <button
+              className="bg-green-500 text-center text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+              onClick={() => navigate("/create-affiliate")}
+            >
+              Create Affiliate
+            </button>
+          )}
       </div>
       {/* Filter Bar */}
       <form className="flex flex-wrap gap-2 items-center mb-4">
@@ -449,7 +470,7 @@ const AffiliateListPage = () => {
         className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
         onClose={() => setEditModalOpen(false)}
         title="Edit Affiliate"
-        // onSave={handleEditFormSubmit}
+      // onSave={handleEditFormSubmit}
       >
         <CreateAgentForm
           onSubmit={handleEditFormSubmit}

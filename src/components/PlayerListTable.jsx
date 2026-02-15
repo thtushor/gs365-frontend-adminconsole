@@ -4,6 +4,7 @@ import {
   FaTrash,
   FaMoneyBillWave,
   FaEllipsisV,
+  FaUserCheck,
 } from "react-icons/fa";
 import DataTable from "./DataTable";
 import { useEffect, useState } from "react";
@@ -37,7 +38,7 @@ const usePromotions = () => {
   });
 };
 
-const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
+const PlayerListTable = ({ players, onEdit, onDelete, onSelect, onVerify }) => {
   console.log(players);
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
@@ -200,6 +201,15 @@ const PlayerListTable = ({ players, onEdit, onDelete, onSelect }) => {
         icon: <FaTrash size={14} />,
         onClick: () => onDelete(row),
         className: "text-red-600 hover:bg-red-50",
+      });
+    }
+
+    if (onVerify && !row.isVerified) {
+      actions.push({
+        label: "Verify",
+        icon: <FaUserCheck size={14} />,
+        onClick: () => onVerify(row),
+        className: "text-purple-600 hover:bg-purple-50",
       });
     }
 
