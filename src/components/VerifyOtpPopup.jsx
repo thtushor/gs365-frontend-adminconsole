@@ -3,11 +3,14 @@ import axios from "axios";
 import { BASE_URL, API_LIST } from "../api/ApiList";
 import { toast } from "react-toastify";
 
-const VerifyOtpPopup = ({ email, onClose, onSuccess }) => {
+const VerifyOtpPopup = ({ email, phone, verificationType = "email", maskedIdentifier, onClose, onSuccess }) => {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [isLoading, setIsLoading] = useState(false);
     const [timer, setTimer] = useState(60);
     const [canResend, setCanResend] = useState(false);
+
+    const isPhone = verificationType === "phone";
+    const displayIdentifier = maskedIdentifier || (isPhone ? phone : email);
 
     useEffect(() => {
         let interval;
@@ -70,13 +73,17 @@ const VerifyOtpPopup = ({ email, onClose, onSuccess }) => {
 
         setIsLoading(true);
         try {
-            const { data } = await axios.post(BASE_URL + API_LIST.VERIFY_OTP, {
-                email,
-                otp: otpString,
-            });
+            const body = { otp: otpString };
+            if (isPhone) {
+                body.phone = phone;
+            } else {
+                body.email = email;
+            }
+
+            const { data } = await axios.post(BASE_URL + API_LIST.VERIFY_OTP, body);
 
             if (data.status) {
-                toast.success(data.message || "Email verified successfully");
+                toast.success(data.message || "Verified successfully");
                 onSuccess();
             } else {
                 toast.error(data.message || "Verification failed");
@@ -92,9 +99,14 @@ const VerifyOtpPopup = ({ email, onClose, onSuccess }) => {
         if (!canResend) return;
         setIsLoading(true);
         try {
-            const { data } = await axios.post(BASE_URL + API_LIST.RESEND_OTP, {
-                email,
-            });
+            const body = {};
+            if (isPhone) {
+                body.phone = phone;
+            } else {
+                body.email = email;
+            }
+
+            const { data } = await axios.post(BASE_URL + API_LIST.RESEND_OTP, body);
             if (data.status) {
                 toast.success(data.message || "OTP resent successfully");
                 setTimer(60);
@@ -121,10 +133,12 @@ const VerifyOtpPopup = ({ email, onClose, onSuccess }) => {
                     </svg>
                 </button>
 
-                <h2 className="text-2xl font-bold text-green-700 text-center mb-2">Verify Email</h2>
+                <h2 className="text-2xl font-bold text-green-700 text-center mb-2">
+                    Verify {isPhone ? "Phone" : "Email"}
+                </h2>
                 <p className="text-gray-600 text-center mb-8 text-sm">
                     Please enter the 6-digit code sent to <br />
-                    <span className="font-semibold text-gray-800">{email}</span>
+                    <span className="font-semibold text-gray-800">{displayIdentifier}</span>
                 </p>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">

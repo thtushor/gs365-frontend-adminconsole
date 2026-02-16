@@ -18,6 +18,9 @@ const Login = () => {
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [showForgotPopup, setShowForgotPopup] = useState(false);
   const [verifyEmail, setVerifyEmail] = useState("");
+  const [verifyPhone, setVerifyPhone] = useState("");
+  const [verificationType, setVerificationType] = useState("");
+  const [maskedIdentifier, setMaskedIdentifier] = useState("");
 
   useEffect(() => {
     if (user?.role === "admin" || user?.role === "superAdmin") {
@@ -49,9 +52,17 @@ const Login = () => {
       setIsLoadingLogin(false);
       const resData = err.response?.data;
       if (resData?.requiresVerification) {
-        setVerifyEmail(resData.email);
+        const vType = resData.verificationType || "email";
+        setVerificationType(vType);
+        setVerifyEmail(resData.email || "");
+        setVerifyPhone(resData.phone || "");
+        setMaskedIdentifier(
+          vType === "phone"
+            ? resData.maskedPhone || resData.phone || ""
+            : resData.maskedEmail || resData.email || ""
+        );
         setShowOtpPopup(true);
-        toast.info(resData.message || "Please verify your email");
+        toast.info(resData.message || "Please verify your account");
       } else {
         setError(resData?.message || "Login failed");
         toast.error(resData?.message || "Login failed");
@@ -140,6 +151,9 @@ const Login = () => {
       {showOtpPopup && (
         <VerifyOtpPopup
           email={verifyEmail}
+          phone={verifyPhone}
+          verificationType={verificationType}
+          maskedIdentifier={maskedIdentifier}
           onClose={() => setShowOtpPopup(false)}
           onSuccess={handleVerifySuccess}
         />
