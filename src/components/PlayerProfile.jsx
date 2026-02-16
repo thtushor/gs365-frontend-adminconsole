@@ -213,9 +213,8 @@ const PlayerProfile = () => {
           </div>
         ) : (
           conversion && (
-            <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${
-              conversion ? (Number(value) / Number(conversion)).toFixed(2) : 0
-            } USD`}</span>
+            <span className="text-[12px] font-medium text-gray-500 block mt-[-3px]">{`${conversion ? (Number(value) / Number(conversion)).toFixed(2) : 0
+              } USD`}</span>
           )
         )}
       </div>
@@ -287,17 +286,16 @@ const PlayerProfile = () => {
               path === "/players/:playerId/profile"
                 ? location.pathname === to
                 : location.pathname === to ||
-                  location.pathname.startsWith(to + "/");
+                location.pathname.startsWith(to + "/");
 
             return (
               <li key={label}>
                 <Link
                   to={to}
-                  className={`${
-                    isActive
+                  className={`${isActive
                       ? "bg-green-400 text-black"
                       : "text-[#ffff] hover:text-black hover:bg-green-400"
-                  }  px-2 py-1 rounded-[5px]`}
+                    }  px-2 py-1 rounded-[5px]`}
                 >
                   {label}
                 </Link>
@@ -328,11 +326,10 @@ const PlayerProfile = () => {
                 <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
                   ACC:
                   <span
-                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
-                      playerDetails.status === "active"
+                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${playerDetails.status === "active"
                         ? "bg-green-100 text-green-500 border-green-500"
                         : "bg-red-100 text-red-500 border-red-500"
-                    }`}
+                      }`}
                   >
                     {playerDetails.status || "Unverified"}
                   </span>
@@ -340,11 +337,10 @@ const PlayerProfile = () => {
                 <div className="bg-gray-100 font-medium px-3 py-1 rounded-full pr-1 border border-gray-300 shadow-sm">
                   KYC:
                   <span
-                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${
-                      playerDetails.kyc_status === "verified"
+                    className={`px-3 py-1 rounded-full border ml-1 capitalize text-sm font-medium ${playerDetails.kyc_status === "verified"
                         ? "bg-green-100 text-green-500 border-green-500"
                         : "bg-red-100 text-red-500 border-red-500"
-                    }`}
+                      }`}
                   >
                     {playerDetails.kyc_status || "Unverified"}
                   </span>
@@ -352,31 +348,31 @@ const PlayerProfile = () => {
               </div>
               {(isSuperAdmin ||
                 hasPermission(permissions, "kyc_view_kyc_requests")) && (
-                <KycRequestButton
-                  holderId={playerDetails?.id}
-                  holderType={"player"}
-                  isPending={kycDetails?.data[0]?.status}
-                />
-              )}
+                  <KycRequestButton
+                    holderId={playerDetails?.id}
+                    holderType={"player"}
+                    isPending={kycDetails?.data[0]?.status}
+                  />
+                )}
               {(isSuperAdmin ||
                 hasPermission(permissions, "player_edit_player")) && (
-                <ActionDropdown
-                  actions={[
-                    {
-                      label: "Edit Profile",
-                      icon: <FaEdit size={14} />,
-                      onClick: handleEditProfile,
-                      className: "text-green-600 hover:bg-green-50",
-                    },
-                    {
-                      label: "Edit Phones",
-                      icon: <FaPhone size={14} />,
-                      onClick: handleOpenPhones,
-                      className: "text-blue-600 hover:bg-blue-50",
-                    },
-                  ]}
-                />
-              )}
+                  <ActionDropdown
+                    actions={[
+                      {
+                        label: "Edit Profile",
+                        icon: <FaEdit size={14} />,
+                        onClick: handleEditProfile,
+                        className: "text-green-600 hover:bg-green-50",
+                      },
+                      {
+                        label: "Edit Phones",
+                        icon: <FaPhone size={14} />,
+                        onClick: handleOpenPhones,
+                        className: "text-blue-600 hover:bg-blue-50",
+                      },
+                    ]}
+                  />
+                )}
             </div>
           </div>
 
@@ -408,9 +404,8 @@ const PlayerProfile = () => {
         <div className="flex xl:items-center justify-between flex-col gap-4 mb-5">
           <div className="header-auth mt-[-5px] mb-3 relative">
             <div
-              className={` ${
-                playerInProfitOrLoss() < 0 ? "signup-btn" : "signup-btn-green"
-              }`}
+              className={` ${playerInProfitOrLoss() < 0 ? "signup-btn" : "signup-btn-green"
+                }`}
             >
               <div className="flex items-center justify-center flex-col mt-[-2px]">
                 BDT {playerInProfitOrLoss()}
@@ -534,6 +529,7 @@ const PlayerProfile = () => {
         open={phonesOpen}
         onClose={handleClosePhones}
         userId={playerId}
+        userRole={user?.role}
       />
     </div>
   );
