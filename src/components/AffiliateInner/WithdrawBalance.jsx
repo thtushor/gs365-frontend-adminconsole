@@ -212,11 +212,11 @@ const WithdrawBalance = () => {
             walletAddress: "",
             network: "",
           });
-          if (user?.role === "superAdmin" || user?.role === "admin") {
-            navigate("/affiliate-withdraw-requests");
-          } else {
-            navigate(`/affiliate-list/${affiliateInfo?.id}/withdraw-history`);
-          }
+          // if (user?.role === "superAdmin" || user?.role === "admin") {
+          //   navigate("/affiliate-withdraw-requests");
+          // } else {
+          //   navigate(`/affiliate-list/${affiliateInfo?.id}/withdraw-history`);
+          // }
         },
         onError: (err) => {
           setResponse({
