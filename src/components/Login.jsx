@@ -82,10 +82,10 @@ const Login = () => {
       >
         <h2 className="text-2xl font-bold text-center text-green-700 mb-2">
           {userType === "affiliate"
-            ? "Affiliate Sign In"
+            ? "Affiliate Sign In 23423"
             : userType === "agent"
               ? "Agent Sign In"
-              : "Admin Sign In"}
+              : "Admin Sign In 23423"}
         </h2>
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-700">
