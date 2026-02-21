@@ -1,0 +1,48 @@
+name: Deploy Admin & Affiliate to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Admin & Affiliate directories
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+
+            # 1. Update and Build ADMIN
+            echo "Deploying ADMIN..."
+            cd /var/www/html/gs365/client/admin/gs365-frontend-adminconsole
+            git fetch --all
+            git checkout main
+            git pull origin main
+            npm install
+            npm run build
+            
+            # 2. Update and Build AFFILIATE
+            echo "Deploying AFFILIATE..."
+            cd /var/www/html/gs365/client/affiliate/gs365-frontend-adminconsole
+            git fetch --all
+            git checkout main
+            git pull origin main
+            npm install
+            npm run build
+
+            # Reload Nginx
+            nginx -s reload
+            
+            echo "Both Admin and Affiliate deployments successful!"
+
