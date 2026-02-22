@@ -194,8 +194,8 @@ const AffiliateCommissionListPage = () => {
             <span className="font-semibold">Status:</span>
             <span
               className={`ml-1 px-2 py-1 text-xs rounded-full ${row?.betResults?.betStatus === "win"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
                 }`}
             >
               {row?.betResults?.betStatus}
@@ -224,8 +224,8 @@ const AffiliateCommissionListPage = () => {
             <span className="font-semibold">Amount:</span>
             <span
               className={`ml-1 ${parseFloat(row?.commissionAmount) >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
+                ? "text-green-600"
+                : "text-red-600"
                 }`}
             >
               {row?.commissionAmount}
@@ -246,12 +246,12 @@ const AffiliateCommissionListPage = () => {
       render: (_, row) => (
         <span
           className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${row.status === "approved"
-              ? "bg-green-100 text-green-800"
-              : row.status === "pending"
-                ? "bg-yellow-100 text-yellow-800"
-                : row.status === "settled"
-                  ? "bg-gray-300 text-gray-700"
-                  : "bg-red-100 text-red-800"
+            ? "bg-green-100 text-green-800"
+            : row.status === "pending"
+              ? "bg-yellow-100 text-yellow-800"
+              : row.status === "settled"
+                ? "bg-gray-300 text-gray-700"
+                : "bg-red-100 text-red-800"
             }`}
         >
           {row.status}
@@ -318,16 +318,45 @@ const AffiliateCommissionListPage = () => {
       {affiliateId && (
         <div className="flex gap-4 flex-wrap mb-6">
           {statsLoading ? (
-            <Spin />
+            <div className="w-full flex justify-center py-4">
+              <Spin />
+            </div>
           ) : (
             <>
+              {/* Lifetime Stats */}
+              <HighlightBox
+                label="Total Profit"
+                value={detailedStats?.totalProfit?.toFixed(2)}
+                color="bg-blue-600 text-white border-blue-600"
+              />
+              <HighlightBox
+                label="Total Loss"
+                value={detailedStats?.totalLoss?.toFixed(2)}
+                color="bg-red-600 text-white border-red-600"
+              />
               <HighlightBox
                 label="Total Commission"
                 value={detailedStats?.totalCommission?.toFixed(2)}
+                tooltipTitle="(Total Profit - Total Loss) = Total Commission"
+                color="bg-blue-500 text-white border-blue-500"
+              />
+
+              {/* Settled Stats */}
+              <HighlightBox
+                label="Settled Profit"
+                value={detailedStats?.settledProfit?.toFixed(2)}
+                color="bg-blue-300 text-white border-blue-300"
+              />
+              <HighlightBox
+                label="Settled Loss"
+                value={detailedStats?.settledLoss?.toFixed(2)}
+                color="bg-red-300 text-white border-red-300"
               />
               <HighlightBox
                 label="Total Settled Commission"
                 value={detailedStats?.settledCommission?.toFixed(2)}
+                tooltipTitle="(Settled Profit - Settled Loss) = Total Settled Commission"
+                color="bg-blue-400 text-white border-blue-400"
               />
             </>
           )}
