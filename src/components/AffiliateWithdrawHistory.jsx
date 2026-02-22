@@ -12,6 +12,9 @@ import { formatDate } from "../Utils/dateUtils";
 import { API_LIST } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
 import { useSettings } from "../hooks/useSettings";
+import { useDetailedAffiliateStats } from "../hooks/useDetailedAffiliateStats";
+import { HighlightBox } from "./shared/HighlightBox";
+import { Spin } from "antd";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -36,9 +39,10 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
   const { data: settingsData } = useSettings();
   const { affiliateInfo } = useAuth();
   console.log(affiliateInfo);
+  const { affiliateId: affiliateIdParam } = useParams();
   const [filters, setFilters] = useState({
     ...defaultFilters,
-    affiliateId: affiliateInfo?.id || "",
+    affiliateId: affiliateIdParam || affiliateInfo?.id || "",
   });
   const [selectedTx, setSelectedTx] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -46,14 +50,17 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
   const [updatePayload, setUpdatePayload] = useState({ status: "", notes: "" });
   const navigate = useNavigate();
 
+  const currentAffiliateId = affiliateIdParam || affiliateInfo?.id;
+  const { data: detailedStats, isLoading: statsLoading } = useDetailedAffiliateStats(currentAffiliateId);
+
   useEffect(() => {
-    if (affiliateInfo?.id) {
+    if (currentAffiliateId) {
       setFilters((f) => ({
         ...f,
-        affiliateId: affiliateInfo?.id || "",
+        affiliateId: currentAffiliateId,
       }));
     }
-  }, [affiliateInfo?.id]);
+  }, [currentAffiliateId]);
 
   const { data, isLoading } = useTransactions(filters);
   const updateMutation = useUpdateTransactionStatus();
@@ -129,13 +136,12 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
         width: 120,
         render: (value) => (
           <span
-            className={`px-2 py-1 rounded text-xs font-medium ${
-              value === "approved"
+            className={`px-2 py-1 rounded text-xs font-medium ${value === "approved"
                 ? "bg-green-100 text-green-800"
                 : value === "pending"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-red-100 text-red-800"
-            }`}
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-red-100 text-red-800"
+              }`}
           >
             {value}
           </span>
@@ -194,6 +200,33 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
       </div>
+
+      {currentAffiliateId && (
+        <div className="flex gap-4 flex-wrap mb-6">
+          {statsLoading ? (
+            <Spin />
+          ) : (
+            <>
+              <HighlightBox
+                label="Total Withdraw"
+                value={detailedStats?.totalWithdraw?.toFixed(2)}
+              />
+              <HighlightBox
+                label="Total Settled Withdraw"
+                value={detailedStats?.settledWithdraw?.toFixed(2)}
+              />
+              <HighlightBox
+                label="Total Pending Withdraw"
+                value={detailedStats?.pendingWithdraw?.toFixed(2)}
+              />
+              <HighlightBox
+                label="Total Rejected Withdraw"
+                value={detailedStats?.rejectedWithdraw?.toFixed(2)}
+              />
+            </>
+          )}
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -276,13 +309,12 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
                 </div>
                 <div className="text-right">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedTx.status === "approved"
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${selectedTx.status === "approved"
                         ? "bg-green-100 text-green-800"
                         : selectedTx.status === "pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
                   >
                     {selectedTx.status.toUpperCase()}
                   </span>
@@ -337,55 +369,55 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
                 {(selectedTx.accountNumber ||
                   selectedTx.bankName ||
                   selectedTx.walletAddress) && (
-                  <div className="bg-white border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                      Payment Information
-                    </h4>
-                    <div className="space-y-3">
-                      {selectedTx.accountNumber && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Account Number:</span>
-                          <span className="font-medium">
-                            {selectedTx.accountNumber}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.accountHolderName && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Account Holder:</span>
-                          <span className="font-medium">
-                            {selectedTx.accountHolderName}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.bankName && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Bank:</span>
-                          <span className="font-medium">
-                            {selectedTx.bankName}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.walletAddress && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Wallet Address:</span>
-                          <span className="font-medium text-xs break-all">
-                            {selectedTx.walletAddress}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.network && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Network:</span>
-                          <span className="font-medium">
-                            {selectedTx.network}
-                          </span>
-                        </div>
-                      )}
+                    <div className="bg-white border rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                        Payment Information
+                      </h4>
+                      <div className="space-y-3">
+                        {selectedTx.accountNumber && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Number:</span>
+                            <span className="font-medium">
+                              {selectedTx.accountNumber}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.accountHolderName && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Holder:</span>
+                            <span className="font-medium">
+                              {selectedTx.accountHolderName}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.bankName && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Bank:</span>
+                            <span className="font-medium">
+                              {selectedTx.bankName}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.walletAddress && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Wallet Address:</span>
+                            <span className="font-medium text-xs break-all">
+                              {selectedTx.walletAddress}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.network && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Network:</span>
+                            <span className="font-medium">
+                              {selectedTx.network}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
 
               {/* Right Column */}
@@ -436,11 +468,10 @@ const AffiliateWithdrawRequestListPage = ({ title = "Withdraw History" }) => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Status:</span>
                       <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          selectedTx.affiliateStatus === "active"
+                        className={`px-2 py-1 rounded text-xs font-medium ${selectedTx.affiliateStatus === "active"
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
-                        }`}
+                          }`}
                       >
                         {selectedTx.affiliateStatus}
                       </span>

@@ -44,6 +44,7 @@ export const API_LIST = {
   AFFILIATE_COMMISSION_LIST: "/api/commissions",
   GET_TOTAL_COMMISSION: "/api/commissions/total-commission",
   GET_AFFILIATE_BALANCE: "/api/transactions/affiliate-balance",
+  GET_AFFILIATE_DETAILED_STATS: "/api/transactions/affiliate-detailed-stats",
   SETTLE_AFFILIATE_COMMISSIONS: "/api/transactions/affiliate/settle-commissions",
   CREATE_AFFILIATE_WITHDRAW: "/api/transactions/affiliate-withdraw",
   AFFILIATE_PROFILE: "/api/admin/affiliates",

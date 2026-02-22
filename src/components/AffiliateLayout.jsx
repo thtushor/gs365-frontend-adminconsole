@@ -11,6 +11,7 @@ import { HiMiniInformationCircle } from "react-icons/hi2";
 import { BiCheck, BiCheckSquare, BiCopy } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { HelpCenterIconWithChatsCount } from "./HelpCenterIcon";
+import { HighlightBox } from "./shared/HighlightBox";
 
 export const affiliateRoutes = [
   {
@@ -151,139 +152,6 @@ const AffiliateLayout = () => {
     return true;
   });
   // Dummy balances (could come from API)
-  const HighlightBox = ({ label, value, role }) => {
-    const handleShare = (type) => {
-      const userReferCode = value || "N/A"; // fallback to default if no user data
-      const affiliateReferralLink = `https://gamestar365.com/affiliate-signup?refCode=${userReferCode}`;
-      const playerReferralLink = `https://gamestar365.com/register?refCode=${userReferCode}`;
-      if (navigator.share) {
-        navigator
-          .share({
-            title: "Gamestar 365",
-            text: "Check out this link!",
-            url: type === "player" ? playerReferralLink : affiliateReferralLink,
-          })
-          .then(() => console.log("Link shared successfully"))
-          .catch((error) => console.error("Error sharing", error));
-      } else {
-        alert("Share not supported on this browser.");
-      }
-    };
-
-    const [copied, setCopied] = useState(false);
-    const handleCopy = async (code) => {
-      try {
-        await navigator.clipboard.writeText(code);
-        setCopied(true);
-        toast.success("Referral code copied to clipboard!");
-        setTimeout(() => setCopied(false), 1200);
-      } catch (e) {
-        setCopied(false);
-      }
-    };
-
-    return label === "Referral Code" ? (
-      <div className="border-[#07122b] border text-black bg-white p-3 py-2 rounded shadow-md w-full sm:w-fit">
-        <div
-          onClick={() => handleCopy(value)}
-          className="text-sm flex cursor-pointer items-center gap-1 font-semibold text-gray-600 relative"
-        >
-          REF: <span className="text-green-500">{value || "N/A"}</span>{" "}
-          <span className="text-green-500 cursor-pointer text-[16px]">
-            {copied ? <BiCheckSquare color="orange" /> : <BiCopy />}
-          </span>
-        </div>
-        <div className="text-[14px] mt-[2px] font-semibold truncate flex gap-1">
-          <button
-            type="button"
-            onClick={() => handleShare("player")}
-            className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
-          >
-            Player{" "}
-            <span>
-              {affiliateDetails?.data?.role === "superAffiliate" ? "" : "Refer"}
-            </span>
-          </button>
-
-          {affiliateDetails?.data?.role === "superAffiliate" && (
-            <button
-              type="button"
-              onClick={() => handleShare("affiliate")}
-              className="bg-green-300 hover:bg-green-500 px-2 text-center cursor-pointer rounded-md"
-            >
-              Affiliate
-            </button>
-          )}
-        </div>
-      </div>
-    ) : (
-      <div
-        className={`relative z-[1] ${label === "Total Earn"
-          ? "bg-blue-500 text-white border-blue-500"
-          : label === "Total Loss"
-            ? "bg-red-500 text-white border-red-500"
-            : label === "Lifetime Withdraw"
-              ? "bg-blue-400 text-white border-blue-400"
-              : label === "Current Balance"
-                ? value > 0
-                  ? "bg-green-400 text-white border-green-400"
-                  : "bg-red-500 text-white border-red-500"
-                : label === "Pending Withdrawal"
-                  ? "bg-orange-400 text-white border-orange-400"
-                  : "bg-white text-black"
-          } border   p-3 py-2 rounded shadow-md w-full sm:w-fit`}
-      >
-        <div
-          className={`text-xs font-medium ${label === "Total Earn" ||
-            label === "Total Loss" ||
-            label === "Lifetime Withdraw" ||
-            label === "Current Balance" ||
-            label === "Pending Withdrawal"
-            ? "text-white"
-            : "text-gray-600"
-            }`}
-        >
-          {label}
-        </div>
-        <div className="text-[20px] font-bold truncate">{value || 0}</div>
-        {
-          label === "Current Balance" && (
-            <>
-              <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
-                {Number(value) >= Number(affiliateDetails?.data?.minTrx) &&
-                  Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
-                  <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
-                    Withdrawable
-                  </div>
-                ) : (
-                  <p className="bg-red-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-red-500 text-red-500">
-                    Not Withdrawable
-                  </p>
-                )}
-              </div>
-
-              <div className="absolute bottom-[2px] right-[2px] text-[18px] text-white/70 cursor-pointer">
-                <Tooltip
-                  title="(Total Earn - Total Loss - Lifetime Withdraw - Pending Withdrawal) = Current Balance"
-                  placement="bottomRight"
-                  color="rgb(34, 197, 94)"
-                  overlayInnerStyle={{
-                    color: "black",
-                    fontWeight: "600",
-                    fontSize: "12px",
-                  }}
-
-                  showArrow={false}
-                >
-                  <HiMiniInformationCircle />
-                </Tooltip>
-              </div>
-            </>
-          )
-        }
-      </div >
-    );
-  };
 
   return (
     <div>
@@ -399,6 +267,8 @@ const AffiliateLayout = () => {
                     value={Number(
                       affiliateBalanceDetails?.data?.currentBalance || 0
                     ).toFixed(0)}
+                    affiliateDetails={affiliateDetails}
+                    tooltipTitle="(Total Earn - Total Loss - Lifetime Withdraw - Pending Withdrawal) = Current Balance"
                   />
                 )}
             </div>

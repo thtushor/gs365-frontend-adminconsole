@@ -126,6 +126,9 @@ const WithdrawBalance = () => {
       queryClient.invalidateQueries({
         queryKey: ["affiliateProfile"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["affiliateDetailedStats", affiliateInfo?.id],
+      });
       setForm({
         amount: "",
         currencyId: affiliateInfo?.currency || "",

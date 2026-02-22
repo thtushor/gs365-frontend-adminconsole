@@ -15,6 +15,9 @@ import { useAffiliates } from "../hooks/useAffiliates";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
 import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
+import { useDetailedAffiliateStats } from "../hooks/useDetailedAffiliateStats";
+import { HighlightBox } from "./shared/HighlightBox";
+import { Spin } from "antd";
 
 const defaultFilters = {
   search: "",
@@ -60,6 +63,8 @@ const AffiliateCommissionListPage = () => {
       }));
     }
   }, [affiliateId]);
+
+  const { data: detailedStats, isLoading: statsLoading } = useDetailedAffiliateStats(affiliateId);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [API_LIST.AFFILIATE_COMMISSION_LIST, filters],
@@ -122,8 +127,8 @@ const AffiliateCommissionListPage = () => {
               {row?.adminUser?.role === "affiliate"
                 ? "Sub Affiliate"
                 : row?.adminUser?.role === "superAffiliate"
-                ? "Super Affiliate"
-                : row?.adminUser?.role}
+                  ? "Super Affiliate"
+                  : row?.adminUser?.role}
             </p>
           </div>
         ) : (
@@ -137,8 +142,8 @@ const AffiliateCommissionListPage = () => {
               {row?.adminUser?.role === "affiliate"
                 ? "Sub Affiliate"
                 : row?.adminUser?.role === "superAffiliate"
-                ? "Super Affiliate"
-                : row?.adminUser?.role}
+                  ? "Super Affiliate"
+                  : row?.adminUser?.role}
             </p>
           </div>
         ),
@@ -188,11 +193,10 @@ const AffiliateCommissionListPage = () => {
           <p className="text-sm">
             <span className="font-semibold">Status:</span>
             <span
-              className={`ml-1 px-2 py-1 text-xs rounded-full ${
-                row?.betResults?.betStatus === "win"
+              className={`ml-1 px-2 py-1 text-xs rounded-full ${row?.betResults?.betStatus === "win"
                   ? "bg-green-100 text-green-800"
                   : "bg-red-100 text-red-800"
-              }`}
+                }`}
             >
               {row?.betResults?.betStatus}
             </span>
@@ -219,11 +223,10 @@ const AffiliateCommissionListPage = () => {
           <p className="text-sm">
             <span className="font-semibold">Amount:</span>
             <span
-              className={`ml-1 ${
-                parseFloat(row?.commissionAmount) >= 0
+              className={`ml-1 ${parseFloat(row?.commissionAmount) >= 0
                   ? "text-green-600"
                   : "text-red-600"
-              }`}
+                }`}
             >
               {row?.commissionAmount}
             </span>
@@ -242,15 +245,14 @@ const AffiliateCommissionListPage = () => {
       align: "center",
       render: (_, row) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
-            row.status === "approved"
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${row.status === "approved"
               ? "bg-green-100 text-green-800"
               : row.status === "pending"
-              ? "bg-yellow-100 text-yellow-800"
-              : row.status === "settled"
-              ? "bg-gray-300 text-gray-700"
-              : "bg-red-100 text-red-800"
-          }`}
+                ? "bg-yellow-100 text-yellow-800"
+                : row.status === "settled"
+                  ? "bg-gray-300 text-gray-700"
+                  : "bg-red-100 text-red-800"
+            }`}
         >
           {row.status}
         </span>
@@ -313,6 +315,25 @@ const AffiliateCommissionListPage = () => {
         <h2 className="text-lg font-semibold">Affiliate Commission List</h2>
       </div>
 
+      {affiliateId && (
+        <div className="flex gap-4 flex-wrap mb-6">
+          {statsLoading ? (
+            <Spin />
+          ) : (
+            <>
+              <HighlightBox
+                label="Total Commission"
+                value={detailedStats?.totalCommission?.toFixed(2)}
+              />
+              <HighlightBox
+                label="Total Settled Commission"
+                value={detailedStats?.settledCommission?.toFixed(2)}
+              />
+            </>
+          )}
+        </div>
+      )}
+
       {/* Filter Bar */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
@@ -354,8 +375,8 @@ const AffiliateCommissionListPage = () => {
                     {affiliate.role === "affiliate"
                       ? "Sub Affiliate"
                       : affiliate.role === "superAffiliate"
-                      ? "Super Affiliate"
-                      : affiliate.role}
+                        ? "Super Affiliate"
+                        : affiliate.role}
                     )
                   </option>
                 ))}
