@@ -276,7 +276,7 @@ const AffiliateLayout = () => {
                 <HiMiniInformationCircle />
                 {showTooltip && (
                   <div className="absolute top-full mb-1 right-0 bg-green-500 text-black font-semibold text-[12px] px-2 py-1 rounded shadow-md whitespace-nowrap">
-                    (Lifetime Profit - Lifetime Loss - Lifetime Withdraw) = Current Balance
+                    (Total Earn - Total Loss - Lifetime Withdraw - Pending Withdrawal) = Current Balance
                   </div>
                 )}
               </div>
