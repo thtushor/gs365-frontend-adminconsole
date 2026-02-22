@@ -76,7 +76,7 @@ export const HighlightBox = ({ label, value, affiliateDetails, tooltipTitle, col
     const getCardStyle = () => {
         if (color) return color;
         switch (label) {
-            case "Total Earn":
+            case "Total Profit":
             case "Total Commission":
                 return "bg-blue-500 text-white border-blue-500";
             case "Total Loss":

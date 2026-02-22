@@ -215,7 +215,7 @@ const AffiliateLayout = () => {
                 "affiliate_view_main_balance"
               ) && (
                   <HighlightBox
-                    label="Total Earn"
+                    label="Total Profit"
                     value={Number(
                       affiliateBalanceDetails?.data?.lifetimeProfit || 0
                     ).toFixed(0)}
@@ -239,10 +239,12 @@ const AffiliateLayout = () => {
                 "affiliate_view_withdrawable_balance"
               ) && (
                   <HighlightBox
-                    label="Lifetime Withdraw"
+                    label="Current Balance"
                     value={Number(
-                      affiliateBalanceDetails?.data?.lifetimeWithdraw || 0
+                      affiliateBalanceDetails?.data?.currentBalance || 0
                     ).toFixed(0)}
+                    affiliateDetails={affiliateDetails}
+                    tooltipTitle="(Total Profit - Total Loss - Lifetime Withdraw - Pending Withdrawal) = Current Balance"
                   />
                 )}
               {staticAffiliatePermission(
@@ -263,12 +265,10 @@ const AffiliateLayout = () => {
                 "affiliate_view_withdrawable_balance"
               ) && (
                   <HighlightBox
-                    label="Current Balance"
+                    label="Lifetime Withdraw"
                     value={Number(
-                      affiliateBalanceDetails?.data?.currentBalance || 0
+                      affiliateBalanceDetails?.data?.lifetimeWithdraw || 0
                     ).toFixed(0)}
-                    affiliateDetails={affiliateDetails}
-                    tooltipTitle="(Total Earn - Total Loss - Lifetime Withdraw - Pending Withdrawal) = Current Balance"
                   />
                 )}
             </div>
