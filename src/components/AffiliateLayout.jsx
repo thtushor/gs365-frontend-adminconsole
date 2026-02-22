@@ -227,7 +227,7 @@ const AffiliateLayout = () => {
         className={`relative z-[1] ${label === "Total Earn"
           ? "bg-blue-500 text-white border-blue-500"
           : label === "Total Loss"
-            ? "bg-purple-500 text-white border-purple-500"
+            ? "bg-red-500 text-white border-red-500"
             : label === "Lifetime Withdraw"
               ? "bg-blue-400 text-white border-blue-400"
               : label === "Current Balance"
@@ -385,9 +385,9 @@ const AffiliateLayout = () => {
                 "affiliate_view_withdrawable_balance"
               ) && (
                   <HighlightBox
-                    label="Current Balance"
+                    label="Pending Withdrawal"
                     value={Number(
-                      affiliateBalanceDetails?.data?.currentBalance || 0
+                      affiliateBalanceDetails?.data?.pendingWithdrawal || 0
                     ).toFixed(0)}
                   />
                 )}
@@ -397,9 +397,9 @@ const AffiliateLayout = () => {
                 "affiliate_view_withdrawable_balance"
               ) && (
                   <HighlightBox
-                    label="Pending Withdrawal"
+                    label="Current Balance"
                     value={Number(
-                      affiliateBalanceDetails?.data?.pendingWithdrawal || 0
+                      affiliateBalanceDetails?.data?.currentBalance || 0
                     ).toFixed(0)}
                   />
                 )}
