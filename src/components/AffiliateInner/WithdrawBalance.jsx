@@ -62,7 +62,9 @@ const WithdrawBalance = () => {
 
   const withdrawAbleBalance = () => {
     if (!affiliateBalanceDetails?.data) return 0;
-    return Number(affiliateBalanceDetails?.data?.currentBalance || 0).toFixed(2);
+    return Number(affiliateBalanceDetails?.data?.currentBalance || 0).toFixed(
+      2,
+    );
   };
 
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
@@ -104,8 +106,8 @@ const WithdrawBalance = () => {
       const usdCurrency =
         currencyOptions?.length > 0
           ? currencyOptions.find(
-            (option) => option?.label === "US Dollar (USD)"
-          )
+              (option) => option?.label === "US Dollar (USD)",
+            )
           : null;
 
       setForm((prev) => ({ ...prev, currencyId: usdCurrency?.value }));
@@ -170,10 +172,11 @@ const WithdrawBalance = () => {
     const bdtConversionAmount =
       isUSD?.label === "US Dollar (USD)"
         ? Number(form.amount || 0) *
-        Number(settingsData?.data[0]?.conversionRate || 1)
+          Number(settingsData?.data[0]?.conversionRate || 1)
         : form.amount;
 
-    const isFullWithdrawal = Number(bdtConversionAmount) === Number(withdrawAbleBalance());
+    const isFullWithdrawal =
+      Number(bdtConversionAmount) === Number(withdrawAbleBalance());
 
     if (
       Number(bdtConversionAmount) < affiliateInfo?.minTrx ||
@@ -184,20 +187,19 @@ const WithdrawBalance = () => {
         message: `Your withdraw amount must be between ${affiliateInfo?.minTrx} and ${affiliateInfo?.maxTrx}`,
       });
       toast.error(
-        `Your withdraw amount must be between ${affiliateInfo?.minTrx} and ${affiliateInfo?.maxTrx}`
+        `Your withdraw amount must be between ${affiliateInfo?.minTrx} and ${affiliateInfo?.maxTrx}`,
       );
       setLoading(false);
       return;
     }
-    console.log("bdtConversionAmount", bdtConversionAmount);
     try {
       if (bdtConversionAmount > Number(withdrawAbleBalance() || 0)) {
         toast.error(
           `Your USD amount after conversion is ${Number(
-            bdtConversionAmount || 0
+            bdtConversionAmount || 0,
           ).toFixed(
-            2
-          )} BDT, (You have only ${withdrawAbleBalance()} BDT balance to withdraw)!`
+            2,
+          )} BDT, (You have only ${withdrawAbleBalance()} BDT balance to withdraw)!`,
         );
         setLoading(false);
         return;
@@ -213,18 +215,18 @@ const WithdrawBalance = () => {
         remainingBalance: withdrawAbleBalance() - Number(bdtConversionAmount),
         ...(form.withdrawMethod === "bank"
           ? {
-            accountNumber: form.accountNumber,
-            accountHolderName: form.accountHolderName,
-            bankName: form.bankName,
-            branchName: form.branchName,
-            branchAddress: form.branchAddress,
-            swiftCode: form.swiftCode,
-            iban: form.iban,
-          }
+              accountNumber: form.accountNumber,
+              accountHolderName: form.accountHolderName,
+              bankName: form.bankName,
+              branchName: form.branchName,
+              branchAddress: form.branchAddress,
+              swiftCode: form.swiftCode,
+              iban: form.iban,
+            }
           : {
-            walletAddress: form.walletAddress,
-            network: form.network,
-          }),
+              walletAddress: form.walletAddress,
+              network: form.network,
+            }),
         settleCommissions: isFullWithdrawal ? form.settleCommissions : false,
       };
       mutation.mutate(payload, {
@@ -251,9 +253,8 @@ const WithdrawBalance = () => {
 
   const checkWithdrawValidity = () => {
     const minWithdraw = Number(affiliateInfo?.minTrx) || 0;
-    const maxWithdraw = Number(affiliateInfo?.maxTrx) || 0;
     const currentBalance = withdrawAbleBalance();
-    return currentBalance >= minWithdraw && currentBalance <= maxWithdraw;
+    return currentBalance >= minWithdraw;
   };
 
   useEffect(() => {
@@ -264,11 +265,14 @@ const WithdrawBalance = () => {
   }, [withdrawAbleBalance()]);
 
   const bdtConversionAmount =
-    currencyOptions?.find((c) => c.value === form.currencyId)?.label === "US Dollar (USD)"
-      ? Number(form.amount || 0) * Number(settingsData?.data[0]?.conversionRate || 1)
+    currencyOptions?.find((c) => c.value === form.currencyId)?.label ===
+    "US Dollar (USD)"
+      ? Number(form.amount || 0) *
+        Number(settingsData?.data[0]?.conversionRate || 1)
       : Number(form.amount || 0);
 
-  const isFullWithdrawal = Number(bdtConversionAmount) === Number(withdrawAbleBalance());
+  const isFullWithdrawal =
+    Number(bdtConversionAmount) === Number(withdrawAbleBalance());
 
   return (
     <div className="bg-white p-4 rounded-md mb-6" id="withdraw-section">
@@ -368,7 +372,7 @@ const WithdrawBalance = () => {
                     options={currencyOptions}
                     value={
                       currencyOptions.find(
-                        (opt) => opt.value === form.currencyId
+                        (opt) => opt.value === form.currencyId,
                       ) || null
                     }
                     onChange={(selected) =>
@@ -430,8 +434,8 @@ const WithdrawBalance = () => {
                       placeholder={label}
                       value={
                         form[
-                        label.replace(/\s+/g, "").charAt(0).toLowerCase() +
-                        label.replace(/\s+/g, "").slice(1)
+                          label.replace(/\s+/g, "").charAt(0).toLowerCase() +
+                            label.replace(/\s+/g, "").slice(1)
                         ]
                       }
                       onChange={handleChange}
@@ -486,11 +490,17 @@ const WithdrawBalance = () => {
                   id="settle-commissions"
                   name="settleCommissions"
                   checked={form.settleCommissions}
-                  onChange={(e) => setForm({ ...form, settleCommissions: e.target.checked })}
+                  onChange={(e) =>
+                    setForm({ ...form, settleCommissions: e.target.checked })
+                  }
                   className="w-5 h-5 cursor-pointer accent-green-600"
                 />
-                <label htmlFor="settle-commissions" className="text-sm font-semibold text-green-800 cursor-pointer">
-                  I want to settle all my approved commissions with this withdrawal request.
+                <label
+                  htmlFor="settle-commissions"
+                  className="text-sm font-semibold text-green-800 cursor-pointer"
+                >
+                  I want to settle all my approved commissions with this
+                  withdrawal request.
                 </label>
               </div>
             )}
@@ -511,16 +521,18 @@ const WithdrawBalance = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`bg-green-500 text-white px-4 py-2 rounded ${loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`bg-green-500 text-white px-4 py-2 rounded ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
 
           {response && (
             <p
-              className={`text-sm mt-2 ${response.status ? "text-green-600" : "text-red-600"
-                }`}
+              className={`text-sm mt-2 ${
+                response.status ? "text-green-600" : "text-red-600"
+              }`}
             >
               {response.message}
             </p>
