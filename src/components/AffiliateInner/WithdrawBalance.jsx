@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useGetRequest, usePostRequest } from "../../Utils/apiClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../../api/ApiList";
 import { useCurrencies } from "../shared/useCurrencies";
-import { usePostRequest } from "../../Utils/apiClient";
 import { useAuth } from "../../hooks/useAuth";
 import Select from "react-select";
 import { toast } from "react-toastify";
@@ -40,7 +40,7 @@ const WithdrawBalance = () => {
     return days.toLowerCase().includes(today);
   };
 
-  const { affiliateInfo, affiliateCommission, user } = useAuth();
+  const { affiliateInfo, user } = useAuth();
   console.log(affiliateInfo);
   const [filters, setFilters] = useState({
     ...defaultFilters,
@@ -48,9 +48,20 @@ const WithdrawBalance = () => {
   });
   const { data: affiliatePreviousWithdraws } = useTransactions(filters);
 
+  const getRequest = useGetRequest();
+  const { data: affiliateBalanceDetails } = useQuery({
+    queryKey: ["affiliateBalance", affiliateInfo?.id],
+    queryFn: () =>
+      getRequest({
+        url: `${BASE_URL}${API_LIST.GET_AFFILIATE_BALANCE}/${affiliateInfo?.id}`,
+        errorMessage: "Failed to fetch affiliate balance details",
+      }),
+    enabled: !!affiliateInfo?.id,
+  });
+
   const withdrawAbleBalance = () => {
-    if (!affiliateCommission) return 0;
-    return Number(affiliateCommission?.currentBalance || 0).toFixed(2);
+    if (!affiliateBalanceDetails?.data) return 0;
+    return Number(affiliateBalanceDetails?.data?.currentBalance || 0).toFixed(2);
   };
 
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
@@ -107,8 +118,8 @@ const WithdrawBalance = () => {
         body: payload,
       }),
     onSuccess: () => {
+      console.log("Withdraw request submitted!");
       setResponse({ status: true, message: "Withdraw request submitted!" });
-      // setAffiliateCommission(null);
       queryClient.invalidateQueries({
         queryKey: ["affiliateBalance", affiliateInfo?.id],
       });

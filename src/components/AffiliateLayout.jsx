@@ -60,7 +60,7 @@ const AffiliateLayout = () => {
   const location = useLocation();
   const getRequest = useGetRequest();
 
-  const { user, setAffiliateInfo, setAffiliateCommission } = useAuth();
+  const { user, setAffiliateInfo } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
   console.log(user);
@@ -109,15 +109,6 @@ const AffiliateLayout = () => {
     // keepPreviousData: true,
     enabled: !!affiliateId,
   });
-
-  useEffect(() => {
-    console.log("affiliateBalanceDetails", affiliateBalanceDetails);
-    console.log("affiliateBalanceSuccess", affiliateBalanceSuccess);
-    if (affiliateBalanceDetails?.data && affiliateBalanceSuccess) {
-      console.log("affiliateBalanceDetails", affiliateBalanceDetails);
-      setAffiliateCommission(affiliateBalanceDetails?.data);
-    }
-  }, [affiliateBalanceDetails?.data, affiliateBalanceSuccess]);
 
   useEffect(() => {
     if (affiliateDetails?.data && !isError) {
