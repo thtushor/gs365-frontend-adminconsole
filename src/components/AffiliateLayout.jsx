@@ -49,7 +49,7 @@ export const affiliateRoutes = [
   },
   {
     label: "Support",
-    rightComponent: <HelpCenterIconWithChatsCount iconClassName={"text-white hover:text-black duration-300 w-4 opacity-0 h-4"} userType="affiliate"/>,
+    rightComponent: <HelpCenterIconWithChatsCount iconClassName={"text-white hover:text-black duration-300 w-4 opacity-0 h-4"} userType="affiliate" />,
     path: "/affiliate-list/:affiliateId/support",
     requiredPermission: "affiliate_support",
   },
@@ -95,42 +95,25 @@ const AffiliateLayout = () => {
   }, [user?.kyc_status]);
 
   const {
-    data: affiliateCommissionDetails,
-    isLoading: affiliateCommissionLoading,
-    isError: affiliateCommissionError,
+    data: affiliateBalanceDetails,
+    isLoading: affiliateBalanceLoading,
+    isError: affiliateBalanceError,
   } = useQuery({
-    queryKey: ["affiliateCommission", affiliateId],
+    queryKey: ["affiliateBalance", affiliateId],
     queryFn: () =>
       getRequest({
-        url: `${BASE_URL}${API_LIST.GET_TOTAL_COMMISSION}/${affiliateId}`,
-        errorMessage: "Failed to fetch affiliate commission details",
+        url: `${BASE_URL}${API_LIST.GET_AFFILIATE_BALANCE}/${affiliateId}`,
+        errorMessage: "Failed to fetch affiliate balance details",
       }),
     keepPreviousData: true,
     enabled: !!affiliateId,
   });
 
   useEffect(() => {
-    if (affiliateCommissionDetails?.data) {
-      setAffiliateCommission(affiliateCommissionDetails?.data);
+    if (affiliateBalanceDetails?.data) {
+      setAffiliateCommission(affiliateBalanceDetails?.data);
     }
-  }, [affiliateCommissionDetails?.data]);
-
-  const withdrawAbleBalance = () => {
-    if (!affiliateCommissionDetails?.data) {
-      return 0;
-    }
-    const totalLoss = (
-      Number(affiliateDetails?.data?.remainingBalance) +
-      Math.abs(
-        Number(affiliateCommissionDetails?.data?.totalLossCommission || 0)
-      )
-    ).toFixed(2);
-    const totalWin = Math.abs(
-      Number(affiliateCommissionDetails?.data?.totalWinCommission || 0)
-    );
-
-    return (totalLoss - totalWin).toFixed(2);
-  };
+  }, [affiliateBalanceDetails?.data]);
 
   useEffect(() => {
     if (affiliateDetails?.data && !isError) {
@@ -242,57 +225,62 @@ const AffiliateLayout = () => {
     ) : (
       <div
         className={`relative z-[1] ${label === "Main Balance"
-            ? "bg-blue-400 text-white border-blue-400"
-            : label === "Downline Balance"
-              ? "bg-purple-500 text-white border-purple-500"
-              : label === "Withdrawable Balance"
-                ? value > 0
-                  ? "bg-green-400 text-white border-green-400"
-                  : "bg-red-500 text-white border-red-500"
+          ? "bg-blue-400 text-white border-blue-400"
+          : label === "Downline Balance"
+            ? "bg-purple-500 text-white border-purple-500"
+            : label === "Current Balance"
+              ? value > 0
+                ? "bg-green-400 text-white border-green-400"
+                : "bg-red-500 text-white border-red-500"
+              : label === "Pending Withdrawal"
+                ? "bg-orange-400 text-white border-orange-400"
                 : "bg-white text-black"
           } border   p-3 py-2 rounded shadow-md w-full sm:w-fit`}
       >
         <div
           className={`text-xs font-medium ${label === "Main Balance" ||
-              label === "Downline Balance" ||
-              label === "Withdrawable Balance"
-              ? "text-white"
-              : "text-gray-600"
+            label === "Downline Balance" ||
+            label === "Current Balance" ||
+            label === "Pending Withdrawal"
+            ? "text-white"
+            : "text-gray-600"
             }`}
         >
           {label}
         </div>
         <div className="text-[20px] font-bold truncate">{value || 0}</div>
-        {label === "Withdrawable Balance" && (
-          <>
-            <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
-              {Number(value) >= Number(affiliateDetails?.data?.minTrx) &&
-                Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
-                <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
-                  Withdrawable
-                </div>
-              ) : (
-                <p className="bg-red-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-red-500 text-red-500">
-                  Not Withdrawable
-                </p>
-              )}
-            </div>
+        {
+          label === "Current Balance" && (
+            <>
+              <div className="absolute top-[-11px] left-1/2 -translate-x-1/2 text-[10px] uppercase font-medium">
+                {Number(value) >= Number(affiliateDetails?.data?.minTrx) &&
+                  Number(value) <= Number(affiliateDetails?.data?.maxTrx) ? (
+                  <div className="bg-green-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-green-500 text-green-500">
+                    Withdrawable
+                  </div>
+                ) : (
+                  <p className="bg-red-100 border px-[6px] py-[2px] pt-[1px] rounded-full border-red-500 text-red-500">
+                    Not Withdrawable
+                  </p>
+                )}
+              </div>
 
-            <div
-              className="absolute bottom-[2px] right-[2px] text-[18px] text-white/70 cursor-pointer"
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-            >
-              <HiMiniInformationCircle />
-              {showTooltip && (
-                <div className="absolute top-full mb-1 right-0 bg-green-500 text-black font-semibold text-[12px] px-2 py-1 rounded shadow-md whitespace-nowrap">
-                  (Main Balance - Downline Balance) = Withdrawable Balance
-                </div>
-              )}
-            </div>
-          </>
-        )}
-      </div>
+              <div
+                className="absolute bottom-[2px] right-[2px] text-[18px] text-white/70 cursor-pointer"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+              >
+                <HiMiniInformationCircle />
+                {showTooltip && (
+                  <div className="absolute top-full mb-1 right-0 bg-green-500 text-black font-semibold text-[12px] px-2 py-1 rounded shadow-md whitespace-nowrap">
+                    (Lifetime Profit - Lifetime Loss - Lifetime Withdraw) = Current Balance
+                  </div>
+                )}
+              </div>
+            </>
+          )
+        }
+      </div >
     );
   };
 
@@ -313,8 +301,8 @@ const AffiliateLayout = () => {
                 <Link
                   to={to}
                   className={`${isActive
-                      ? "bg-green-400 text-black"
-                      : "text-[#ffff] hover:text-black hover:bg-green-400"
+                    ? "bg-green-400 text-black"
+                    : "text-[#ffff] hover:text-black hover:bg-green-400"
                     }  px-2 py-1 rounded-[5px]  gap-2 flex items-center`}
                 >
                   {label}
@@ -345,7 +333,7 @@ const AffiliateLayout = () => {
       </nav>
 
       <main className="p-4 bg-[#07122b] mt-5 rounded-lg">
-        {isLoading || affiliateCommissionLoading ? (
+        {isLoading || affiliateBalanceLoading ? (
           <div className="py-8 flex items-center justify-center">
             <Spin />
           </div>
@@ -359,14 +347,8 @@ const AffiliateLayout = () => {
               ) && (
                   <HighlightBox
                     label="Main Balance"
-                    value={(
-                      Number(affiliateDetails?.data?.remainingBalance) +
-                      Math.abs(
-                        Number(
-                          affiliateCommissionDetails?.data?.totalLossCommission ||
-                          0
-                        )
-                      )
+                    value={Number(
+                      affiliateBalanceDetails?.data?.lifetimeProfit || 0
                     ).toFixed(2)}
                   />
                 )}
@@ -378,7 +360,7 @@ const AffiliateLayout = () => {
                   <HighlightBox
                     label="Downline Balance"
                     value={Number(
-                      affiliateCommissionDetails?.data?.totalWinCommission || 0
+                      affiliateBalanceDetails?.data?.lifetimeLoss || 0
                     ).toFixed(2)}
                   />
                 )}
@@ -388,8 +370,22 @@ const AffiliateLayout = () => {
                 "affiliate_view_withdrawable_balance"
               ) && (
                   <HighlightBox
-                    label="Withdrawable Balance"
-                    value={withdrawAbleBalance()}
+                    label="Current Balance"
+                    value={Number(
+                      affiliateBalanceDetails?.data?.currentBalance || 0
+                    ).toFixed(2)}
+                  />
+                )}
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_withdrawable_balance"
+              ) && (
+                  <HighlightBox
+                    label="Pending Withdrawal"
+                    value={Number(
+                      affiliateBalanceDetails?.data?.pendingWithdrawal || 0
+                    ).toFixed(2)}
                   />
                 )}
             </div>
@@ -430,8 +426,8 @@ const AffiliateLayout = () => {
           </div>
         )}
         <Outlet />
-      </main>
-    </div>
+      </main >
+    </div >
   );
 };
 

@@ -50,14 +50,7 @@ const WithdrawBalance = () => {
 
   const withdrawAbleBalance = () => {
     if (!affiliateCommission) return 0;
-    const totalLoss = (
-      Number(affiliateInfo?.remainingBalance) +
-      Math.abs(Number(affiliateCommission?.totalLossCommission || 0))
-    ).toFixed(2);
-    const totalWin = Math.abs(
-      Number(affiliateCommission?.totalWinCommission || 0)
-    );
-    return (totalLoss - totalWin).toFixed(2);
+    return Number(affiliateCommission?.currentBalance || 0).toFixed(2);
   };
 
   const { data: currencyList, isLoading: currencyLoading } = useCurrencies();
@@ -114,7 +107,7 @@ const WithdrawBalance = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["affiliateCommission", "affiliateProfile"],
+        queryKey: ["affiliateBalance", "affiliateProfile"],
       });
     },
   });
