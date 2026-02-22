@@ -224,22 +224,25 @@ const AffiliateLayout = () => {
       </div>
     ) : (
       <div
-        className={`relative z-[1] ${label === "Main Balance"
-          ? "bg-blue-400 text-white border-blue-400"
-          : label === "Downline Balance"
+        className={`relative z-[1] ${label === "Total Earn"
+          ? "bg-blue-500 text-white border-blue-500"
+          : label === "Total Loss"
             ? "bg-purple-500 text-white border-purple-500"
-            : label === "Current Balance"
-              ? value > 0
-                ? "bg-green-400 text-white border-green-400"
-                : "bg-red-500 text-white border-red-500"
-              : label === "Pending Withdrawal"
-                ? "bg-orange-400 text-white border-orange-400"
-                : "bg-white text-black"
+            : label === "Lifetime Withdraw"
+              ? "bg-blue-400 text-white border-blue-400"
+              : label === "Current Balance"
+                ? value > 0
+                  ? "bg-green-400 text-white border-green-400"
+                  : "bg-red-500 text-white border-red-500"
+                : label === "Pending Withdrawal"
+                  ? "bg-orange-400 text-white border-orange-400"
+                  : "bg-white text-black"
           } border   p-3 py-2 rounded shadow-md w-full sm:w-fit`}
       >
         <div
-          className={`text-xs font-medium ${label === "Main Balance" ||
-            label === "Downline Balance" ||
+          className={`text-xs font-medium ${label === "Total Earn" ||
+            label === "Total Loss" ||
+            label === "Lifetime Withdraw" ||
             label === "Current Balance" ||
             label === "Pending Withdrawal"
             ? "text-white"
@@ -346,10 +349,10 @@ const AffiliateLayout = () => {
                 "affiliate_view_main_balance"
               ) && (
                   <HighlightBox
-                    label="Main Balance"
+                    label="Total Earn"
                     value={Number(
                       affiliateBalanceDetails?.data?.lifetimeProfit || 0
-                    ).toFixed(2)}
+                    ).toFixed(0)}
                   />
                 )}
               {staticAffiliatePermission(
@@ -358,10 +361,22 @@ const AffiliateLayout = () => {
                 "affiliate_view_downline_balance"
               ) && (
                   <HighlightBox
-                    label="Downline Balance"
+                    label="Total Loss"
                     value={Number(
                       affiliateBalanceDetails?.data?.lifetimeLoss || 0
-                    ).toFixed(2)}
+                    ).toFixed(0)}
+                  />
+                )}
+              {staticAffiliatePermission(
+                user?.role,
+                permissions,
+                "affiliate_view_withdrawable_balance"
+              ) && (
+                  <HighlightBox
+                    label="Lifetime Withdraw"
+                    value={Number(
+                      affiliateBalanceDetails?.data?.lifetimeWithdraw || 0
+                    ).toFixed(0)}
                   />
                 )}
               {staticAffiliatePermission(
@@ -373,7 +388,7 @@ const AffiliateLayout = () => {
                     label="Current Balance"
                     value={Number(
                       affiliateBalanceDetails?.data?.currentBalance || 0
-                    ).toFixed(2)}
+                    ).toFixed(0)}
                   />
                 )}
               {staticAffiliatePermission(
@@ -385,7 +400,7 @@ const AffiliateLayout = () => {
                     label="Pending Withdrawal"
                     value={Number(
                       affiliateBalanceDetails?.data?.pendingWithdrawal || 0
-                    ).toFixed(2)}
+                    ).toFixed(0)}
                   />
                 )}
             </div>
