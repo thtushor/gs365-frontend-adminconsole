@@ -72,6 +72,7 @@ const WithdrawBalance = () => {
     walletAddress: "",
     network: "",
     givenTransactionId: "",
+    settleCommissions: false,
   });
 
   const [loading, setLoading] = useState(false);
@@ -134,6 +135,9 @@ const WithdrawBalance = () => {
         ? Number(form.amount || 0) *
         Number(settingsData?.data[0]?.conversionRate || 1)
         : form.amount;
+
+    const isFullWithdrawal = Number(bdtConversionAmount) === Number(withdrawAbleBalance());
+
     if (
       Number(bdtConversionAmount) < affiliateInfo?.minTrx ||
       Number(bdtConversionAmount) > affiliateInfo?.maxTrx
@@ -184,6 +188,7 @@ const WithdrawBalance = () => {
             walletAddress: form.walletAddress,
             network: form.network,
           }),
+        settleCommissions: isFullWithdrawal ? form.settleCommissions : false,
       };
       mutation.mutate(payload, {
         onSuccess: () => {
@@ -204,6 +209,8 @@ const WithdrawBalance = () => {
             iban: "",
             walletAddress: "",
             network: "",
+            givenTransactionId: "",
+            settleCommissions: false,
           });
           // if (user?.role === "superAdmin" || user?.role === "admin") {
           //   navigate("/affiliate-withdraw-requests");
@@ -245,6 +252,13 @@ const WithdrawBalance = () => {
       setForm((prev) => ({ ...prev, amount: balance }));
     }
   }, []);
+
+  const bdtConversionAmount =
+    currencyOptions?.find((c) => c.value === form.currencyId)?.label === "US Dollar (USD)"
+      ? Number(form.amount || 0) * Number(settingsData?.data[0]?.conversionRate || 1)
+      : Number(form.amount || 0);
+
+  const isFullWithdrawal = Number(bdtConversionAmount) === Number(withdrawAbleBalance());
 
   return (
     <div className="bg-white p-4 rounded-md mb-6" id="withdraw-section">
@@ -455,7 +469,22 @@ const WithdrawBalance = () => {
               </div>
             )}
 
-            {/* Notes */}
+            {isFullWithdrawal && (
+              <div className="col-span-full border-green-200 border bg-green-50 rounded-lg p-3 flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="settle-commissions"
+                  name="settleCommissions"
+                  checked={form.settleCommissions}
+                  onChange={(e) => setForm({ ...form, settleCommissions: e.target.checked })}
+                  className="w-5 h-5 cursor-pointer accent-green-600"
+                />
+                <label htmlFor="settle-commissions" className="text-sm font-semibold text-green-800 cursor-pointer">
+                  I want to settle all my approved commissions with this withdrawal request.
+                </label>
+              </div>
+            )}
+
             <div className="col-span-full">
               <label className="font-semibold text-xs mb-1">Notes</label>
               <textarea
