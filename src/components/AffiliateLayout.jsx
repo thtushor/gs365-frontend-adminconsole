@@ -97,6 +97,7 @@ const AffiliateLayout = () => {
   const {
     data: affiliateBalanceDetails,
     isLoading: affiliateBalanceLoading,
+    isSuccess: affiliateBalanceSuccess,
     isError: affiliateBalanceError,
   } = useQuery({
     queryKey: ["affiliateBalance", affiliateId],
@@ -105,15 +106,18 @@ const AffiliateLayout = () => {
         url: `${BASE_URL}${API_LIST.GET_AFFILIATE_BALANCE}/${affiliateId}`,
         errorMessage: "Failed to fetch affiliate balance details",
       }),
-    keepPreviousData: true,
+    // keepPreviousData: true,
     enabled: !!affiliateId,
   });
 
   useEffect(() => {
-    if (affiliateBalanceDetails?.data) {
+    console.log("affiliateBalanceDetails", affiliateBalanceDetails);
+    console.log("affiliateBalanceSuccess", affiliateBalanceSuccess);
+    if (affiliateBalanceDetails?.data && affiliateBalanceSuccess) {
+      console.log("affiliateBalanceDetails", affiliateBalanceDetails);
       setAffiliateCommission(affiliateBalanceDetails?.data);
     }
-  }, [affiliateBalanceDetails?.data]);
+  }, [affiliateBalanceDetails?.data, affiliateBalanceSuccess]);
 
   useEffect(() => {
     if (affiliateDetails?.data && !isError) {

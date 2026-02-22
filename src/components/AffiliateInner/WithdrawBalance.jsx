@@ -107,8 +107,30 @@ const WithdrawBalance = () => {
         body: payload,
       }),
     onSuccess: () => {
+      setResponse({ status: true, message: "Withdraw request submitted!" });
+      // setAffiliateCommission(null);
       queryClient.invalidateQueries({
-        queryKey: ["affiliateBalance", "affiliateProfile"],
+        queryKey: ["affiliateBalance", affiliateInfo?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["affiliateProfile"],
+      });
+      setForm({
+        amount: "",
+        currencyId: affiliateInfo?.currency || "",
+        withdrawMethod: "bank",
+        notes: "",
+        accountNumber: "",
+        accountHolderName: "",
+        bankName: "",
+        branchName: "",
+        branchAddress: "",
+        swiftCode: "",
+        iban: "",
+        walletAddress: "",
+        network: "",
+        givenTransactionId: "",
+        settleCommissions: false,
       });
     },
   });
@@ -191,33 +213,6 @@ const WithdrawBalance = () => {
         settleCommissions: isFullWithdrawal ? form.settleCommissions : false,
       };
       mutation.mutate(payload, {
-        onSuccess: () => {
-          setResponse({ status: true, message: "Withdraw request submitted!" });
-
-          // Reset form
-          setForm({
-            amount: "",
-            currencyId: "",
-            withdrawMethod: "bank",
-            notes: "",
-            accountNumber: "",
-            accountHolderName: "",
-            bankName: "",
-            branchName: "",
-            branchAddress: "",
-            swiftCode: "",
-            iban: "",
-            walletAddress: "",
-            network: "",
-            givenTransactionId: "",
-            settleCommissions: false,
-          });
-          // if (user?.role === "superAdmin" || user?.role === "admin") {
-          //   navigate("/affiliate-withdraw-requests");
-          // } else {
-          //   navigate(`/affiliate-list/${affiliateInfo?.id}/withdraw-history`);
-          // }
-        },
         onError: (err) => {
           setResponse({
             status: false,
@@ -251,7 +246,7 @@ const WithdrawBalance = () => {
     if (balance > 0) {
       setForm((prev) => ({ ...prev, amount: balance }));
     }
-  }, []);
+  }, [withdrawAbleBalance()]);
 
   const bdtConversionAmount =
     currencyOptions?.find((c) => c.value === form.currencyId)?.label === "US Dollar (USD)"
