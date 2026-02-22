@@ -125,7 +125,7 @@ const AffiliateListPage = () => {
     },
     {
       field: "username",
-      headerName: "Username",
+      headerName: "USERNAME",
       width: 140,
       render: (_, row) => (
         <Link
@@ -138,7 +138,7 @@ const AffiliateListPage = () => {
     },
     {
       field: "fullname",
-      headerName: "Full Name",
+      headerName: "FULL NAME",
       width: 180,
       render: (_, row) => row.fullname,
     },
@@ -150,33 +150,34 @@ const AffiliateListPage = () => {
     },
     {
       field: "email",
-      headerName: "Email",
+      headerName: "EMAIL",
       width: 180,
       render: (_, row) => row.email,
     },
     {
       field: "role",
-      headerName: "Role",
+      headerName: "ROLE",
       width: 120,
       render: (_, row) =>
         row.role === "affiliate" ? "Sub Affiliate" : "Super Affiliate",
     },
     {
       field: "commission_percentage",
-      headerName: "Total Com. %",
+      headerName: "TOTAL COM. %",
       width: 120,
 
       render: (_, row) => row.commission_percent || 0,
     },
     {
       field: "status",
-      headerName: "Status",
+      headerName: "STATUS",
       width: 100,
       align: "center",
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "active" ? "text-green-600" : "text-red-500"
-            }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "active" ? "text-green-600" : "text-red-500"
+          }`}
         >
           {value}
         </span>
@@ -184,13 +185,14 @@ const AffiliateListPage = () => {
     },
     {
       field: "kyc_status",
-      headerName: "KYC Status",
+      headerName: "KYC STATUS",
       width: 100,
       align: "center",
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "verified" ? "text-green-600" : "text-red-500"
-            }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "verified" ? "text-green-600" : "text-red-500"
+          }`}
         >
           {value}
         </span>
@@ -210,32 +212,32 @@ const AffiliateListPage = () => {
     // },
     {
       field: "isVerified",
-      headerName: "Is Verified",
+      headerName: "IS VERIFIED",
       width: 100,
       render: (_, row) => (row.isVerified ? "Yes" : "No"),
     },
     {
       field: "refCode",
-      headerName: "Referral Code",
+      headerName: "REFERRAL CODE",
       width: 120,
       render: (_, row) => row.refCode,
     },
     {
       field: "lastIp",
-      headerName: "Last IP",
+      headerName: "LAST IP",
       width: 120,
       render: (_, row) => row.lastIp,
     },
     {
       field: "lastLogin",
-      headerName: "Last Login",
+      headerName: "LAST LOGIN",
       width: 160,
       render: (_, row) =>
         row.lastLogin ? new Date(row.lastLogin).toLocaleString() : "",
     },
     {
       field: "device_type",
-      headerName: "Device Type",
+      headerName: "DEVICE TYPE",
       width: 120,
       render: (_, row) => row.device_type,
     },
@@ -289,93 +291,97 @@ const AffiliateListPage = () => {
     // },
     {
       field: "action",
-      headerName: "Action",
+      headerName: "ACTION",
       width: 120,
       align: "center",
       render: (value, row, idx) => (
         <div className="flex gap-2 justify-center">
           {(isSuperAdmin ||
             hasPermission(permissions, "affiliate_edit_affiliate")) && (
-              <button
-                className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
-                title="Edit"
-                onClick={() => handleEdit(row)}
-              >
-                <FaEdit />
-              </button>
-            )}
+            <button
+              className="inline-flex items-center justify-center text-green-500 hover:bg-green-100 rounded-full p-2 transition"
+              title="Edit"
+              onClick={() => handleEdit(row)}
+            >
+              <FaEdit />
+            </button>
+          )}
           {(isSuperAdmin ||
             hasPermission(permissions, "affiliate_edit_affiliate")) && (
-              <>
-                <button
-                  className={`inline-flex items-center justify-center rounded-full p-2 transition ${row.isEmailVerified
-                    ? "text-green-600 hover:bg-green-100"
-                    : "text-purple-600 hover:bg-purple-100"
-                    }`}
-                  title={row.isEmailVerified ? "Unverify Email" : "Verify Email"}
-                  onClick={() => {
-                    const newStatus = !row.isEmailVerified;
-                    if (
-                      window.confirm(
-                        `Are you sure you want to ${newStatus ? "verify" : "unverify"
-                        } ${row.username}'s email?`
-                      )
-                    ) {
-                      updateMutation.mutate({
-                        id: row.id,
-                        isEmailVerified: newStatus,
-                      });
-                    }
-                  }}
-                >
-                  {row.isEmailVerified ? (
-                    <FaEnvelopeOpenText size={14} />
-                  ) : (
-                    <FaEnvelope size={14} />
-                  )}
-                </button>
-                <button
-                  className={`inline-flex items-center justify-center rounded-full p-2 transition ${row.isPhoneVerified
-                    ? "text-green-600 hover:bg-green-100"
-                    : "text-purple-600 hover:bg-purple-100"
-                    }`}
-                  title={row.isPhoneVerified ? "Unverify Phone" : "Verify Phone"}
-                  onClick={() => {
-                    const newStatus = !row.isPhoneVerified;
-                    if (
-                      window.confirm(
-                        `Are you sure you want to ${newStatus ? "verify" : "unverify"
-                        } ${row.username}'s phone?`
-                      )
-                    ) {
-                      updateMutation.mutate({
-                        id: row.id,
-                        isPhoneVerified: newStatus,
-                      });
-                    }
-                  }}
-                >
-                  {row.isPhoneVerified ? (
-                    <FaMobileAlt size={14} />
-                  ) : (
-                    <FaMobile size={14} />
-                  )}
-                </button>
-              </>
-            )}
-          {(isSuperAdmin ||
-            hasPermission(permissions, "affiliate_delete_affiliate")) && (
+            <>
               <button
-                className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
-                title="Delete"
+                className={`inline-flex items-center justify-center rounded-full p-2 transition ${
+                  row.isEmailVerified
+                    ? "text-green-600 hover:bg-green-100"
+                    : "text-purple-600 hover:bg-purple-100"
+                }`}
+                title={row.isEmailVerified ? "Unverify Email" : "Verify Email"}
                 onClick={() => {
-                  setSelectedAgent(row);
-                  setDeleteModalOpen(true);
+                  const newStatus = !row.isEmailVerified;
+                  if (
+                    window.confirm(
+                      `Are you sure you want to ${
+                        newStatus ? "verify" : "unverify"
+                      } ${row.username}'s email?`,
+                    )
+                  ) {
+                    updateMutation.mutate({
+                      id: row.id,
+                      isEmailVerified: newStatus,
+                    });
+                  }
                 }}
               >
-                <FaTrash />
+                {row.isEmailVerified ? (
+                  <FaEnvelopeOpenText size={14} />
+                ) : (
+                  <FaEnvelope size={14} />
+                )}
               </button>
-            )}
+              <button
+                className={`inline-flex items-center justify-center rounded-full p-2 transition ${
+                  row.isPhoneVerified
+                    ? "text-green-600 hover:bg-green-100"
+                    : "text-purple-600 hover:bg-purple-100"
+                }`}
+                title={row.isPhoneVerified ? "Unverify Phone" : "Verify Phone"}
+                onClick={() => {
+                  const newStatus = !row.isPhoneVerified;
+                  if (
+                    window.confirm(
+                      `Are you sure you want to ${
+                        newStatus ? "verify" : "unverify"
+                      } ${row.username}'s phone?`,
+                    )
+                  ) {
+                    updateMutation.mutate({
+                      id: row.id,
+                      isPhoneVerified: newStatus,
+                    });
+                  }
+                }}
+              >
+                {row.isPhoneVerified ? (
+                  <FaMobileAlt size={14} />
+                ) : (
+                  <FaMobile size={14} />
+                )}
+              </button>
+            </>
+          )}
+          {(isSuperAdmin ||
+            hasPermission(permissions, "affiliate_delete_affiliate")) && (
+            <button
+              className="inline-flex items-center justify-center text-red-500 hover:bg-red-100 rounded-full p-2 transition"
+              title="Delete"
+              onClick={() => {
+                setSelectedAgent(row);
+                setDeleteModalOpen(true);
+              }}
+            >
+              <FaTrash />
+            </button>
+          )}
         </div>
       ),
     },
@@ -441,13 +447,13 @@ const AffiliateListPage = () => {
         <h2 className="text-lg font-semibold">Affiliate List</h2>
         {(isSuperAdmin ||
           hasPermission(permissions, "affiliate_create_affiliate")) && (
-            <button
-              className="bg-green-500 text-center text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
-              onClick={() => navigate("/create-affiliate")}
-            >
-              Create Affiliate
-            </button>
-          )}
+          <button
+            className="bg-green-500 text-center text-white px-4 py-1 rounded hover:bg-green-600 transition text-sm font-medium"
+            onClick={() => navigate("/create-affiliate")}
+          >
+            Create Affiliate
+          </button>
+        )}
       </div>
       {/* Filter Bar */}
       <form className="flex flex-wrap gap-2 items-center mb-4">
@@ -519,7 +525,7 @@ const AffiliateListPage = () => {
         className={"min-w-[80vw] min-h-[60vh] overflow-auto"}
         onClose={() => setEditModalOpen(false)}
         title="Edit Affiliate"
-      // onSave={handleEditFormSubmit}
+        // onSave={handleEditFormSubmit}
       >
         <CreateAgentForm
           onSubmit={handleEditFormSubmit}

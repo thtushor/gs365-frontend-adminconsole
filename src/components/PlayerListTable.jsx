@@ -104,7 +104,7 @@ const PlayerListTable = ({
     // Validate promotion requirements if a promotion is selected
     if (depositForm.promotionId) {
       const selectedPromotion = promotionsData?.data?.find(
-        (p) => p.id === depositForm.promotionId
+        (p) => p.id === depositForm.promotionId,
       );
       if (selectedPromotion) {
         const amount = parseFloat(depositForm.amount);
@@ -114,8 +114,8 @@ const PlayerListTable = ({
         if (amount < minAmount) {
           toast.error(
             `Minimum deposit amount for this promotion is ${formatAmount(
-              minAmount
-            )}`
+              minAmount,
+            )}`,
           );
           return;
         }
@@ -123,8 +123,8 @@ const PlayerListTable = ({
         if (amount > maxAmount) {
           toast.error(
             `Maximum deposit amount for this promotion is ${formatAmount(
-              maxAmount
-            )}`
+              maxAmount,
+            )}`,
           );
           return;
         }
@@ -271,7 +271,7 @@ const PlayerListTable = ({
     setSelectedPlayers((prev) =>
       prev.find((p) => p.id === player.id)
         ? prev.filter((p) => p.id !== player.id)
-        : [...prev, player]
+        : [...prev, player],
     );
   };
 
@@ -364,7 +364,7 @@ const PlayerListTable = ({
         !notificationForm.title
       ) {
         toast.error(
-          "For claimable notifications, Title, Amount, Promotion, Turnover Multiplier, Start Date, End Date are required."
+          "For claimable notifications, Title, Amount, Promotion, Turnover Multiplier, Start Date, End Date are required.",
         );
         return;
       }
@@ -376,7 +376,7 @@ const PlayerListTable = ({
     if (notificationForm.notificationType === "linkable") {
       if (!notificationForm.title || !notificationForm.promotionId) {
         toast.error(
-          "For linkable notifications, Title and Promotion are required."
+          "For linkable notifications, Title and Promotion are required.",
         );
         return;
       }
@@ -384,7 +384,7 @@ const PlayerListTable = ({
     if (notificationForm.notificationType === "static") {
       if (!notificationForm.title || !notificationForm.description) {
         toast.error(
-          "For static notifications, Title and description are required."
+          "For static notifications, Title and description are required.",
         );
         return;
       }
@@ -436,7 +436,7 @@ const PlayerListTable = ({
             : null,
         promotionId:
           notificationForm.notificationType === "linkable" ||
-            notificationForm.notificationType === "claimable"
+          notificationForm.notificationType === "claimable"
             ? notificationForm.promotionId
             : null,
         startDate: notificationForm.startDate || new Date().toISOString(), // must not be empty
@@ -536,8 +536,9 @@ const PlayerListTable = ({
       width: 100,
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "active" ? "text-green-600" : "text-red-500"
-            }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "active" ? "text-green-600" : "text-red-500"
+          }`}
         >
           {value}
         </span>
@@ -549,8 +550,9 @@ const PlayerListTable = ({
       width: 100,
       render: (value) => (
         <span
-          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${value === "verified" ? "text-green-600" : "text-red-500"
-            }`}
+          className={`px-2 py-1 text-center pb-[5px] font-semibold block rounded-full capitalize text-xs ${
+            value === "verified" ? "text-green-600" : "text-red-500"
+          }`}
         >
           {value}
         </span>
@@ -558,12 +560,13 @@ const PlayerListTable = ({
     },
     {
       field: "isVerified",
-      headerName: "VERIFIED",
+      headerName: "IS VERIFIED",
       width: 100,
       render: (value) => (
         <span
-          className={`px-2 py-1 rounded text-xs ${value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}
+          className={`px-2 py-1 rounded text-xs ${
+            value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          }`}
         >
           {value ? "Yes" : "No"}
         </span>
@@ -742,9 +745,7 @@ const PlayerListTable = ({
       headerName: "ACTION",
       width: 150,
       align: "center",
-      render: (_, row) => (
-        <ActionDropdown actions={getActionsForRow(row)} />
-      ),
+      render: (_, row) => <ActionDropdown actions={getActionsForRow(row)} />,
     },
   ];
 
@@ -782,7 +783,6 @@ const PlayerListTable = ({
                 readOnly
               />
             </div>
-
           </div>
 
           <div>
@@ -813,7 +813,7 @@ const PlayerListTable = ({
               options={promotionOptions}
               value={
                 promotionOptions.find(
-                  (option) => option.value === depositForm.promotionId
+                  (option) => option.value === depositForm.promotionId,
                 ) || null
               }
               onChange={handlePromotionChange}
@@ -828,7 +828,7 @@ const PlayerListTable = ({
                 <div className="font-medium">Selected Promotion Details:</div>
                 {(() => {
                   const selectedPromotion = promotionsData?.data?.find(
-                    (p) => p.id === depositForm.promotionId
+                    (p) => p.id === depositForm.promotionId,
                   );
                   if (selectedPromotion) {
                     return (
@@ -1040,25 +1040,25 @@ const PlayerListTable = ({
               {/* Linkable Fields */}
               {(notificationForm.notificationType === "linkable" ||
                 notificationForm.notificationType === "claimable") && (
-                  <div>
-                    <label className="block text-sm mb-1">Promotion</label>
-                    <Select
-                      isClearable
-                      isSearchable
-                      placeholder="Select a promotion..."
-                      options={promotionOptions}
-                      value={
-                        promotionOptions.find(
-                          (option) =>
-                            option.value === notificationForm.promotionId
-                        ) || null
-                      }
-                      onChange={handleNotificationPromotionChange}
-                      isLoading={promotionsLoading}
-                      className="w-full"
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm mb-1">Promotion</label>
+                  <Select
+                    isClearable
+                    isSearchable
+                    placeholder="Select a promotion..."
+                    options={promotionOptions}
+                    value={
+                      promotionOptions.find(
+                        (option) =>
+                          option.value === notificationForm.promotionId,
+                      ) || null
+                    }
+                    onChange={handleNotificationPromotionChange}
+                    isLoading={promotionsLoading}
+                    className="w-full"
+                  />
+                </div>
+              )}
 
               {/* Common Optional Fields */}
               <div>
