@@ -6,7 +6,7 @@ import { API_LIST, BASE_URL } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission, PERMISSION_CATEGORIES } from "../Utils/permissions";
 import { staticAffiliatePermission } from "../Utils/staticAffiliatePermission";
-import { Spin } from "antd";
+import { Spin, Tooltip } from "antd";
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import { BiCheck, BiCheckSquare, BiCopy } from "react-icons/bi";
 import { toast } from "react-toastify";
@@ -187,7 +187,6 @@ const AffiliateLayout = () => {
       }
     };
 
-    const [showTooltip, setShowTooltip] = useState(false);
     return label === "Referral Code" ? (
       <div className="border-[#07122b] border text-black bg-white p-3 py-2 rounded shadow-md w-full sm:w-fit">
         <div
@@ -268,17 +267,21 @@ const AffiliateLayout = () => {
                 )}
               </div>
 
-              <div
-                className="absolute bottom-[2px] right-[2px] text-[18px] text-white/70 cursor-pointer"
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
-              >
-                <HiMiniInformationCircle />
-                {showTooltip && (
-                  <div className="absolute top-full mb-1 right-0 bg-green-500 text-black font-semibold text-[12px] px-2 py-1 rounded shadow-md whitespace-nowrap">
-                    (Total Earn - Total Loss - Lifetime Withdraw - Pending Withdrawal) = Current Balance
-                  </div>
-                )}
+              <div className="absolute bottom-[2px] right-[2px] text-[18px] text-white/70 cursor-pointer">
+                <Tooltip
+                  title="(Total Earn - Total Loss - Lifetime Withdraw - Pending Withdrawal) = Current Balance"
+                  placement="bottomRight"
+                  color="rgb(34, 197, 94)"
+                  overlayInnerStyle={{
+                    color: "black",
+                    fontWeight: "600",
+                    fontSize: "12px",
+                  }}
+
+                  showArrow={false}
+                >
+                  <HiMiniInformationCircle />
+                </Tooltip>
               </div>
             </>
           )
