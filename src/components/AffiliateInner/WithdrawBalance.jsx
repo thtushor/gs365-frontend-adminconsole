@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetRequest, usePostRequest } from "../../Utils/apiClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { API_LIST, BASE_URL } from "../../api/ApiList";
@@ -25,6 +25,7 @@ const defaultFilters = {
 };
 
 const WithdrawBalance = () => {
+  const { affiliateId } = useParams();
   const navigate = useNavigate();
   const { data: settingsData } = useSettings();
   const isTodayWithdrawDay = (days) => {
@@ -44,19 +45,19 @@ const WithdrawBalance = () => {
   console.log(affiliateInfo);
   const [filters, setFilters] = useState({
     ...defaultFilters,
-    affiliateId: affiliateInfo?.id || "",
+    affiliateId: affiliateId || "",
   });
   const { data: affiliatePreviousWithdraws } = useTransactions(filters);
 
   const getRequest = useGetRequest();
   const { data: affiliateBalanceDetails } = useQuery({
-    queryKey: ["affiliateBalance", affiliateInfo?.id],
+    queryKey: ["affiliateBalance", affiliateId],
     queryFn: () =>
       getRequest({
-        url: `${BASE_URL}${API_LIST.GET_AFFILIATE_BALANCE}/${affiliateInfo?.id}`,
+        url: `${BASE_URL}${API_LIST.GET_AFFILIATE_BALANCE}/${affiliateId}`,
         errorMessage: "Failed to fetch affiliate balance details",
       }),
-    enabled: !!affiliateInfo?.id,
+    enabled: !!affiliateId,
   });
 
   const withdrawAbleBalance = () => {
@@ -121,13 +122,13 @@ const WithdrawBalance = () => {
       console.log("Withdraw request submitted!");
       setResponse({ status: true, message: "Withdraw request submitted!" });
       queryClient.invalidateQueries({
-        queryKey: ["affiliateBalance", affiliateInfo?.id],
+        queryKey: ["affiliateBalance", affiliateId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["affiliateProfile"],
+        queryKey: ["affiliateProfile", affiliateId],
       });
       queryClient.invalidateQueries({
-        queryKey: ["affiliateDetailedStats", affiliateInfo?.id],
+        queryKey: ["affiliateDetailedStats", affiliateId],
       });
       setForm({
         amount: "",
