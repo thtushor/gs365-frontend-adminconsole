@@ -3,16 +3,66 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="description" content="GS Console" id="meta-description" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GS Console" id="og-title" />
+  <meta property="og:description" content="GS Console Management" id="og-desc" />
+  <meta property="og:image" content="/admin-favicon.png" id="og-image" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content="GS Console" id="twitter-title" />
+  <meta property="twitter:description" content="GS Console Management" id="twitter-desc" />
+  <meta property="twitter:image" content="/admin-favicon.png" id="twitter-image" />
+
   <script>
     (function () {
       const userType = "%VITE_USER_TYPE%";
-      const isAffiliate = userType === 'affiliate';
-      document.title = isAffiliate ? 'GS AFFILIATE' : 'GS ADMIN';
+      const configs = {
+        affiliate: {
+          title: 'GS AFFILIATE',
+          favicon: '/affiliate-favicon.png',
+          desc: 'Join the GS Affiliate program. Manage your network, track commissions, and optimize your performance with our advanced affiliate dashboard.'
+        },
+        admin: {
+          title: 'GS ADMIN',
+          favicon: '/admin-favicon.png',
+          desc: 'GS Admin Console - Comprehensive management system for platform administration, user control, and operational oversight.'
+        }
+      };
 
+      const config = configs[userType] || configs.admin;
+
+      // Set Title
+      document.title = config.title;
+
+      // Set Favicon
       const link = document.createElement('link');
       link.rel = 'icon';
-      link.href = isAffiliate ? '/affiliate-favicon.png' : '/admin-favicon.png';
+      link.href = config.favicon;
       document.head.appendChild(link);
+
+      // Update Meta Tags Helper
+      const setMeta = (id, attr, value) => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute(attr, value);
+      };
+
+      // Update Descriptions
+      setMeta('meta-description', 'content', config.desc);
+      setMeta('og-desc', 'content', config.desc);
+      setMeta('twitter-desc', 'content', config.desc);
+
+      // Update Titles
+      setMeta('og-title', 'content', config.title);
+      setMeta('twitter-title', 'content', config.title);
+
+      // Update Images (Social Preview)
+      const fullImageUrl = window.location.origin + config.favicon;
+      setMeta('og-image', 'content', fullImageUrl);
+      setMeta('twitter-image', 'content', fullImageUrl);
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
