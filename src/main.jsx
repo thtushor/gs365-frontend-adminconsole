@@ -28,6 +28,34 @@ function ProtectedRoute({ children }) {
   const pathname = useLocation().pathname;
 
   const navigate = useNavigate();
+
+  const userType = import.meta.env.VITE_USER_TYPE;
+
+   useEffect(() => {
+    console.log("TITLE EFFECT RUNNING, userType:", userType);
+    // Dynamically set title
+    if (userType === "affiliate") {
+      document.title = "GS AFFILIATE";
+
+      // Change favicon
+      const link =
+        document.querySelector("link[rel~='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
+      link.href = "/affiliate-favicon.png";
+      document.head.appendChild(link);
+    } else {
+      document.title = "GS ADMIN";
+
+      // Change favicon
+      const link =
+        document.querySelector("link[rel~='icon']") ||
+        document.createElement("link");
+      link.rel = "icon";
+      link.href = "/admin-favicon.png"; // your admin favicon path
+      document.head.appendChild(link);
+    }
+  }, [userType]);
   // console.log({ isValidating, user });
 
   useEffect(() => {
