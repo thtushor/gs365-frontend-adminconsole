@@ -32,7 +32,7 @@ function ProtectedRoute({ children }) {
   const userType = import.meta.env.VITE_USER_TYPE;
 
    useEffect(() => {
-    console.log("TITLE EFFECT RUNNING, userType:", userType);
+    console.log("TITLE EFFECT RUNNING, userType: ", userType);
     // Dynamically set title
     if (userType === "affiliate") {
       document.title = "GS AFFILIATE";
