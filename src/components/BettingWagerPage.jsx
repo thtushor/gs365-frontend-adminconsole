@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useBetResults, useGames, useUsers } from "../hooks/useBetResults";
 import { FaFilter, FaDownload, FaEye } from "react-icons/fa";
+import Select from "react-select";
 import StatusChip from "./shared/StatusChip";
 import Pagination from "./Pagination";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -15,8 +16,11 @@ const BettingWagerPage = ({
   playerId: propPlayerId,
   title = "Betting Wager",
 }) => {
+  const { playerId: paramPlayerId } = useParams();
+  const playerId = propPlayerId || paramPlayerId;
+
   const [filters, setFilters] = useState({
-    userId: "",
+    userId: playerId || "",
     gameId: "",
     betStatus: "",
     playingStatus: "",
@@ -33,9 +37,6 @@ const BettingWagerPage = ({
     sortOrder: "desc",
   });
 
-  const { playerId: paramPlayerId } = useParams();
-  const playerId = propPlayerId || paramPlayerId;
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const navigate = useNavigate();
@@ -47,7 +48,6 @@ const BettingWagerPage = ({
     error: betResultsError,
   } = useBetResults({
     ...filters,
-    userId: playerId,
     page: currentPage,
     pageSize,
   });
@@ -62,6 +62,14 @@ const BettingWagerPage = ({
   const users = usersData?.users?.data || [];
   const betResultsList = betResults?.data || [];
   const pagination = betResults?.pagination || {};
+
+  const userOptions = useMemo(() => [
+    { value: "", label: "All Users" },
+    ...users.map((user) => ({
+      value: user.id,
+      label: user.username,
+    })),
+  ], [users]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -178,18 +186,26 @@ const BettingWagerPage = ({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               User
             </label>
-            <select
-              value={filters.userId}
-              onChange={(e) => handleFilterChange("userId", e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Users</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.fullname || user.username}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={userOptions.find((opt) => opt.value === filters.userId)}
+              onChange={(option) => handleFilterChange("userId", option ? option.value : "")}
+              options={userOptions}
+              isSearchable
+              placeholder="All Users"
+              className="w-full"
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: "#d1d5db",
+                  "&:hover": {
+                    borderColor: "#d1d5db",
+                  },
+                  boxShadow: "none",
+                  minHeight: "42px",
+                }),
+              }}
+            />
           </div>
 
           {/* Game Filter */}
@@ -514,8 +530,8 @@ const BettingWagerPage = ({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatAmount(
                         Number(bet.betBalance) +
-                          Number(bet.winAmount) -
-                          Number(bet.lossAmount)
+                        Number(bet.winAmount) -
+                        Number(bet.lossAmount)
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
