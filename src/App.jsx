@@ -151,6 +151,7 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
+    console.log("TITLE EFFECT RUNNING, userType:", userType);
     // Dynamically set title
     if (userType === "affiliate") {
       document.title = "GS AFFILIATE";
