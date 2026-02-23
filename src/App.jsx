@@ -64,13 +64,13 @@ function getRoutes(menu, user) {
     if (item.children && item.children.length > 0) {
       for (const child of item.children) {
         const ChildComponent = child.component;
-       
+
 
         const skipPermissionUsers = child.skipPermissionUsers || [];
         const hasSkipPermissionUser = skipPermissionUsers.includes(user?.role);
 
-         const childHasPermission =
-          isSuperAdmin ||hasSkipPermissionUser ||
+        const childHasPermission =
+          isSuperAdmin || hasSkipPermissionUser ||
           hasPermission(permissions, child.accessKey);
 
         if (child.path)
@@ -98,7 +98,7 @@ function getRoutes(menu, user) {
 }
 
 // Handle routes that don't use Layout
-function getOutsideRoutes(routes, LayoutWrapper = null, user,isAffiliate=false) {
+function getOutsideRoutes(routes, LayoutWrapper = null, user, isAffiliate = false) {
   const permissions = user?.designation?.permissions || [];
   const isSuperAdmin =
     user?.role === "superAdmin";
@@ -147,37 +147,10 @@ const queryClient = new QueryClient(); // Create a client
 
 function App() {
   const { user, isValidating } = useAuth(); // Get isValidating from useAuth
-  const userType = import.meta.env.VITE_USER_TYPE;
   const location = useLocation();
 
-  useEffect(() => {
-    console.log("TITLE EFFECT RUNNING, userType:", userType);
-    // Dynamically set title
-    if (userType === "affiliate") {
-      document.title = "GS AFFILIATE";
+  console.log({ location: location?.pathname })
 
-      // Change favicon
-      const link =
-        document.querySelector("link[rel~='icon']") ||
-        document.createElement("link");
-      link.rel = "icon";
-      link.href = "/affiliate-favicon.png";
-      document.head.appendChild(link);
-    } else {
-      document.title = "GS ADMIN";
-
-      // Change favicon
-      const link =
-        document.querySelector("link[rel~='icon']") ||
-        document.createElement("link");
-      link.rel = "icon";
-      link.href = "/admin-favicon.png"; // your admin favicon path
-      document.head.appendChild(link);
-    }
-  }, [userType]);
-
-  console.log({location: location?.pathname})
-  
 
   if (isValidating && !location?.pathname?.includes("server-error")) {
     return <Loader />; // Show loader while validating
@@ -189,7 +162,7 @@ function App() {
         {/* Routes inside the layout */}
         <Route path="/" element={<Layout />}>
           {getRoutes(menu, user)}
-          {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout, user,true)}
+          {getOutsideRoutes(affiliateOutsideRoute, AffiliateLayout, user, true)}
           {getOutsideRoutes(gameProviderOutsideRoute, GameProviderLayout, user)}
           {getOutsideRoutes(
             sportProviderOutsideRoute,

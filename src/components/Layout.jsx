@@ -21,56 +21,25 @@ const Layout = () => {
 
   const isAdmin = staticAdminCheck(user?.role);
 
-  const userType = import.meta.env.VITE_USER_TYPE;
 
-  const documentTitle = () => {
-    if (userType === "affiliate") {
-      document.title = "GS AFFILIATE";
+  useEffect(() => {
+    socket?.on(`newMessage`, (data) => {
+      console.log("New message found 2", data)
+      queryClient.invalidateQueries({
+        queryKey: ["chatMessages", {
+          ...user
+        }]
+      });
+      queryClient.invalidateQueries({ queryKey: ["userChats"] });
+      queryClient.invalidateQueries({ queryKey: ["chats"] });
+      queryClient.invalidateQueries({ queryKey: ["chats-count"] })
+    })
 
-      // Change favicon
-      const link =
-        document.querySelector("link[rel~='icon']") ||
-        document.createElement("link");
-      link.rel = "icon";
-      link.href = "/affiliate-favicon.png";
-      document.head.appendChild(link);
-    } else {
-      document.title = "GS ADMIN";
-
-      // Change favicon
-      const link =
-        document.querySelector("link[rel~='icon']") ||
-        document.createElement("link");
-      link.rel = "icon";
-      link.href = "/admin-favicon.png";
-      document.head.appendChild(link);
+    return () => {
+      socket?.removeListener(`newMessage`)
     }
-  };
-  useEffect(() => {
-    // Dynamically set title
-    documentTitle;
-  }, [userType]);
+  }, [socket])
 
-
-  useEffect(() => {
-      socket?.on(`newMessage`, (data) => {
-        console.log("New message found 2", data)
-        queryClient.invalidateQueries({
-          queryKey: ["chatMessages", {
-            ...user
-          }]
-        });
-        queryClient.invalidateQueries({ queryKey: ["userChats"] });
-        queryClient.invalidateQueries({ queryKey: ["chats"] });
-        queryClient.invalidateQueries({ queryKey: ["chats-count"] })
-      })
-  
-      return () => {
-        socket?.removeListener(`newMessage`)
-      }
-    }, [socket])
-
-  documentTitle();
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Sidebar for desktop, drawer for mobile */}
