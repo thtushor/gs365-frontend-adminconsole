@@ -31,6 +31,8 @@ function ProtectedRoute({ children }) {
 
   const userType = import.meta.env.VITE_USER_TYPE;
 
+  console.log("TITLE EFFECT RUNNING, userType: ", userType);
+
    useEffect(() => {
     console.log("TITLE EFFECT RUNNING, userType: ", userType);
     // Dynamically set title
