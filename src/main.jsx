@@ -67,32 +67,6 @@ function ProtectedRoute({ children }) {
 
 function Router() {
   const { user, isProfileLoading } = useAuth();
-  const userType = import.meta.env.VITE_USER_TYPE;
-
-  useEffect(() => {
-    // Dynamically set title
-    if (userType === "affiliate") {
-      document.title = "GS AFFILIATE";
-
-      // Change favicon
-      const link =
-        document.querySelector("link[rel~='icon']") ||
-        document.createElement("link");
-      link.rel = "icon";
-      link.href = "/affiliate-favicon.png";
-      document.head.appendChild(link);
-    } else {
-      document.title = "GS ADMIN";
-
-      // Change favicon
-      const link =
-        document.querySelector("link[rel~='icon']") ||
-        document.createElement("link");
-      link.rel = "icon";
-      link.href = "/admin-favicon.png";
-      document.head.appendChild(link);
-    }
-  }, [userType]);
 
   return (
     <Routes>

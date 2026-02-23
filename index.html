@@ -1,15 +1,26 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/admin-favicon.png" />
-    <!-- <link rel="icon" type="image/png" href="/affilaite-favicon.png" /> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GS Admin</title>
-    <!-- <title>GS Affiliate</title> -->
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    (function () {
+      const userType = "%VITE_USER_TYPE%";
+      const isAffiliate = userType === 'affiliate';
+      document.title = isAffiliate ? 'GS AFFILIATE' : 'GS ADMIN';
+
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.href = isAffiliate ? '/affiliate-favicon.png' : '/admin-favicon.png';
+      document.head.appendChild(link);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
