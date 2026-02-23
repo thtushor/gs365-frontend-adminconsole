@@ -1,4 +1,5 @@
 import { FaSignOutAlt, FaBars } from "react-icons/fa";
+import { Tooltip } from "antd";
 import { motion } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
@@ -123,26 +124,26 @@ const Topbar = ({ onMenuClick }) => {
 
   return (
     <motion.header
-      className="flex items-center justify-between bg-[#07122b] text-white px-4 md:px-6 py-3 shadow-md w-full"
+      className="flex items-center justify-between bg-[#07122b] text-white px-3 sm:px-6 py-2 sm:py-3 shadow-md w-full"
       initial="hidden"
       animate="visible"
       variants={topbarVariants}
     >
       {/* Hamburger menu for mobile */}
       <button
-        className="md:hidden mr-2 text-2xl p-2 rounded hover:bg-[#1a2a4a] focus:outline-none"
+        className="md:hidden mr-1 sm:mr-2 text-xl sm:text-2xl p-2 rounded hover:bg-[#1a2a4a] focus:outline-none"
         onClick={onMenuClick}
         aria-label="Open sidebar menu"
       >
         <FaBars />
       </button>
-      <div className="flex-1 flex justify-end items-center gap-4">
-       {["admin","superAdmin"].includes(user.role) && <div className="relative w-fit">
+      <div className="flex-1 flex justify-end items-center gap-2 sm:gap-4">
+        {["admin", "superAdmin"].includes(user.role) && <div className="relative w-fit">
           <div
-            className="relative text-white cursor-pointer w-fit z-[999]"
+            className="relative text-white cursor-pointer w-fit z-[999] hover:text-blue-400 transition-colors"
             onClick={() => setIsOpen((prev) => !prev)}
           >
-            <IoNotificationsOutline size={27} />
+            <IoNotificationsOutline className="text-[22px] sm:text-[27px]" />
             {notificationsData?.length > 0 && (
               <div className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-blue-500 border-2 border-black rounded-full">
                 {notificationsData?.length > 9 ? "9+" : notificationsData?.length}
@@ -235,51 +236,50 @@ const Topbar = ({ onMenuClick }) => {
             </div>
           )}
         </div>}
-        
+
         {user?.role === "superAffiliate" && (
-          <Link
-            to={`/create-affiliate?refCode=${user?.refCode}`}
-            className="text-base font-semibold items-center gap-2 flex text-white border px-[10px] pt-[2px] pb-1 rounded-full w-fit text-[16px]"
-          >
-            + Sub Affiliate
-          </Link>
+          <Tooltip title="+ Sub Affiliate" mouseEnterDelay={0.5}>
+            <Link
+              to={`/create-affiliate?refCode=${user?.refCode}`}
+              className="font-semibold items-center gap-1 flex text-white border px-2 sm:px-[10px] pt-[2px] pb-1 rounded-full w-fit text-[12px] sm:text-[16px] whitespace-nowrap"
+            >
+              <span className="truncate max-w-[80px] sm:max-w-none">+ Sub Affiliate</span>
+            </Link>
+          </Tooltip>
         )}
 
         {user && (
-          <div className="flex items-center max-w-xs truncate">
-            <Link
-              to={`/affiliate-list/${user?.id}`}
-              className="font-semibold items-center gap-2 flex text-white border sm:px-[10px] px-1 sm:pr-[5.5px] pt-[2px] pb-1 rounded-full w-fit text-[14px] sm:text-[16px]"
-            >
-              <p className="">
-                {(user?.fullname || user?.username || user?.email)?.length > 50
-                  ? (user?.fullname || user?.username || user?.email)?.slice(
-                    0,
-                    50
-                  ) + "..."
-                  : user?.fullname || user?.username || user?.email}
-              </p>
-
-              <span
-                className={`border rounded-full px-2 py-0.5 text-xs font-semibold capitalize mb-[-3px] whitespace-nowrap ${roleColors[user.role] ||
-                  "bg-gray-100 text-gray-700 border-gray-400"
-                  }`}
+          <div className="flex items-center max-w-[130px] sm:max-w-xs">
+            <Tooltip title={user?.fullname || user?.username || user?.email} mouseEnterDelay={0.5}>
+              <Link
+                to={`/affiliate-list/${user?.id}`}
+                className="font-semibold items-center gap-1 sm:gap-2 flex text-white border px-2 sm:px-[10px] pt-[2px] pb-1 rounded-full w-full text-[12px] sm:text-[16px]"
               >
-                {user.role}
-              </span>
-            </Link>
+                <p className="truncate">
+                  {user?.fullname || user?.username || user?.email}
+                </p>
+
+                <span
+                  className={`border rounded-full px-2 py-0.5 text-[10px] sm:text-xs font-semibold capitalize mb-[-1px] sm:mb-[-3px] whitespace-nowrap ${roleColors[user.role] ||
+                    "bg-gray-100 text-gray-700 border-gray-400"
+                    }`}
+                >
+                  {user.role}
+                </span>
+              </Link>
+            </Tooltip>
           </div>
         )}
 
         <button
-          className="text-base font-semibold items-center gap-2 flex border px-[10px] pt-[2px] pb-1 rounded-full w-fit text-[16px] bg-red-100 border-red-500 text-red-500"
+          className="font-semibold items-center gap-1 sm:gap-2 flex border px-2 sm:px-[10px] pt-[2px] pb-1 rounded-full w-fit text-[12px] sm:text-[16px] bg-red-100 border-red-500 text-red-500 hover:bg-red-200 transition-colors"
           onClick={handleLogout}
           disabled={isLoading || isLogoutLoading}
         >
           <span className="sm:flex hidden">
-            {isLogoutLoading ? "Logging out..." : "Logout"}{" "}
+            {isLogoutLoading ? "Logging out..." : "Logout"}
           </span>
-          <FaSignOutAlt className="text-lg mt-1" />
+          <FaSignOutAlt className="text-base sm:text-lg mt-0.5 sm:mt-1" />
         </button>
       </div>
     </motion.header>
