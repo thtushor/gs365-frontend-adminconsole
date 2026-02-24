@@ -1,36 +1,57 @@
 import { useState, useMemo } from "react";
 import Select from "react-select";
 
-const PlayerListFilter = ({ filters, onChange, users = [], admins = [] }) => {
+const PlayerListFilter = ({
+  filters,
+  onChange,
+  users = [],
+  admins = [],
+  affiliates = [],
+  agents = [],
+}) => {
   const [localFilters, setLocalFilters] = useState(filters);
 
-  const userOptions = useMemo(() => [
-    { value: "", label: "Select Player" },
-    ...users.map((user) => ({
-      value: user.id,
-      label: user.username,
-    })),
-  ], [users]);
+  const userOptions = useMemo(
+    () => [
+      { value: "", label: "Select Player" },
+      ...users.map((user) => ({
+        value: user.id,
+        label: `${user.username} (${user.id})`,
+      })),
+    ],
+    [users]
+  );
 
-  const adminOptions = useMemo(() => [
-    { value: "", label: "Created By" },
-    ...admins.map((admin) => ({
-      value: admin.id,
-      label: admin.username,
-    })),
-  ], [admins]);
+  const adminUserOptions = useMemo(() => {
+    const mapAdmin = (a) => ({
+      value: a.id,
+      label: `${a.username} (${a.role})`,
+    });
+
+    return [
+      { value: "", label: "All Users" },
+      {
+        label: "Owners/Admins",
+        options: admins.map(mapAdmin),
+      },
+      {
+        label: "Affiliates",
+        options: affiliates.map(mapAdmin),
+      },
+      {
+        label: "Agents",
+        options: agents.map(mapAdmin),
+      },
+    ];
+  }, [admins, affiliates, agents]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setLocalFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (option) => {
-    setLocalFilters((prev) => ({ ...prev, playerId: option ? option.value : "" }));
-  };
-
-  const handleAdminSelectChange = (option) => {
-    setLocalFilters((prev) => ({ ...prev, createdBy: option ? option.value : "" }));
+  const handleSelectChange = (name, option) => {
+    setLocalFilters((prev) => ({ ...prev, [name]: option ? option.value : "" }));
   };
 
   const handleSubmit = (e) => {
@@ -47,12 +68,33 @@ const PlayerListFilter = ({ filters, onChange, users = [], admins = [] }) => {
       page: 1,
       pageSize: 20,
       createdBy: "",
+      referred_by: "",
+      referred_by_admin_user: "",
       currencyId: "",
       dateFrom: "",
       dateTo: "",
     };
     setLocalFilters(resetFilters);
     onChange(resetFilters);
+  };
+
+  const selectStyles = {
+    control: (base) => ({
+      ...base,
+      borderColor: "#e5e7eb",
+      "&:hover": {
+        borderColor: "#e5e7eb",
+      },
+      boxShadow: "none",
+      minHeight: "38px",
+    }),
+    groupHeading: (base) => ({
+      ...base,
+      color: "#10b981",
+      fontWeight: "bold",
+      fontSize: "0.75rem",
+      textTransform: "uppercase",
+    }),
   };
 
   return (
@@ -64,23 +106,13 @@ const PlayerListFilter = ({ filters, onChange, users = [], admins = [] }) => {
         <div className="sm:w-60 w-full">
           <Select
             value={userOptions.find((opt) => opt.value === localFilters.playerId)}
-            onChange={handleSelectChange}
+            onChange={(opt) => handleSelectChange("playerId", opt)}
             options={userOptions}
             isSearchable
-            placeholder="Player ID"
+            placeholder="Search Player..."
             className="w-full text-sm"
             classNamePrefix="react-select"
-            styles={{
-              control: (base) => ({
-                ...base,
-                borderColor: "#e5e7eb",
-                "&:hover": {
-                  borderColor: "#e5e7eb",
-                },
-                boxShadow: "none",
-                minHeight: "38px",
-              }),
-            }}
+            styles={selectStyles}
           />
         </div>
         <input
@@ -101,28 +133,52 @@ const PlayerListFilter = ({ filters, onChange, users = [], admins = [] }) => {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <div className="sm:w-48 w-full">
+
+        <div className="sm:w-52 w-full">
           <Select
-            value={adminOptions.find((opt) => opt.value === localFilters.createdBy)}
-            onChange={handleAdminSelectChange}
-            options={adminOptions}
+            value={adminUserOptions
+              .flatMap((g) => g.options || [g])
+              .find((opt) => opt.value === localFilters.createdBy)}
+            onChange={(opt) => handleSelectChange("createdBy", opt)}
+            options={adminUserOptions}
             isSearchable
-            placeholder="Created By"
+            placeholder="Created By Admin"
             className="w-full text-sm"
             classNamePrefix="react-select"
-            styles={{
-              control: (base) => ({
-                ...base,
-                borderColor: "#e5e7eb",
-                "&:hover": {
-                  borderColor: "#e5e7eb",
-                },
-                boxShadow: "none",
-                minHeight: "38px",
-              }),
-            }}
+            styles={selectStyles}
           />
         </div>
+
+        <div className="sm:w-52 w-full">
+          <Select
+            value={adminUserOptions
+              .flatMap((g) => g.options || [g])
+              .find((opt) => opt.value === localFilters.referred_by_admin_user)}
+            onChange={(opt) => handleSelectChange("referred_by_admin_user", opt)}
+            options={adminUserOptions}
+            isSearchable
+            placeholder="Referred By Admin/Aff"
+            className="w-full text-sm"
+            classNamePrefix="react-select"
+            styles={selectStyles}
+          />
+        </div>
+
+        <div className="sm:w-52 w-full">
+          <Select
+            value={userOptions.find(
+              (opt) => opt.value === localFilters.referred_by
+            )}
+            onChange={(opt) => handleSelectChange("referred_by", opt)}
+            options={userOptions}
+            isSearchable
+            placeholder="Referred By Player"
+            className="w-full text-sm"
+            classNamePrefix="react-select"
+            styles={selectStyles}
+          />
+        </div>
+
         <input
           type="text"
           name="currencyId"
@@ -155,7 +211,7 @@ const PlayerListFilter = ({ filters, onChange, users = [], admins = [] }) => {
           onChange={handleInputChange}
           className="border rounded px-3 py-2 text-sm flex-1 min-w-[180px] focus:outline-none focus:ring-2 focus:ring-green-200"
         />
-        <div className="flex gap-2">
+        <div className="ml-auto flex gap-2">
           <button
             type="submit"
             className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition text-sm font-medium"

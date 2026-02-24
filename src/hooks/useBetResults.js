@@ -61,3 +61,27 @@ export const useAdmins = () => {
     },
   });
 };
+
+export const useAffiliates = () => {
+  return useQuery({
+    queryKey: ["affiliates_all"],
+    queryFn: async () => {
+      const res = await Axios.get(API_LIST.AFFILIATE_LIST, {
+        params: { pageSize: 100000 }
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useAgents = () => {
+  return useQuery({
+    queryKey: ["agents_all"],
+    queryFn: async () => {
+      const res = await Axios.get(API_LIST.AGENT_LIST, {
+        params: { pageSize: 100000 }
+      });
+      return res.data;
+    },
+  });
+};

@@ -12,7 +12,7 @@ import PlayerForm from "./PlayerForm";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
-import { useUsers, useAdmins } from "../hooks/useBetResults";
+import { useUsers, useAdmins, useAffiliates, useAgents } from "../hooks/useBetResults";
 
 const mapPlayer = (p) => ({
   id: p.id,
@@ -66,6 +66,8 @@ const defaultFilters = {
   page: 1,
   pageSize: 20,
   createdBy: "",
+  referred_by: "",
+  referred_by_admin_user: "",
   currencyId: "",
   dateFrom: "",
   dateTo: "",
@@ -86,7 +88,12 @@ const PlayerListPage = () => {
   const allUsers = usersData?.users?.data || [];
 
   const { data: adminsData } = useAdmins();
+  const { data: affiliatesData } = useAffiliates();
+  const { data: agentsData } = useAgents();
+
   const allAdmins = adminsData?.data || [];
+  const allAffiliates = affiliatesData?.data || [];
+  const allAgents = agentsData?.data || [];
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["players", filters],
@@ -277,7 +284,14 @@ const PlayerListPage = () => {
         </div>
       </div>
       <div className="bg-white rounded-lg shadow p-4 mb-4">
-        <PlayerListFilter filters={filters} onChange={handleFilterChange} users={allUsers} admins={allAdmins} />
+        <PlayerListFilter
+          filters={filters}
+          onChange={handleFilterChange}
+          users={allUsers}
+          admins={allAdmins}
+          affiliates={allAffiliates}
+          agents={allAgents}
+        />
       </div>
       <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">
         {isLoading ? (
