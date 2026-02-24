@@ -49,3 +49,15 @@ export const useUsers = () => {
     },
   });
 };
+
+export const useAdmins = () => {
+  return useQuery({
+    queryKey: ["admins"],
+    queryFn: async () => {
+      const res = await Axios.get(API_LIST.GET_ADMIN_LIST, {
+        params: { pageSize: 100000 }
+      });
+      return res.data;
+    },
+  });
+};

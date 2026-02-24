@@ -1,16 +1,24 @@
 import { useState, useMemo } from "react";
 import Select from "react-select";
 
-const PlayerListFilter = ({ filters, onChange, users = [] }) => {
+const PlayerListFilter = ({ filters, onChange, users = [], admins = [] }) => {
   const [localFilters, setLocalFilters] = useState(filters);
 
   const userOptions = useMemo(() => [
-    { value: "", label: "All Players" },
+    { value: "", label: "Select Player" },
     ...users.map((user) => ({
       value: user.id,
       label: user.username,
     })),
   ], [users]);
+
+  const adminOptions = useMemo(() => [
+    { value: "", label: "Created By" },
+    ...admins.map((admin) => ({
+      value: admin.id,
+      label: admin.username,
+    })),
+  ], [admins]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +27,10 @@ const PlayerListFilter = ({ filters, onChange, users = [] }) => {
 
   const handleSelectChange = (option) => {
     setLocalFilters((prev) => ({ ...prev, playerId: option ? option.value : "" }));
+  };
+
+  const handleAdminSelectChange = (option) => {
+    setLocalFilters((prev) => ({ ...prev, createdBy: option ? option.value : "" }));
   };
 
   const handleSubmit = (e) => {
@@ -89,14 +101,28 @@ const PlayerListFilter = ({ filters, onChange, users = [] }) => {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <input
-          type="text"
-          name="createdBy"
-          placeholder="Created By"
-          value={localFilters.createdBy}
-          onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
+        <div className="sm:w-48 w-full">
+          <Select
+            value={adminOptions.find((opt) => opt.value === localFilters.createdBy)}
+            onChange={handleAdminSelectChange}
+            options={adminOptions}
+            isSearchable
+            placeholder="Created By"
+            className="w-full text-sm"
+            classNamePrefix="react-select"
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderColor: "#e5e7eb",
+                "&:hover": {
+                  borderColor: "#e5e7eb",
+                },
+                boxShadow: "none",
+                minHeight: "38px",
+              }),
+            }}
+          />
+        </div>
         <input
           type="text"
           name="currencyId"
