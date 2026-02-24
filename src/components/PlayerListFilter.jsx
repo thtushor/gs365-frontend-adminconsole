@@ -21,6 +21,14 @@ const PlayerListFilter = ({
     [users]
   );
 
+  const onlyAdminOptions = useMemo(() => [
+    { value: "", label: "Created By" },
+    ...admins.map((a) => ({
+      value: a.id,
+      label: `${a.username} (${a.role})`,
+    })),
+  ], [admins]);
+
   const adminUserOptions = useMemo(() => {
     const mapAdmin = (a) => ({
       value: a.id,
@@ -30,7 +38,7 @@ const PlayerListFilter = ({
     return [
       { value: "", label: "All Users" },
       {
-        label: "Owners/Admins",
+        label: "Admins",
         options: admins.map(mapAdmin),
       },
       {
@@ -131,11 +139,11 @@ const PlayerListFilter = ({
 
         <div className="sm:w-52 w-full">
           <Select
-            value={adminUserOptions
-              .flatMap((g) => g.options || [g])
-              .find((opt) => opt.value === localFilters.createdBy)}
+            value={onlyAdminOptions.find(
+              (opt) => opt.value === localFilters.createdBy
+            )}
             onChange={(opt) => handleSelectChange("createdBy", opt)}
-            options={adminUserOptions}
+            options={onlyAdminOptions}
             isSearchable
             placeholder="Created By Admin"
             className="w-full text-sm"
