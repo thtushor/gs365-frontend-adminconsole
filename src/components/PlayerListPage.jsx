@@ -12,6 +12,7 @@ import PlayerForm from "./PlayerForm";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
+import { useUsers } from "../hooks/useBetResults";
 
 const mapPlayer = (p) => ({
   id: p.id,
@@ -80,6 +81,9 @@ const PlayerListPage = () => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === "superAdmin";
   const permissions = user?.designation?.permissions || [];
+
+  const { data: usersData } = useUsers();
+  const allUsers = usersData?.users?.data || [];
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["players", filters],
@@ -270,7 +274,7 @@ const PlayerListPage = () => {
         </div>
       </div>
       <div className="bg-white rounded-lg shadow p-4 mb-4">
-        <PlayerListFilter filters={filters} onChange={handleFilterChange} />
+        <PlayerListFilter filters={filters} onChange={handleFilterChange} users={allUsers} />
       </div>
       <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">
         {isLoading ? (

@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import Select from "react-select";
 
-const PlayerListFilter = ({ filters, onChange }) => {
+const PlayerListFilter = ({ filters, onChange, users = [] }) => {
   const [localFilters, setLocalFilters] = useState(filters);
+
+  const userOptions = useMemo(() => [
+    { value: "", label: "All Players" },
+    ...users.map((user) => ({
+      value: user.id,
+      label: user.username,
+    })),
+  ], [users]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setLocalFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (option) => {
+    setLocalFilters((prev) => ({ ...prev, playerId: option ? option.value : "" }));
   };
 
   const handleSubmit = (e) => {
@@ -36,14 +49,28 @@ const PlayerListFilter = ({ filters, onChange }) => {
         className="flex flex-wrap gap-3 items-center"
         onSubmit={handleSubmit}
       >
-        <input
-          type="text"
-          name="playerId"
-          placeholder="Player ID"
-          value={localFilters.playerId}
-          onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
+        <div className="sm:w-60 w-full">
+          <Select
+            value={userOptions.find((opt) => opt.value === localFilters.playerId)}
+            onChange={handleSelectChange}
+            options={userOptions}
+            isSearchable
+            placeholder="Player ID"
+            className="w-full text-sm"
+            classNamePrefix="react-select"
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderColor: "#e5e7eb",
+                "&:hover": {
+                  borderColor: "#e5e7eb",
+                },
+                boxShadow: "none",
+                minHeight: "38px",
+              }),
+            }}
+          />
+        </div>
         <input
           type="text"
           name="phone"
