@@ -22,9 +22,6 @@ const PlayerListFilter = ({ filters, onChange }) => {
       page: 1,
       pageSize: 20,
       createdBy: "",
-      referred_by: "",
-      referred_by_admin_user: "",
-      userType: "all",
       currencyId: "",
       dateFrom: "",
       dateTo: "",
@@ -65,38 +62,11 @@ const PlayerListFilter = ({ filters, onChange }) => {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <select
-          name="userType"
-          value={localFilters.userType}
-          onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
-        >
-          <option value="all">All Users</option>
-          <option value="player">Player</option>
-          <option value="affiliate">Affiliate</option>
-          <option value="agent">Agent</option>
-        </select>
         <input
           type="text"
           name="createdBy"
           placeholder="Created By"
           value={localFilters.createdBy}
-          onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
-        <input
-          type="text"
-          name="referred_by"
-          placeholder="Referred By"
-          value={localFilters.referred_by}
-          onChange={handleInputChange}
-          className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
-        />
-        <input
-          type="text"
-          name="referred_by_admin_user"
-          placeholder="Referred By Admin"
-          value={localFilters.referred_by_admin_user}
           onChange={handleInputChange}
           className="border rounded px-3 py-2 text-sm sm:w-40 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
         />

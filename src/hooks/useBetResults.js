@@ -30,8 +30,8 @@ export const useGames = () => {
   return useQuery({
     queryKey: ["games"],
     queryFn: async () => {
-      const res = await Axios.get(API_LIST.GET_ALL_GAMES, { 
-        params: { pageSize: 10000 } 
+      const res = await Axios.get(API_LIST.GET_ALL_GAMES, {
+        params: { pageSize: 100000 }
       });
       return res.data;
     },
@@ -42,8 +42,8 @@ export const useUsers = () => {
   return useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await Axios.get(API_LIST.GET_ALL_USERS, { 
-        params: { pageSize: 10000 } 
+      const res = await Axios.get(API_LIST.GET_ALL_USERS, {
+        params: { pageSize: 100000 }
       });
       return res.data;
     },

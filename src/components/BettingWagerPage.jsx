@@ -64,7 +64,7 @@ const BettingWagerPage = ({
   const pagination = betResults?.pagination || {};
 
   const userOptions = useMemo(() => [
-    { value: "", label: "All Users" },
+    { value: "", label: "All Players" },
     ...users.map((user) => ({
       value: user.id,
       label: user.username,
