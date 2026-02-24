@@ -12,7 +12,7 @@ import PlayerForm from "./PlayerForm";
 import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission } from "../Utils/permissions";
-import { useUsers, useAdmins, useAffiliates, useAgents } from "../hooks/useBetResults";
+import { useUsers, useAdmins, useAffiliates } from "../hooks/useBetResults";
 
 const mapPlayer = (p) => ({
   id: p.id,
@@ -89,11 +89,9 @@ const PlayerListPage = () => {
 
   const { data: adminsData } = useAdmins();
   const { data: affiliatesData } = useAffiliates();
-  const { data: agentsData } = useAgents();
 
   const allAdmins = adminsData?.data || [];
   const allAffiliates = affiliatesData?.data || [];
-  const allAgents = agentsData?.data || [];
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["players", filters],
@@ -290,7 +288,6 @@ const PlayerListPage = () => {
           users={allUsers}
           admins={allAdmins}
           affiliates={allAffiliates}
-          agents={allAgents}
         />
       </div>
       <div className="bg-white rounded-lg overflow-auto max-w-full shadow p-4 min-h-[200px] flex flex-col justify-center items-center">

@@ -7,7 +7,6 @@ const PlayerListFilter = ({
   users = [],
   admins = [],
   affiliates = [],
-  agents = [],
 }) => {
   const [localFilters, setLocalFilters] = useState(filters);
 
@@ -38,12 +37,8 @@ const PlayerListFilter = ({
         label: "Affiliates",
         options: affiliates.map(mapAdmin),
       },
-      {
-        label: "Agents",
-        options: agents.map(mapAdmin),
-      },
     ];
-  }, [admins, affiliates, agents]);
+  }, [admins, affiliates]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
