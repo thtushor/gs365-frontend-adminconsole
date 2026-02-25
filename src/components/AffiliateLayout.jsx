@@ -291,6 +291,7 @@ const AffiliateLayout = () => {
                   <HighlightBox
                     label="Referral Code"
                     value={affiliateDetails?.data?.refCode || "N/A"}
+                    affiliateDetails={affiliateDetails}
                     uplineDetails={affiliateDetails?.data?.role}
                   />
                 )}
