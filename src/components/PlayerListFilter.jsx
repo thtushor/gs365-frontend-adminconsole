@@ -15,7 +15,7 @@ const PlayerListFilter = ({
       { value: "", label: "Select Player" },
       ...users.map((user) => ({
         value: user.id,
-        label: `${user.username} (${user.id})`,
+        label: `${user.fullname || ""} (${user.username}) (${user.id})`,
       })),
     ],
     [users]
@@ -32,7 +32,7 @@ const PlayerListFilter = ({
   const adminUserOptions = useMemo(() => {
     const mapAdmin = (a) => ({
       value: a.id,
-      label: `${a.username} (${a.role})`,
+      label: `${a.fullname || ""} (${a.username}) (${a.role})`,
     });
 
     return [

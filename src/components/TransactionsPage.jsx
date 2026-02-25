@@ -12,6 +12,8 @@ import { useSettings } from "../hooks/useSettings";
 import { useAuth } from "../hooks/useAuth";
 import { hasPermission, hasAnyPermission } from "../Utils/permissions";
 import MouseFollowTooltip from "./MouseFollowTooltip";
+import Select from "react-select";
+import { useUsers } from "../hooks/useBetResults";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -81,6 +83,17 @@ const TransactionsPage = ({
       }));
     }
   }, [playerId]);
+
+  const { data: usersData } = useUsers();
+  const allUsers = usersData?.users?.data || [];
+
+  const userOptions = useMemo(() => [
+    { value: "", label: "All Players" },
+    ...allUsers.map((user) => ({
+      value: user.id,
+      label: `${user.fullname || ""} (${user.username}) (${user.id})`,
+    })),
+  ], [allUsers]);
 
   const { data, isLoading } = useTransactions(filters);
   const updateMutation = useUpdateTransactionStatus();
@@ -403,14 +416,28 @@ const TransactionsPage = ({
 
           {/* User ID Input - only shown when no playerId */}
           {!playerId && (
-            <input
-              className="border rounded px-3 py-2 w-full"
-              placeholder="User ID"
-              value={filters.userId}
-              onChange={(e) =>
-                setFilters((f) => ({ ...f, userId: e.target.value, page: 1 }))
-              }
-            />
+            <div className="w-full">
+              <Select
+                value={userOptions.find((opt) => opt.value === filters.userId)}
+                onChange={(opt) => setFilters((f) => ({ ...f, userId: opt ? opt.value : "", page: 1 }))}
+                options={userOptions}
+                isSearchable
+                placeholder="Search Player..."
+                className="w-full text-sm"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderColor: "#e5e7eb",
+                    "&:hover": {
+                      borderColor: "#e5e7eb",
+                    },
+                    boxShadow: "none",
+                    minHeight: "38px",
+                  }),
+                }}
+              />
+            </div>
           )}
 
           {/* Sort By */}

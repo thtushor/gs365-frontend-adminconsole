@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { FaFilter } from "react-icons/fa";
+import Select from "react-select";
 import Pagination from "./Pagination";
 import { usePlayerRankings, useGames, useUsers } from "../hooks/useBetResults";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +30,14 @@ const WinLossPage = () => {
 
   const games = gamesData?.data || [];
   const users = usersData?.users?.data || [];
+  const userOptions = useMemo(() => [
+    { value: "", label: "All Users" },
+    ...users.map((user) => ({
+      value: user.id,
+      label: `${user.fullname || ""} (${user.username}) (${user.id})`,
+    })),
+  ], [users]);
+
   const rankings = data?.data || [];
   const pagination = data?.pagination || {};
 
@@ -151,18 +160,27 @@ const WinLossPage = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               User
             </label>
-            <select
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={filters.userId}
-              onChange={(e) => handleFilterChange("userId", e.target.value)}
-            >
-              <option value="">All Users</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.fullname || user.username}
-                </option>
-              ))}
-            </select>
+            <Select
+              value={userOptions.find((opt) => opt.value === filters.userId)}
+              onChange={(opt) => handleFilterChange("userId", opt ? opt.value : "")}
+              options={userOptions}
+              isSearchable
+              placeholder="Search User..."
+              className="w-full text-sm"
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: "#d1d5db",
+                  borderRadius: "0.375rem",
+                  "&:hover": {
+                    borderColor: "#3b82f6",
+                  },
+                  boxShadow: "none",
+                  minHeight: "42px",
+                }),
+              }}
+            />
           </div>
 
           <div>

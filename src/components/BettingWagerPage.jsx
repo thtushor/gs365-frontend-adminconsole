@@ -67,7 +67,7 @@ const BettingWagerPage = ({
     { value: "", label: "All Players" },
     ...users.map((user) => ({
       value: user.id,
-      label: user.username,
+      label: `${user.fullname || ""} (${user.username}) (${user.id})`,
     })),
   ], [users]);
 
