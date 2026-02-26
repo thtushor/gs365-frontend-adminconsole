@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
@@ -22,7 +22,9 @@ const ProviderProfilePage = () => {
   const { providerId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("profile");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "profile";
+
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -184,7 +186,11 @@ const ProviderProfilePage = () => {
           },
         ]}
         value={activeTab}
-        onChange={setActiveTab}
+        onChange={(val) => {
+          searchParams.set("tab", val);
+          setSearchParams(searchParams, { replace: true });
+        }}
+
       >
         {/* Providers Tab */}
         <div>
