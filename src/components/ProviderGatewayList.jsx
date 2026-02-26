@@ -309,7 +309,6 @@ const ProviderGatewayList = ({ providerId, providerName }) => {
       width: 200,
       render: (value, row) => {
         const isAutomated = row?.provider?.isAutomated;
-        console.log({ row })
         return (
           <div
             className={`flex items-center space-x-2 p-2 rounded transition-colors duration-200 ${isAutomated
