@@ -77,6 +77,45 @@ const PaymentProviderForm = ({ formData, setFormData }) => {
           </p>
         </div>
       </div>
+
+      {/* Third Row - Automated and Tag */}
+      <div className="grid grid-cols-2 gap-4 items-center">
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="isAutomated"
+            checked={formData.isAutomated || false}
+            onChange={(e) =>
+              setFormData({ ...formData, isAutomated: e.target.checked })
+            }
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label
+            htmlFor="isAutomated"
+            className="text-sm font-medium text-gray-700"
+          >
+            Is Automated Payment Provider?
+          </label>
+        </div>
+
+        {formData.isAutomated && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Provider Tag
+            </label>
+            <select
+              value={formData.tag || ""}
+              onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Tag</option>
+              <option value="VEXORA">VEXORA</option>
+              <option value="OXAPAY">OXAPAY</option>
+              <option value="COINSPAY">COINSPAY</option>
+            </select>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

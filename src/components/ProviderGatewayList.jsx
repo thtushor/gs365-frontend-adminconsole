@@ -263,9 +263,8 @@ const ProviderGatewayList = ({ providerId, providerName }) => {
         className: "hover:bg-gray-100",
       },
       {
-        label: `Mark as ${
-          row?.isRecommended ? "Not Recommended" : "Recommended"
-        }`,
+        label: `Mark as ${row?.isRecommended ? "Not Recommended" : "Recommended"
+          }`,
         icon: (
           <FaToggleOn
             size={14}
@@ -308,24 +307,37 @@ const ProviderGatewayList = ({ providerId, providerName }) => {
       field: "gateway",
       headerName: "Gateway",
       width: 200,
-      render: (value, row) => (
-        <div
-          className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors duration-200"
-          onClick={() => handleGatewayClick(value, row?.id)}
-          title="Click to manage gateway account"
-        >
-          {value?.iconUrl && (
-            <img
-              src={value.iconUrl}
-              alt={value.name}
-              className="w-6 h-6 rounded object-cover"
-            />
-          )}
-          <span className="font-medium text-green-500">
-            {value?.name || "-"}
-          </span>
-        </div>
-      ),
+      render: (value, row) => {
+        const isAutomated = row?.provider?.isAutomated;
+        return (
+          <div
+            className={`flex items-center space-x-2 p-2 rounded transition-colors duration-200 ${isAutomated
+              ? "cursor-not-allowed opacity-75"
+              : "cursor-pointer hover:bg-gray-50"
+              }`}
+            onClick={() => !isAutomated && handleGatewayClick(value, row?.id)}
+            title={
+              isAutomated
+                ? "Automated providers do not require manual account management"
+                : "Click to manage gateway account"
+            }
+          >
+            {value?.iconUrl && (
+              <img
+                src={value.iconUrl}
+                alt={value.name}
+                className="w-6 h-6 rounded object-cover"
+              />
+            )}
+            <span
+              className={`font-medium ${isAutomated ? "text-gray-500" : "text-green-500"
+                }`}
+            >
+              {value?.name || "-"}
+            </span>
+          </div>
+        );
+      },
     },
     {
       field: "priority",

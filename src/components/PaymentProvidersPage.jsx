@@ -25,11 +25,10 @@ const PaymentProvidersPage = () => {
   const TabButton = ({ tab, label, isActive, onClick }) => (
     <button
       onClick={onClick}
-      className={`px-4 py-2 font-medium rounded-t-lg transition-colors ${
-        isActive
+      className={`px-4 py-2 font-medium rounded-t-lg transition-colors ${isActive
           ? "bg-white text-blue-600 border-b-2 border-blue-600"
           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-      }`}
+        }`}
     >
       {label}
     </button>
@@ -57,6 +56,8 @@ const PaymentProvidersPage = () => {
       contactInfo: "",
       commissionPercentage: "",
       status: "active",
+      isAutomated: false,
+      tag: "",
     });
 
     const { user } = useAuth();
@@ -95,6 +96,8 @@ const PaymentProvidersPage = () => {
         contactInfo: "",
         commissionPercentage: "",
         status: "active",
+        isAutomated: false,
+        tag: "",
       });
     };
 
@@ -115,6 +118,8 @@ const PaymentProvidersPage = () => {
         contactInfo: provider.contactInfo || "",
         commissionPercentage: provider.commissionPercentage || "",
         status: provider.status || "active",
+        isAutomated: provider.isAutomated || false,
+        tag: provider.tag || "",
       });
       setModalOpen(true);
     };
@@ -206,13 +211,13 @@ const PaymentProvidersPage = () => {
           <div className="flex items-center space-x-2">
             {(isSuperAdmin ||
               hasPermission(permissions, "payment_view_provider_profile")) && (
-              <button
-                onClick={() => navigate(`/payment-providers/${row.id}`)}
-                className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-              >
-                {value}
-              </button>
-            )}
+                <button
+                  onClick={() => navigate(`/payment-providers/${row.id}`)}
+                  className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                >
+                  {value}
+                </button>
+              )}
           </div>
         ),
       },
@@ -241,6 +246,27 @@ const PaymentProvidersPage = () => {
         render: (value) => <StatusChip status={value} />,
       },
       {
+        field: "isAutomated",
+        headerName: "Automated",
+        width: 100,
+        render: (value) => (
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium ${value ? "bg-purple-100 text-purple-800" : "bg-gray-100 text-gray-800"
+              }`}
+          >
+            {value ? "Yes" : "No"}
+          </span>
+        ),
+      },
+      {
+        field: "tag",
+        headerName: "Tag",
+        width: 120,
+        render: (value) => (
+          <span className="text-gray-700 font-medium">{value || "-"}</span>
+        ),
+      },
+      {
         field: "actions",
         headerName: "Actions",
         width: 120,
@@ -251,27 +277,27 @@ const PaymentProvidersPage = () => {
                 permissions,
                 "payment_manage_payment_providers"
               )) && (
-              <button
-                onClick={() => handleEdit(row)}
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                title="Edit"
-              >
-                <FaEdit />
-              </button>
-            )}
+                <button
+                  onClick={() => handleEdit(row)}
+                  className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                  title="Edit"
+                >
+                  <FaEdit />
+                </button>
+              )}
             {(isSuperAdmin ||
               hasPermission(
                 permissions,
                 "payment_manage_payment_providers"
               )) && (
-              <button
-                onClick={() => handleDelete(row)}
-                className="p-2 text-red-600 hover:bg-red-50 rounded"
-                title="Delete"
-              >
-                <FaTrash />
-              </button>
-            )}
+                <button
+                  onClick={() => handleDelete(row)}
+                  className="p-2 text-red-600 hover:bg-red-50 rounded"
+                  title="Delete"
+                >
+                  <FaTrash />
+                </button>
+              )}
           </div>
         ),
       },
@@ -298,14 +324,14 @@ const PaymentProvidersPage = () => {
           </h1>
           {(isSuperAdmin ||
             hasPermission(permissions, "payment_manage_payment_providers")) && (
-            <button
-              onClick={handleCreate}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2"
-            >
-              <FaPlus />
-              <span>Add Provider</span>
-            </button>
-          )}
+              <button
+                onClick={handleCreate}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2"
+              >
+                <FaPlus />
+                <span>Add Provider</span>
+              </button>
+            )}
         </div>
 
         {/* Filters */}

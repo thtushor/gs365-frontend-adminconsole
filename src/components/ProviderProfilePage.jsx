@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Axios from "../api/axios";
 import { API_LIST } from "../api/ApiList";
@@ -22,13 +22,17 @@ const ProviderProfilePage = () => {
   const { providerId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("profile");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "profile";
+
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     contactInfo: "",
     commissionPercentage: "",
     status: "active",
+    isAutomated: false,
+    tag: "",
   });
 
   // Fetch provider details
@@ -78,6 +82,8 @@ const ProviderProfilePage = () => {
       contactInfo: provider?.contactInfo || "",
       commissionPercentage: provider?.commissionPercentage || "",
       status: provider?.status || "active",
+      isAutomated: provider?.isAutomated || false,
+      tag: provider?.tag || "",
     });
   };
 
@@ -180,7 +186,11 @@ const ProviderProfilePage = () => {
           },
         ]}
         value={activeTab}
-        onChange={setActiveTab}
+        onChange={(val) => {
+          searchParams.set("tab", val);
+          setSearchParams(searchParams, { replace: true });
+        }}
+
       >
         {/* Providers Tab */}
         <div>
@@ -241,6 +251,26 @@ const ProviderProfilePage = () => {
                   </label>
                   <StatusChip status={provider.status} />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Automated
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {provider.isAutomated ? "Yes" : "No"}
+                  </p>
+                </div>
+
+                {provider.isAutomated && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Provider Tag
+                    </label>
+                    <p className="text-gray-900 font-medium">
+                      {provider.tag || "N/A"}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4">
