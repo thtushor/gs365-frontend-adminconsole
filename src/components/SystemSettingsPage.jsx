@@ -26,6 +26,7 @@ const SystemSettingsPage = () => {
     minWithdrawableBalance: 0,
     conversionRate: 0,
     affiliateWithdrawTime: [],
+    withdrawalTimeout: "Disabled",
     systemActiveTime: { start: "", end: "" },
   });
 
@@ -51,6 +52,7 @@ const SystemSettingsPage = () => {
           ? setting.affiliateWithdrawTime.split(",")
           : [],
       systemActiveTime: setting.systemActiveTime,
+      withdrawalTimeout: setting.withdrawalTimeout,
     });
   };
   const handleSave = async (settingId) => {
@@ -109,6 +111,7 @@ const SystemSettingsPage = () => {
           conversionRate: Number(editValue.conversionRate),
           affiliateWithdrawTime: editValue.affiliateWithdrawTime,
           systemActiveTime: editValue.systemActiveTime,
+          withdrawalTimeout: editValue.withdrawalTimeout,
         },
       });
 
@@ -152,6 +155,17 @@ const SystemSettingsPage = () => {
     "friday",
   ];
   const spinOnOffOptions = ["Enabled", "Disabled"];
+  const withdrawalTimeoutOptions = [
+    "30 min",
+    "1 hour",
+    "2 hours",
+    "3 hours",
+    "5 hours",
+    "7 hours",
+    "12 hours",
+    "24 hours",
+    "Disabled",
+  ];
 
   return (
     <div className="p-6">
@@ -369,6 +383,24 @@ const SystemSettingsPage = () => {
                   hasAccess={hasAccess}
                   updateSettingsMutation={updateSettingsMutation}
                 />
+                {hasAccess("settings_update_system_settings") && (
+                  <SettingRow
+                    label="Withdrawal Auto-Cancel Timeout"
+                    description={`Pending withdrawals older than this will be rejected. Current: ${setting.withdrawalTimeout}`}
+                    field="withdrawalTimeout"
+                    setting={setting}
+                    editingField={editingField}
+                    editValue={editValue}
+                    setEditValue={setEditValue}
+                    handleEdit={handleEdit}
+                    handleSave={handleSave}
+                    handleCancel={handleCancel}
+                    hasAccess={hasAccess}
+                    updateSettingsMutation={updateSettingsMutation}
+                    options={withdrawalTimeoutOptions}
+                    isMultiSelect={false}
+                  />
+                )}
               </React.Fragment>
             ))
           )}
