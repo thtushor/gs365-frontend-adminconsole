@@ -5,6 +5,8 @@ import "react-phone-number-input/style.css";
 import { useGetRequest } from "../Utils/apiClient";
 import { API_LIST, BASE_URL } from "../api/ApiList";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../hooks/useAuth";
+import { hasPermission } from "../Utils/permissions";
 
 const defaultForm = {
   username: "",
@@ -19,10 +21,27 @@ const defaultForm = {
   countryId: null,
   currency: null,
   callingCode: "+880",
+  withdrawalCooldown: "Disabled",
 };
+
+const COOLDOWN_OPTIONS = [
+  { value: "Disabled", label: "Disabled" },
+  { value: "30 min", label: "30 min" },
+  { value: "1 hour", label: "1 hour" },
+  { value: "2 hours", label: "2 hours" },
+  { value: "3 hours", label: "3 hours" },
+  { value: "5 hours", label: "5 hours" },
+  { value: "7 hours", label: "7 hours" },
+  { value: "12 hours", label: "12 hours" },
+  { value: "24 hours", label: "24 hours" },
+];
 
 const PlayerForm = ({ initialValues, onSubmit, loading, isEdit }) => {
   const getRequest = useGetRequest();
+  const { user: currentUser } = useAuth();
+  const permissions = currentUser?.designation?.permissions || [];
+  const isSuperAdmin = currentUser?.role === "superAdmin";
+
   const [form, setForm] = useState({
     ...defaultForm,
     ...initialValues,
@@ -48,18 +67,17 @@ const PlayerForm = ({ initialValues, onSubmit, loading, isEdit }) => {
     () =>
       countryData?.data?.length > 0
         ? countryData?.data?.map((country) => ({
-            id: country?.id,
-            value: country?.code,
-            label: country?.name,
-            currency: {
-              id: country?.currency?.id,
-              code: country?.currency?.code,
-              name: country?.currency?.name,
-            },
-            phoneCode: `+${
-              country.callingCode || (country.code === "BD" ? "880" : "")
+          id: country?.id,
+          value: country?.code,
+          label: country?.name,
+          currency: {
+            id: country?.currency?.id,
+            code: country?.currency?.code,
+            name: country?.currency?.name,
+          },
+          phoneCode: `+${country.callingCode || (country.code === "BD" ? "880" : "")
             }`,
-          }))
+        }))
         : [],
     [countryData]
   );
@@ -184,6 +202,7 @@ const PlayerForm = ({ initialValues, onSubmit, loading, isEdit }) => {
         currency_id: form.currency,
         refer_code: form.refCode?.trim() || undefined,
         isAgreeWithTerms: form.ageCheck,
+        withdrawalCooldown: isEdit ? form.withdrawalCooldown : "Disabled",
       };
 
       await onSubmit(apiData);
@@ -376,6 +395,24 @@ const PlayerForm = ({ initialValues, onSubmit, loading, isEdit }) => {
         )}
       </div>
 
+      {isEdit && (isSuperAdmin || hasPermission(permissions, "player_edit_withdrawal_cooldown")) && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Withdrawal Cooldown (Overrides Global)
+          </label>
+          <Select
+            options={COOLDOWN_OPTIONS}
+            value={COOLDOWN_OPTIONS.find((opt) => opt.value === form.withdrawalCooldown) || COOLDOWN_OPTIONS[0]}
+            onChange={(selected) =>
+              setForm((prev) => ({
+                ...prev,
+                withdrawalCooldown: selected ? selected.value : "Disabled",
+              }))
+            }
+          />
+        </div>
+      )}
+
       <button
         type="submit"
         className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition font-semibold"
@@ -386,8 +423,8 @@ const PlayerForm = ({ initialValues, onSubmit, loading, isEdit }) => {
             ? "Updating..."
             : "Creating..."
           : isEdit
-          ? "Update User"
-          : "Create User"}
+            ? "Update User"
+            : "Create User"}
       </button>
     </form>
   );

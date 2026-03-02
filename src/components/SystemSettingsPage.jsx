@@ -27,6 +27,7 @@ const SystemSettingsPage = () => {
     conversionRate: 0,
     affiliateWithdrawTime: [],
     withdrawalTimeout: "Disabled",
+    withdrawalCooldown: "Disabled",
     systemActiveTime: { start: "", end: "" },
   });
 
@@ -53,6 +54,7 @@ const SystemSettingsPage = () => {
           : [],
       systemActiveTime: setting.systemActiveTime,
       withdrawalTimeout: setting.withdrawalTimeout,
+      withdrawalCooldown: setting.withdrawalCooldown,
     });
   };
   const handleSave = async (settingId) => {
@@ -112,6 +114,7 @@ const SystemSettingsPage = () => {
           affiliateWithdrawTime: editValue.affiliateWithdrawTime,
           systemActiveTime: editValue.systemActiveTime,
           withdrawalTimeout: editValue.withdrawalTimeout,
+          withdrawalCooldown: editValue.withdrawalCooldown,
         },
       });
 
@@ -383,7 +386,7 @@ const SystemSettingsPage = () => {
                   hasAccess={hasAccess}
                   updateSettingsMutation={updateSettingsMutation}
                 />
-                {hasAccess("settings_update_system_settings") && (
+                {hasAccess("settings_update_withdrawal_timeout") && (
                   <SettingRow
                     label="Withdrawal Auto-Cancel Timeout"
                     description={`Pending withdrawals older than this will be rejected. Current: ${setting.withdrawalTimeout}`}
@@ -399,6 +402,26 @@ const SystemSettingsPage = () => {
                     updateSettingsMutation={updateSettingsMutation}
                     options={withdrawalTimeoutOptions}
                     isMultiSelect={false}
+                    requiredPermission="settings_update_withdrawal_timeout"
+                  />
+                )}
+                {hasAccess("settings_update_withdrawal_cooldown") && (
+                  <SettingRow
+                    label="Withdrawal Request Cooldown"
+                    description={`Minimum waiting time between two withdrawal requests. Current: ${setting.withdrawalCooldown}`}
+                    field="withdrawalCooldown"
+                    setting={setting}
+                    editingField={editingField}
+                    editValue={editValue}
+                    setEditValue={setEditValue}
+                    handleEdit={handleEdit}
+                    handleSave={handleSave}
+                    handleCancel={handleCancel}
+                    hasAccess={hasAccess}
+                    updateSettingsMutation={updateSettingsMutation}
+                    options={withdrawalTimeoutOptions}
+                    isMultiSelect={false}
+                    requiredPermission="settings_update_withdrawal_cooldown"
                   />
                 )}
               </React.Fragment>
@@ -427,6 +450,7 @@ const SettingRow = ({
   min = "1",
   options,
   isMultiSelect = true,
+  requiredPermission = "settings_update_system_settings",
 }) => {
   const isEditing =
     editingField?.id === setting.id && editingField?.field === field;
@@ -515,7 +539,7 @@ const SettingRow = ({
               onClick={() => handleSave(setting.id)}
               disabled={
                 updateSettingsMutation.isLoading ||
-                !hasAccess("settings_update_system_settings")
+                !hasAccess(requiredPermission)
               }
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
             >
@@ -531,7 +555,7 @@ const SettingRow = ({
             </button>
           </>
         ) : (
-          hasAccess("settings_update_system_settings") && (
+          hasAccess(requiredPermission) && (
             <button
               onClick={() => handleEdit(setting, field)}
               className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"

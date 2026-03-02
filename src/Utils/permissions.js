@@ -33,6 +33,7 @@ export const PERMISSION_CATEGORIES = {
       "player_view_player_turnover",
       "player_export_player_data",
       "player_change_player_password",
+      "player_edit_withdrawal_cooldown",
     ],
   },
   KYC: {
@@ -239,6 +240,8 @@ export const PERMISSION_CATEGORIES = {
     permissions: [
       "settings_view_system_settings",
       "settings_update_system_settings",
+      "settings_update_withdrawal_timeout",
+      "settings_update_withdrawal_cooldown",
       "settings_manage_turnover_settings",
       "settings_manage_backup_restore",
     ],
