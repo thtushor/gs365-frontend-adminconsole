@@ -14,6 +14,7 @@ import { hasPermission, hasAnyPermission } from "../Utils/permissions";
 import MouseFollowTooltip from "./MouseFollowTooltip";
 import Select from "react-select";
 import { useUsers } from "../hooks/useBetResults";
+import { usePaymentProviders } from "../hooks/usePaymentProviders";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -66,7 +67,11 @@ const TransactionsPage = ({
   const [selectedTx, setSelectedTx] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [updatePayload, setUpdatePayload] = useState({ status: "", notes: "" });
+  const [updatePayload, setUpdatePayload] = useState({
+    status: "",
+    notes: "",
+    providerId: null,
+  });
   const navigate = useNavigate();
 
   const { user } = useAuth();
@@ -251,6 +256,23 @@ const TransactionsPage = ({
         ),
       },
       {
+        field: "gatewayStatus",
+        headerName: "G. Status",
+        width: 120,
+        render: (value) => (
+          <span
+            className={`px-2 py-1 rounded capitalize text-xs font-medium ${value === "approved"
+              ? "bg-green-100 text-green-600 border border-green-600"
+              : value === "pending"
+                ? "bg-yellow-100 text-yellow-600 border border-yellow-600"
+                : "bg-red-100 text-red-600 border border-red-600"
+              }`}
+          >
+            {value || "pending"}
+          </span>
+        ),
+      },
+      {
         field: "createdAt",
         headerName: "Created At",
         width: 200,
@@ -313,7 +335,8 @@ const TransactionsPage = ({
                 "payment_reject_deposits",
                 "payment_approve_withdrawals",
                 "payment_reject_withdrawals",
-              ])) && (
+              ])) &&
+              !(row.type === "deposit" && row.isAutomated) && (
                 <button
                   className="px-3 py-1 rounded bg-orange-50 text-orange-600 hover:bg-orange-100 text-xs"
                   onClick={() => handleOpenModal(row)}
@@ -333,6 +356,7 @@ const TransactionsPage = ({
     setUpdatePayload({
       status: row?.status || "pending",
       notes: row?.notes || "",
+      providerId: row?.providerId || null,
     });
     setModalOpen(true);
   };
@@ -347,9 +371,19 @@ const TransactionsPage = ({
       id: selectedTx.id,
       status: updatePayload.status,
       notes: updatePayload.notes,
+      providerId: updatePayload.providerId,
     });
     setModalOpen(false);
   };
+
+  const { data: providersData } = usePaymentProviders({ status: "active" });
+  const providerOptions = useMemo(() => {
+    const list = providersData?.data || [];
+    return list.map((p) => ({
+      value: p.id,
+      label: `${p.name} ${p.isAutomated ? "(Auto)" : "(Manual)"}`,
+    }));
+  }, [providersData]);
 
   console.log(conversionRate);
 
@@ -1018,6 +1052,40 @@ const TransactionsPage = ({
         loadingText="Updating..."
       >
         <div className="space-y-3">
+          {selectedTx?.type === "withdraw" && (
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-500">
+                Payment Provider
+              </label>
+              <Select
+                value={providerOptions.find(
+                  (opt) => opt.value === updatePayload.providerId
+                )}
+                onChange={(opt) =>
+                  setUpdatePayload((p) => ({
+                    ...p,
+                    providerId: opt ? opt.value : null,
+                  }))
+                }
+                options={providerOptions}
+                isSearchable
+                placeholder="Select Provider..."
+                className="w-full text-sm"
+                classNamePrefix="react-select"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderColor: "#e5e7eb",
+                    "&:hover": {
+                      borderColor: "#e5e7eb",
+                    },
+                    boxShadow: "none",
+                    minHeight: "38px",
+                  }),
+                }}
+              />
+            </div>
+          )}
           <select
             className="w-full border rounded px-3 py-2"
             value={updatePayload.status}

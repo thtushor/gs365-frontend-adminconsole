@@ -74,13 +74,14 @@ export const useTransactions = ({
 export const useUpdateTransactionStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status, notes, dynamicUrl }) => {
+    mutationFn: async ({ id, status, notes, providerId, dynamicUrl }) => {
       const staticUrl = `${API_LIST.PAYMENT_TRANSACTION}/${id}/status`;
       if (!id) throw new Error("Transaction id is required");
       if (!status) throw new Error("Status is required");
       const { data } = await Axios.post(dynamicUrl || staticUrl, {
         status,
         notes,
+        providerId,
       });
       return data;
     },
