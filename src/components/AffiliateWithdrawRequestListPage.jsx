@@ -128,17 +128,31 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
         field: "status",
         headerName: "Status",
         width: 120,
-        render: (value) => (
-          <span
-            className={`px-2 py-1 rounded text-xs font-medium ${value === "approved"
-              ? "bg-green-100 text-green-800"
-              : value === "pending"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-red-100 text-red-800"
-              }`}
-          >
-            {value}
-          </span>
+        render: (value, row) => (
+          <div className="flex flex-col gap-1">
+            <span
+              className={`px-2 py-1 rounded text-xs font-medium w-fit ${value === "approved"
+                ? "bg-green-100 text-green-800"
+                : value === "pending"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-red-100 text-red-800"
+                }`}
+            >
+              {value}
+            </span>
+          </div>
+        ),
+      },
+      {
+        field: "rejectReason",
+        headerName: "Reject Reason",
+        width: 200,
+        render: (value, row) => (
+          row.status === "rejected" ? (
+            <div className="text-red-500 font-medium text-xs truncate max-w-[180px]" title={value || "Reason not specified"}>
+              {value || "Reason not specified"}
+            </div>
+          ) : "——"
         ),
       },
       {
