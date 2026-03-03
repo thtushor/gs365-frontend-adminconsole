@@ -11,8 +11,10 @@ import { formatAmount } from "./BettingWagerPage";
 import { formatDate } from "../Utils/dateUtils";
 import { API_LIST } from "../api/ApiList";
 import { useAuth } from "../hooks/useAuth";
+import { useRejectReasons } from "../hooks/useRejectReasons";
 import { hasPermission, hasAnyPermission } from "../Utils/permissions";
 import { useSettings } from "../hooks/useSettings";
+import Select from "react-select";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -128,13 +130,12 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
         width: 120,
         render: (value) => (
           <span
-            className={`px-2 py-1 rounded text-xs font-medium ${
-              value === "approved"
-                ? "bg-green-100 text-green-800"
-                : value === "pending"
+            className={`px-2 py-1 rounded text-xs font-medium ${value === "approved"
+              ? "bg-green-100 text-green-800"
+              : value === "pending"
                 ? "bg-yellow-100 text-yellow-800"
                 : "bg-red-100 text-red-800"
-            }`}
+              }`}
           >
             {value}
           </span>
@@ -164,13 +165,13 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
                 permissions,
                 "affiliate_view_affiliate_withdraw_history"
               )) && (
-              <button
-                className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
-                onClick={() => handleViewTransaction(row)}
-              >
-                View
-              </button>
-            )}
+                <button
+                  className="px-3 py-1 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs"
+                  onClick={() => handleViewTransaction(row)}
+                >
+                  View
+                </button>
+              )}
 
             {row?.status === "pending" &&
               (isSuperAdmin ||
@@ -192,11 +193,22 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
     [navigate, isSuperAdmin, permissions]
   );
 
+  const { getRejectReasons } = useRejectReasons();
+  const rejectReasonOptions = useMemo(() => {
+    const list = getRejectReasons?.data?.data || [];
+    return list.map((r) => ({
+      value: r.id,
+      label: r.reason,
+    }));
+  }, [getRejectReasons]);
+
   const handleOpenModal = (row) => {
     setSelectedTx(row);
     setUpdatePayload({
       status: row?.status || "pending",
       notes: row?.notes || "",
+      rejectReasonId: row?.rejectReasonId || null,
+      rejectReason: row?.rejectReason || "",
     });
     setModalOpen(true);
   };
@@ -213,6 +225,8 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
       status: updatePayload.status,
       notes: updatePayload.notes,
       dynamicUrl: dynamicUrl,
+      rejectReasonId: updatePayload.rejectReasonId,
+      rejectReason: updatePayload.rejectReason,
     });
     setModalOpen(false);
   };
@@ -311,13 +325,12 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
                 </div>
                 <div className="text-right">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedTx.status === "approved"
-                        ? "bg-green-100 text-green-800"
-                        : selectedTx.status === "pending"
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${selectedTx.status === "approved"
+                      ? "bg-green-100 text-green-800"
+                      : selectedTx.status === "pending"
                         ? "bg-yellow-100 text-yellow-800"
                         : "bg-red-100 text-red-800"
-                    }`}
+                      }`}
                   >
                     {selectedTx.status.toUpperCase()}
                   </span>
@@ -372,55 +385,55 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
                 {(selectedTx.accountNumber ||
                   selectedTx.bankName ||
                   selectedTx.walletAddress) && (
-                  <div className="bg-white border rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                      Payment Information
-                    </h4>
-                    <div className="space-y-3">
-                      {selectedTx.accountNumber && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Account Number:</span>
-                          <span className="font-medium">
-                            {selectedTx.accountNumber}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.accountHolderName && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Account Holder:</span>
-                          <span className="font-medium">
-                            {selectedTx.accountHolderName}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.bankName && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Bank:</span>
-                          <span className="font-medium">
-                            {selectedTx.bankName}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.walletAddress && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Wallet Address:</span>
-                          <span className="font-medium text-xs break-all">
-                            {selectedTx.walletAddress}
-                          </span>
-                        </div>
-                      )}
-                      {selectedTx.network && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Network:</span>
-                          <span className="font-medium">
-                            {selectedTx.network}
-                          </span>
-                        </div>
-                      )}
+                    <div className="bg-white border rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                        Payment Information
+                      </h4>
+                      <div className="space-y-3">
+                        {selectedTx.accountNumber && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Number:</span>
+                            <span className="font-medium">
+                              {selectedTx.accountNumber}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.accountHolderName && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Holder:</span>
+                            <span className="font-medium">
+                              {selectedTx.accountHolderName}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.bankName && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Bank:</span>
+                            <span className="font-medium">
+                              {selectedTx.bankName}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.walletAddress && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Wallet Address:</span>
+                            <span className="font-medium text-xs break-all">
+                              {selectedTx.walletAddress}
+                            </span>
+                          </div>
+                        )}
+                        {selectedTx.network && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Network:</span>
+                            <span className="font-medium">
+                              {selectedTx.network}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
 
               {/* Right Column */}
@@ -471,11 +484,10 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Status:</span>
                       <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          selectedTx.affiliateStatus === "active"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                        className={`px-2 py-1 rounded text-xs font-medium ${selectedTx.affiliateStatus === "active"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                          }`}
                       >
                         {selectedTx.affiliateStatus}
                       </span>
@@ -509,19 +521,59 @@ const AffiliateWithdrawRequestListPage = ({ title = "Transactions" }) => {
         loadingText="Updating..."
       >
         <div className="space-y-3">
-          <select
-            className="w-full border rounded px-3 py-2"
-            value={updatePayload.status}
-            onChange={(e) =>
-              setUpdatePayload((p) => ({ ...p, status: e.target.value }))
-            }
-          >
-            {statusOptions.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-gray-500">Status</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={updatePayload.status}
+              onChange={(e) =>
+                setUpdatePayload((p) => ({ ...p, status: e.target.value }))
+              }
+            >
+              {statusOptions.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {(updatePayload.status === "rejected" ||
+            selectedTx?.status === "rejected") && (
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-500">
+                  Reject Reason
+                </label>
+                <Select
+                  value={rejectReasonOptions.find(
+                    (opt) => opt.value === updatePayload.rejectReasonId
+                  )}
+                  onChange={(opt) =>
+                    setUpdatePayload((p) => ({
+                      ...p,
+                      rejectReasonId: opt ? opt.value : null,
+                      rejectReason: opt ? opt.label : "",
+                    }))
+                  }
+                  options={rejectReasonOptions}
+                  isSearchable
+                  placeholder="Select Reject Reason..."
+                  className="w-full text-sm"
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderColor: "#e5e7eb",
+                      "&:hover": {
+                        borderColor: "#e5e7eb",
+                      },
+                      boxShadow: "none",
+                      minHeight: "38px",
+                    }),
+                  }}
+                />
+              </div>
+            )}
           <textarea
             className="w-full border rounded px-3 py-2"
             rows={4}

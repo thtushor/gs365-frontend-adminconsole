@@ -231,6 +231,11 @@ export const API_LIST = {
   DATABASE_DOWNLOAD_BACKUP_FILES: "/api/database/download-backup",
   DATABASE_DELETE_FILES: "/api/database/delete-backup",
   DATABASE_DELETE_TABLES: "/api/database/drop-all-tables",
+  // Reject Reasons
+  GET_REJECT_REASONS: "/api/admin/reject-reasons",
+  CREATE_REJECT_REASON: "/api/admin/reject-reasons",
+  UPDATE_REJECT_REASON: "/api/admin/reject-reasons",
+  DELETE_REJECT_REASON: "/api/admin/reject-reasons/delete",
 };
 
 export const DROPDOWN_ID = {

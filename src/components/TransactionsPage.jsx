@@ -15,6 +15,7 @@ import MouseFollowTooltip from "./MouseFollowTooltip";
 import Select from "react-select";
 import { useUsers } from "../hooks/useBetResults";
 import { usePaymentProviders } from "../hooks/usePaymentProviders";
+import { useRejectReasons } from "../hooks/useRejectReasons";
 
 const statusOptions = [
   { value: "approved", label: "Approved" },
@@ -351,12 +352,23 @@ const TransactionsPage = ({
     [navigate, conversionRate, isSuperAdmin, permissions]
   );
 
+  const { getRejectReasons } = useRejectReasons();
+  const rejectReasonOptions = useMemo(() => {
+    const list = getRejectReasons?.data?.data || [];
+    return list.map((r) => ({
+      value: r.id,
+      label: r.reason,
+    }));
+  }, [getRejectReasons]);
+
   const handleOpenModal = (row) => {
     setSelectedTx(row);
     setUpdatePayload({
       status: row?.status || "pending",
       notes: row?.notes || "",
       providerId: row?.providerId || null,
+      rejectReasonId: row?.rejectReasonId || null,
+      rejectReason: row?.rejectReason || "",
     });
     setModalOpen(true);
   };
@@ -372,6 +384,8 @@ const TransactionsPage = ({
       status: updatePayload.status,
       notes: updatePayload.notes,
       providerId: updatePayload.providerId,
+      rejectReasonId: updatePayload.rejectReasonId,
+      rejectReason: updatePayload.rejectReason,
     });
     setModalOpen(false);
   };
@@ -807,6 +821,20 @@ const TransactionsPage = ({
                     </div>
                   )}
 
+                {/* Reject Reason */}
+                {selectedTx.status === "rejected" &&
+                  (selectedTx.rejectReason || selectedTx.rejectReasonId) && (
+                    <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mb-6">
+                      <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                        Rejection Reason
+                      </h2>
+                      <p className="text-red-700 text-lg leading-relaxed font-semibold">
+                        {selectedTx.rejectReason || "Reason not specified"}
+                      </p>
+                    </div>
+                  )}
+
                 {/* Notes */}
                 {selectedTx.notes && (
                   <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 mb-6">
@@ -1086,19 +1114,60 @@ const TransactionsPage = ({
               />
             </div>
           )}
-          <select
-            className="w-full border rounded px-3 py-2"
-            value={updatePayload.status}
-            onChange={(e) =>
-              setUpdatePayload((p) => ({ ...p, status: e.target.value }))
-            }
-          >
-            {statusOptions.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-gray-500">Status</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={updatePayload.status}
+              onChange={(e) =>
+                setUpdatePayload((p) => ({ ...p, status: e.target.value }))
+              }
+            >
+              {statusOptions.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {(updatePayload.status === "rejected" ||
+            selectedTx?.status === "rejected") &&
+            selectedTx?.type === "withdraw" && (
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-500">
+                  Reject Reason
+                </label>
+                <Select
+                  value={rejectReasonOptions.find(
+                    (opt) => opt.value === updatePayload.rejectReasonId
+                  )}
+                  onChange={(opt) =>
+                    setUpdatePayload((p) => ({
+                      ...p,
+                      rejectReasonId: opt ? opt.value : null,
+                      rejectReason: opt ? opt.label : "",
+                    }))
+                  }
+                  options={rejectReasonOptions}
+                  isSearchable
+                  placeholder="Select Reject Reason..."
+                  className="w-full text-sm"
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderColor: "#e5e7eb",
+                      "&:hover": {
+                        borderColor: "#e5e7eb",
+                      },
+                      boxShadow: "none",
+                      minHeight: "38px",
+                    }),
+                  }}
+                />
+              </div>
+            )}
           <textarea
             className="w-full border rounded px-3 py-2"
             rows={4}

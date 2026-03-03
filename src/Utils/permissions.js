@@ -220,6 +220,7 @@ export const PERMISSION_CATEGORIES = {
     permissions: [
       "settings_manage_dropdowns",
       "settings_manage_menu_management",
+      "settings_manage_reject_reasons",
       // "settings_view_login_history"
     ],
   },

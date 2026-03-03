@@ -129,6 +129,7 @@ import AffiliateSupportLayout from "../components/SupportPanel/AffiliateSupportL
 import NotificationList from "../components/Notifications";
 import { HelpCenterIconWithChatsCount } from "../components/HelpCenterIcon";
 import SpinBonus from "../components/SpinBonus";
+import RejectReasonsPage from "../components/RejectReasonsPage";
 
 export const menu = [
   {
@@ -646,6 +647,13 @@ export const menu = [
         component: MenuManagement,
         icon: <TbMenuOrder />,
         accessKey: "settings_manage_menu_management",
+      },
+      {
+        label: "Reject Reasons",
+        path: "/reject-reasons",
+        component: RejectReasonsPage,
+        icon: <RiDropdownList />,
+        accessKey: "settings_manage_reject_reasons",
       },
     ],
   },
