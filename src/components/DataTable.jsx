@@ -79,96 +79,94 @@ const DataTable = ({
   }
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full">
       {/* Export Buttons */}
       {(isSuperAdmin ||
         (exportPermission && hasPermission(permissions, exportPermission))) && (
-        <div
-          className={`flex ${
-            customButton ? "justify-between" : "justify-end"
-          } mb-2 gap-2`}
-        >
-          {customButton && (
-            <button
-              onClick={customFn}
-              className="px-2 bg-orange-500 flex cursor-pointer hover:bg-orange-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
-            >
-              Send Notification
-              <span className="text-[18px]">
-                <LuSend />
-              </span>
-            </button>
-          )}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={exportCSV}
-              className="px-2 bg-green-500 flex cursor-pointer hover:bg-green-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
-            >
-              CSV
-              <span className="text-[18px]">
-                <BiDownload />
-              </span>
-            </button>
-            <button
-              onClick={exportPDF}
-              className="px-2 bg-blue-500 py-[3px] cursor-pointer hover:bg-blue-600 flex items-center gap-[2px] text-[14px] font-medium text-white rounded"
-            >
-              PDF
-              <span className="text-[18px]">
-                <BiDownload />
-              </span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Table */}
-      <table className="w-full table-auto text-sm border-collapse">
-        <thead>
-          <tr className="bg-gray-100 text-gray-700">
-            {columns.map((column, index) => (
-              <th
-                key={column.field || index}
-                className={`px-4 py-2 font-semibold whitespace-nowrap ${
-                  column.width ? `w-[${column.width}px]` : ""
-                } ${column.align === "center" ? "text-center" : "text-left"}`}
+          <div
+            className={`flex ${customButton ? "justify-between" : "justify-end"
+              } mb-2 gap-2`}
+          >
+            {customButton && (
+              <button
+                onClick={customFn}
+                className="px-2 bg-orange-500 flex cursor-pointer hover:bg-orange-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
               >
-                {column.headerName}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, rowIndex) => (
-            <tr
-              key={row.id || rowIndex}
-              className={`border-b border-gray-200 whitespace-nowrap hover:bg-gray-50 cursor-pointer ${
-                selectable && selectedRow && selectedRow.id === row.id
-                  ? "bg-blue-50 border-blue-200"
-                  : ""
-              }`}
-              onClick={() => selectable && onRowClick && onRowClick(row)}
-            >
-              {columns.map((column, colIndex) => (
-                <td
-                  key={`${row.id || rowIndex}-${column.field || colIndex}`}
-                  className={`px-4 py-2 ${
-                    column.align === "center" ? "text-center" : "text-left"
-                  }`}
+                Send Notification
+                <span className="text-[18px]">
+                  <LuSend />
+                </span>
+              </button>
+            )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={exportCSV}
+                className="px-2 bg-green-500 flex cursor-pointer hover:bg-green-600 items-center gap-[2px] py-[3px] text-[14px] font-medium text-white rounded"
+              >
+                CSV
+                <span className="text-[18px]">
+                  <BiDownload />
+                </span>
+              </button>
+              <button
+                onClick={exportPDF}
+                className="px-2 bg-blue-500 py-[3px] cursor-pointer hover:bg-blue-600 flex items-center gap-[2px] text-[14px] font-medium text-white rounded"
+              >
+                PDF
+                <span className="text-[18px]">
+                  <BiDownload />
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+
+      {/* Table with horizontal scroll */}
+      <div className="w-full overflow-x-auto border rounded-lg border-gray-100 pb-2">
+        <table className="w-full table-auto text-sm border-collapse">
+          <thead>
+            <tr className="bg-gray-100 text-gray-700">
+              {columns.map((column, index) => (
+                <th
+                  key={column.field || index}
+                  className={`px-4 py-2 font-semibold whitespace-nowrap ${column.width ? `w-[${column.width}px]` : ""
+                    } ${column.align === "center" ? "text-center" : "text-left"}`}
                 >
-                  <div>
-                    {column.field === "sl"
-                      ? rowIndex + 1
-                      : column.render
-                      ? column.render(row[column.field], row)
-                      : row[column.field]}
-                  </div>
-                </td>
+                  {column.headerName}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((row, rowIndex) => (
+              <tr
+                key={row.id || rowIndex}
+                className={`border-b border-gray-200 whitespace-nowrap hover:bg-gray-50 cursor-pointer ${selectable && selectedRow && selectedRow.id === row.id
+                    ? "bg-blue-50 border-blue-200"
+                    : ""
+                  }`}
+                onClick={() => selectable && onRowClick && onRowClick(row)}
+              >
+                {columns.map((column, colIndex) => (
+                  <td
+                    key={`${row.id || rowIndex}-${column.field || colIndex}`}
+                    className={`px-4 py-2 ${column.align === "center" ? "text-center" : "text-left"
+                      }`}
+                  >
+                    <div>
+                      {column.field === "sl"
+                        ? rowIndex + 1
+                        : column.render
+                          ? column.render(row[column.field], row)
+                          : row[column.field]}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
