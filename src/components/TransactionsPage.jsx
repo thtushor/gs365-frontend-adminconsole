@@ -278,10 +278,32 @@ const TransactionsPage = ({
         width: 200,
         render: (value, row) => (
           row.status === "rejected" ? (
-            <div className="text-red-500 font-medium text-xs truncate max-w-[180px]" title={value || "Reason not specified"}>
-              {value || "Reason not specified"}
+            <div className="flex flex-col">
+              <span className="text-red-500 font-bold text-xs" title={row.rejectReasonDescription || ""}>
+                {row.rejectReasonTitle || value || "Reason not specified"}
+              </span>
+              {row.rejectReasonDescription && (
+                <span className="text-gray-400 text-[10px] truncate max-w-[180px]">
+                  {row.rejectReasonDescription}
+                </span>
+              )}
+              {row.notes && (
+                <span className="text-blue-500 text-[10px] italic mt-1 border-t border-gray-100 pt-1 truncate max-w-[180px]" title={row.notes}>
+                  Extra Note: {row.notes}
+                </span>
+              )}
             </div>
           ) : "——"
+        ),
+      },
+      {
+        field: "notes",
+        headerName: "Notes",
+        width: 180,
+        render: (value) => (
+          <div className="text-gray-500 text-xs truncate max-w-[160px]" title={value || ""}>
+            {value || "——"}
+          </div>
         ),
       },
       {
@@ -858,8 +880,13 @@ const TransactionsPage = ({
                         Rejection Reason
                       </h2>
                       <p className="text-red-700 text-lg leading-relaxed font-semibold">
-                        {selectedTx.rejectReason || "Reason not specified"}
+                        {selectedTx.rejectReasonTitle || selectedTx.rejectReason || "Reason not specified"}
                       </p>
+                      {selectedTx.rejectReasonDescription && (
+                        <p className="text-gray-500 text-sm mt-2 font-normal">
+                          {selectedTx.rejectReasonDescription}
+                        </p>
+                      )}
                     </div>
                   )}
 
