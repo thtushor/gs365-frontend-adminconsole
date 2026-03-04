@@ -296,16 +296,16 @@ const TransactionsPage = ({
           ) : "——"
         ),
       },
-      {
-        field: "notes",
-        headerName: "Notes",
-        width: 180,
-        render: (value) => (
-          <div className="text-gray-500 text-xs truncate max-w-[160px]" title={value || ""}>
-            {value || "——"}
-          </div>
-        ),
-      },
+      // {
+      //   field: "notes",
+      //   headerName: "Notes",
+      //   width: 180,
+      //   render: (value) => (
+      //     <div className="text-gray-500 text-xs truncate max-w-[160px]" title={value || ""}>
+      //       {value || "——"}
+      //     </div>
+      //   ),
+      // },
       {
         field: "gatewayStatus",
         headerName: "G. Status",
